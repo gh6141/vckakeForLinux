@@ -21,4 +21,4 @@ qrc_*.cpp
 *.creator
 *.qbs.user
 
-+,db
+*.db
