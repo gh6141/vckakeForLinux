@@ -1,0 +1,9 @@
+/home/user/vckake/build/unknown-Debug/CMakeFiles/vckake.dir
+/home/user/vckake/build/unknown-Debug/CMakeFiles/edit_cache.dir
+/home/user/vckake/build/unknown-Debug/CMakeFiles/rebuild_cache.dir
+/home/user/vckake/build/unknown-Debug/CMakeFiles/list_install_components.dir
+/home/user/vckake/build/unknown-Debug/CMakeFiles/install.dir
+/home/user/vckake/build/unknown-Debug/CMakeFiles/install/local.dir
+/home/user/vckake/build/unknown-Debug/CMakeFiles/install/strip.dir
+/home/user/vckake/build/unknown-Debug/CMakeFiles/vckake_autogen_timestamp_deps.dir
+/home/user/vckake/build/unknown-Debug/CMakeFiles/vckake_autogen.dir
