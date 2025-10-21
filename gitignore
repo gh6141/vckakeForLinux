@@ -1,0 +1,24 @@
+build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+*.o
+*.obj
+*.exe
+*.log
+
+# Qt auto-generated files
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# IDE settings (optional)
+*.user
+*.pro.user
+*.pro.user.*
+*.creator
+*.qbs.user
+
+*.db
+*.sqlite
