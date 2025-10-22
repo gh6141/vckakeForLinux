@@ -27,7 +27,7 @@ void BaseTableWidget::initUI()
     connect(btnDelete, &QPushButton::clicked, this, &BaseTableWidget::deleteRow);
 }
 
-void BaseTableWidget::setTableName(const QString &name,const QString createSQL)
+void BaseTableWidget::setTableName(const QString &name,const QString createSQL,const QStringList& headers)
 {
     tableName = name;
     initDB(createSQL);
@@ -36,12 +36,19 @@ void BaseTableWidget::setTableName(const QString &name,const QString createSQL)
     model->setTable(tableName);
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->select();
-
     view->setModel(model);
+    // num 列を非表示にする
+    view->hideColumn(0); // 0 は num がモデルの最初の列の場合
+
+     // QStringList headers = {"ID", "口座名", "タブ色"};
+    for (int i = 0; i < headers.size(); ++i) {
+       model->setHeaderData(i, Qt::Horizontal, headers[i]);
+    }
 }
 
-void BaseTableWidget::initDB(const QString createSQL="")
+void BaseTableWidget::initDB(const QString createSQL)
 {
+
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("vckake.db");
 
@@ -53,22 +60,19 @@ void BaseTableWidget::initDB(const QString createSQL="")
 
     if (create) {
         QSqlQuery query;
-        QString createSQL;
-        if (tableName == "koza") {
-          //  createSQL = "CREATE TABLE koza ("
-          //              "num INTEGER PRIMARY KEY AUTOINCREMENT, "
-          //              "kozaName TEXT, "
-           //             "tabColor TEXT)";
-        }
+
 
         if (!createSQL.isEmpty()) {
             if (!query.exec(createSQL))
                 qDebug() << "テーブル作成失敗:" << query.lastError().text();
             else
                 qDebug() << "新規DBとテーブル作成完了";
+
         }
+       // query.exec("INSERT INTO koza (kozaName, tabColor) VALUES ('', '')");
     }
-}
+    }
+
 
 void BaseTableWidget::addRow()
 {

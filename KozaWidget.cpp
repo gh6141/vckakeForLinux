@@ -10,8 +10,11 @@ KozaWidget::KozaWidget(QWidget* parent)
                   "num INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "kozaName TEXT, "
                   "tabColor TEXT)";
-    setTableName("koza",sql);
     initDB(sql);  // テーブル作成は派生クラスが決める
+
+    QStringList headers = {"ID", "口座名", "タブ色"};
+    setTableName("koza",sql,headers);
+
 }
 
 // 必要なら派生クラスで addRow を上書き
