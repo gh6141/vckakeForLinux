@@ -23,7 +23,7 @@ void KozaWidget::addRow()
     BaseTableWidget::addRow();  // 空行追加
     int row = model->rowCount() - 1;
     if (row >= 0) {
-        model->setData(model->index(row, 1), "初期科目名");
-        model->setData(model->index(row, 2), "赤");
+        model->setData(model->index(row, 1), "○銀行");
+        model->setData(model->index(row, 2), "red");
     }
 }
