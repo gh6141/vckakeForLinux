@@ -33,6 +33,10 @@
      <string>設定</string>
     </property>
     <addaction name="actionkozaEdit"/>
+    <addaction name="actionactionhimokuEdit"/>
+    <addaction name="actionactionbikoEdit"/>
+    <addaction name="actionactionshiharaisaki"/>
+    <addaction name="actionaction3rsEdit"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -41,6 +45,26 @@
   <action name="actionkozaEdit">
    <property name="text">
     <string>口座設定</string>
+   </property>
+  </action>
+  <action name="actionactionhimokuEdit">
+   <property name="text">
+    <string>費目設定</string>
+   </property>
+  </action>
+  <action name="actionactionbikoEdit">
+   <property name="text">
+    <string>備考設定</string>
+   </property>
+  </action>
+  <action name="actionactionshiharaisaki">
+   <property name="text">
+    <string>支払先・元設定</string>
+   </property>
+  </action>
+  <action name="actionaction3rsEdit">
+   <property name="text">
+    <string>リレーション設定</string>
    </property>
   </action>
  </widget>

@@ -18,6 +18,14 @@ public:
 private slots:
     void on_actionkozaEdit_triggered();
 
+    void on_actionactionhimokuEdit_triggered();
+
+    void on_actionactionbikoEdit_triggered();
+
+    void on_actionactionshiharaisaki_triggered();
+
+    void on_actionaction3rsEdit_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

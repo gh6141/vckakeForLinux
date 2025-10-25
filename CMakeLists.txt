@@ -41,6 +41,14 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         KozaWidget.h
         .gitignore
         mainwindow.h mainwindow.cpp mainwindow.ui
+        HimokuWidget.h
+        HimokuWidget.cpp
+        BikoWidget.h
+        BikoWidget.cpp
+        ShiharaisakimotoWidget.h
+        ShiharaisakimotoWidget.cpp
+        ThreeRelationShipsWidget.h
+        ThreeRelationShipsWidget.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET vckake APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

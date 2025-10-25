@@ -40,7 +40,7 @@ void BaseTableWidget::setTableName(const QString &name,const QString createSQL,c
     // num 列を非表示にする
     view->hideColumn(0); // 0 は num がモデルの最初の列の場合
 
-     // QStringList headers = {"ID", "口座名", "タブ色"};
+
     for (int i = 0; i < headers.size(); ++i) {
        model->setHeaderData(i, Qt::Horizontal, headers[i]);
     }
@@ -48,30 +48,23 @@ void BaseTableWidget::setTableName(const QString &name,const QString createSQL,c
 
 void BaseTableWidget::initDB(const QString createSQL)
 {
-
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("vckake.db");
 
-    bool create = !QFile::exists("vckake.db");
     if (!db.open()) {
         qDebug() << "DB接続失敗";
         return;
     }
 
-    if (create) {
-        QSqlQuery query;
-
-
-        if (!createSQL.isEmpty()) {
+        QSqlQuery query;        
+        query.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='test'");
+        if (!query.next()&&!createSQL.isEmpty()) {
             if (!query.exec(createSQL))
                 qDebug() << "テーブル作成失敗:" << query.lastError().text();
             else
                 qDebug() << "新規DBとテーブル作成完了";
-
         }
-       // query.exec("INSERT INTO koza (kozaName, tabColor) VALUES ('', '')");
-    }
-    }
+}
 
 
 void BaseTableWidget::addRow()
