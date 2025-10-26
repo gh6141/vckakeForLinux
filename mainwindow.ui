@@ -30,6 +30,32 @@
        <attribute name="title">
         <string>収入</string>
        </attribute>
+       <widget class="QPushButton" name="pushButton">
+        <property name="geometry">
+         <rect>
+          <x>640</x>
+          <y>20</y>
+          <width>75</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>保存</string>
+        </property>
+       </widget>
+       <widget class="QCalendarWidget" name="calendarWidget">
+        <property name="geometry">
+         <rect>
+          <x>430</x>
+          <y>20</y>
+          <width>184</width>
+          <height>190</height>
+         </rect>
+        </property>
+        <property name="navigationBarVisible">
+         <bool>true</bool>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
