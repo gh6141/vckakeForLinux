@@ -6,6 +6,10 @@
 #include "ShiharaisakimotoWidget.h"
 #include "ThreeRelationShipsWidget.h"
 #include "kakeibotable.h"
+#include "KozaComboWidget.h"
+#include "HimokuComboWidget.h"
+#include "ShiharaisakiComboWidget.h"
+#include "BikoComboWidget.h"
 #include <QWidget>
 
 #include <QShowEvent>
@@ -23,6 +27,20 @@ MainWindow::MainWindow(QWidget *parent)
     if (vbox) {
         vbox->insertWidget(0, table);  // 👈 一番上（index=0）に挿入
     }
+
+    KozaComboWidget kozaWidget;
+    kozaWidget.fillComboBox(ui->comboBox_8);
+
+    HimokuComboWidget himokuWidget;
+    himokuWidget.fillComboBox(ui->comboBox_6);
+
+    ShiharaisakiComboWidget shiharaisakiWidget;
+    shiharaisakiWidget.fillComboBox(ui->comboBox_5);
+
+    BikoComboWidget bikoWidget;
+    bikoWidget.fillComboBox(ui->comboBox_7);
+
+
 
 }
 
