@@ -1,6 +1,6 @@
 //#include "KozaWidget.h"
 #include "mainwindow.h"
-#include "kakeibotable.h"
+
 
 #include <QApplication>
 #include <QLocale>
@@ -20,14 +20,19 @@ int main(int argc, char *argv[])
         }
     }
 
-    //KozaWidget w;
-    //w.show();
-    MainWindow w;
-    w.show();
+   // MainWindow w;
+   // w.show();
 
-    KakeiboTable table;
-    table.resize(800, 400);
-    table.show();
+    MainWindow *w = new MainWindow();
+    w->show();
+    //KakeiboTable table;
+    //table.resize(800, 400);
+    //table.show();
+
+    // mainwindow.cpp 内
+  //  KakeiboTable *table = new KakeiboTable(this);  // this = MainWindow
+ //   KakeiboTable *table=new KakeiboTable(w);
+  //  ui->centralWidget->layout()->addWidget(table); // レイアウトに組み込むだけ
 
 
     return a.exec();

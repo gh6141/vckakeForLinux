@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "kakeibotable.h"
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +29,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    KakeiboTable *table;  // メンバとして保持
+
 };
 
 #endif // MAINWINDOW_H

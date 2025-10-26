@@ -5,13 +5,20 @@
 #include "BikoWidget.h"
 #include "ShiharaisakimotoWidget.h"
 #include "ThreeRelationShipsWidget.h"
+#include "kakeibotable.h"
 #include <QWidget>
+
+#include <QShowEvent>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    table = new KakeiboTable(); // 親は addWidget() で設定されるので不要
+    ui->centralwidget->layout()->addWidget(table);
 }
 
 MainWindow::~MainWindow()
@@ -57,4 +64,6 @@ void MainWindow::on_actionaction3rsEdit_triggered()
     w->setAttribute(Qt::WA_DeleteOnClose);
     w->show();
 }
+
+
 
