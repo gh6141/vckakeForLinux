@@ -1,5 +1,6 @@
 //#include "KozaWidget.h"
 #include "mainwindow.h"
+#include "kakeibotable.h"
 
 #include <QApplication>
 #include <QLocale>
@@ -23,6 +24,10 @@ int main(int argc, char *argv[])
     //w.show();
     MainWindow w;
     w.show();
+
+    KakeiboTable table;
+    table.resize(800, 400);
+    table.show();
 
 
     return a.exec();

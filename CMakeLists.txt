@@ -49,6 +49,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ShiharaisakimotoWidget.cpp
         ThreeRelationShipsWidget.h
         ThreeRelationShipsWidget.cpp
+        kakeibotable.h
+        kakeibotable.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET vckake APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
