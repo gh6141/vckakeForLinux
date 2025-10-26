@@ -18,7 +18,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     table = new KakeiboTable(); // 親は addWidget() で設定されるので不要
-    ui->centralwidget->layout()->addWidget(table);
+    //ui->centralwidget->layout()->addWidget(table);
+    QVBoxLayout *vbox = qobject_cast<QVBoxLayout*>(ui->centralwidget->layout());
+    if (vbox) {
+        vbox->insertWidget(0, table);  // 👈 一番上（index=0）に挿入
+    }
+
 }
 
 MainWindow::~MainWindow()
