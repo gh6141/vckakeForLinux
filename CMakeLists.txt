@@ -57,6 +57,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SiharaiComboWidget.h
         ShiharaisakiComboWidget.h
         BikoComboWidget.h
+        KakeiboRowData.h
 
 
     )

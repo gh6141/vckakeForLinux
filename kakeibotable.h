@@ -7,6 +7,7 @@
 #include <QTableView>
 #include <QVBoxLayout>
 #include <QFile>
+#include "KakeiboRowData.h"
 
 class KakeiboTable : public QWidget
 {
@@ -16,6 +17,10 @@ public:
     explicit KakeiboTable(QWidget *parent = nullptr);
     bool initDB();
     void loadTable(int accountNum);  // 口座番号でテーブル切替
+public slots:
+   // void addRowForCurrentAccount();
+    void addRowForCurrentAccount(const KakeiboRowData& data);
+
 
 private:
     QSqlDatabase db;
@@ -25,6 +30,9 @@ private:
 
     bool ensureTableExists(const QString &tableName);
 };
+
+
+
 
 #endif // KAKEIBOTABLE_H
 

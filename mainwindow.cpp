@@ -10,6 +10,7 @@
 #include "HimokuComboWidget.h"
 #include "ShiharaisakiComboWidget.h"
 #include "BikoComboWidget.h"
+#include "KakeiboRowData.h"
 #include <QWidget>
 
 #include <QShowEvent>
@@ -41,6 +42,26 @@ MainWindow::MainWindow(QWidget *parent)
     bikoWidget.fillComboBox(ui->comboBox_7);
 
 
+
+    // ComboBox 選択が変わったらテーブルを切り替える
+    connect(ui->comboBox_8, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, [=](int index){
+                int num = ui->comboBox_8->itemData(index).toInt();
+                table->loadTable(num);
+            });
+
+    // 「追加」ボタンを押したら行追加
+
+    connect(ui->pushButton_2, &QPushButton::clicked, this, [=](){
+
+        KakeiboRowData data;
+        data.date = ui->dateEdit_2->date();
+        data.kingaku = ui->lineEdit->text().toInt();
+        data.himoku = ui->comboBox_6->currentText();
+        data.shiharaisaki = ui->comboBox_5->currentText();
+        data.biko = ui->comboBox_7->currentText();
+        table->addRowForCurrentAccount(data);
+    });
 
 }
 
@@ -87,6 +108,8 @@ void MainWindow::on_actionaction3rsEdit_triggered()
     w->setAttribute(Qt::WA_DeleteOnClose);
     w->show();
 }
+
+
 
 
 

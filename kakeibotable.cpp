@@ -2,6 +2,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
+#include <QDate>
 
 KakeiboTable::KakeiboTable(QWidget *parent)
     : QWidget(parent),
@@ -76,4 +77,24 @@ void KakeiboTable::loadTable(int accountNum)
 
     view->setModel(model);
     view->resizeColumnsToContents();
+}
+
+
+
+void KakeiboTable::addRowForCurrentAccount(const KakeiboRowData& data)
+{
+    if (!model) return;
+
+    int row = model->rowCount();
+    model->insertRow(row);
+    model->setData(model->index(row, 1), data.date.toString("yyyy-MM-dd"));
+    model->setData(model->index(row, 2), data.kingaku);
+    model->setData(model->index(row, 3), data.kingaku);
+    model->setData(model->index(row, 4), 0);
+    //model->setData(model->index(row, 5), "");
+    //model->setData(model->index(row, 6), "");
+    model->setData(model->index(row, 5), data.himoku);   // 費目名
+    model->setData(model->index(row, 6), data.shiharaisaki+"/"+data.biko);   // ID
+
+    model->submitAll();
 }
