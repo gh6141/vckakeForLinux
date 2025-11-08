@@ -1,18 +1,41 @@
 vckake_autogen/timestamp: \
+	/home/user/vckake/BaseComboWidget.h \
 	/home/user/vckake/BaseTableWidget.cpp \
 	/home/user/vckake/BaseTableWidget.h \
+	/home/user/vckake/BikoComboWidget.h \
+	/home/user/vckake/BikoWidget.cpp \
+	/home/user/vckake/BikoWidget.h \
 	/home/user/vckake/CMakeLists.txt \
+	/home/user/vckake/HimokuComboWidget.h \
+	/home/user/vckake/HimokuWidget.cpp \
+	/home/user/vckake/HimokuWidget.h \
+	/home/user/vckake/KakeiboRowData.h \
+	/home/user/vckake/KozaComboWidget.h \
 	/home/user/vckake/KozaWidget.cpp \
 	/home/user/vckake/KozaWidget.h \
+	/home/user/vckake/ShiharaisakiComboWidget.h \
+	/home/user/vckake/ShiharaisakimotoWidget.cpp \
+	/home/user/vckake/ShiharaisakimotoWidget.h \
+	/home/user/vckake/SiharaiComboWidget.h \
+	/home/user/vckake/ThreeRelationShipsWidget.cpp \
+	/home/user/vckake/ThreeRelationShipsWidget.h \
 	/home/user/vckake/build/unknown-Debug/.qtc/package-manager/auto-setup.cmake \
 	/home/user/vckake/build/unknown-Debug/CMakeFiles/3.31.9/CMakeCXXCompiler.cmake \
 	/home/user/vckake/build/unknown-Debug/CMakeFiles/3.31.9/CMakeSystem.cmake \
 	/home/user/vckake/build/unknown-Debug/vckake_autogen/moc_predefs.h \
+	/home/user/vckake/kakeibotable.cpp \
+	/home/user/vckake/kakeibotable.h \
 	/home/user/vckake/koza.cpp \
 	/home/user/vckake/koza.h \
 	/home/user/vckake/main.cpp \
+	/home/user/vckake/mainwindow.cpp \
+	/home/user/vckake/mainwindow.h \
+	/usr/include/QtCore/QDate \
 	/usr/include/QtCore/QDebug \
 	/usr/include/QtCore/QFile \
+	/usr/include/QtCore/QList \
+	/usr/include/QtCore/QPair \
+	/usr/include/QtCore/QString \
 	/usr/include/QtCore/q17memory.h \
 	/usr/include/QtCore/q20functional.h \
 	/usr/include/QtCore/q20iterator.h \
@@ -35,6 +58,7 @@ vckake_autogen/timestamp: \
 	/usr/include/QtCore/qbytearrayalgorithms.h \
 	/usr/include/QtCore/qbytearraylist.h \
 	/usr/include/QtCore/qbytearrayview.h \
+	/usr/include/QtCore/qcalendar.h \
 	/usr/include/QtCore/qchar.h \
 	/usr/include/QtCore/qcompare.h \
 	/usr/include/QtCore/qcompare_impl.h \
@@ -48,6 +72,7 @@ vckake_autogen/timestamp: \
 	/usr/include/QtCore/qcontiguouscache.h \
 	/usr/include/QtCore/qdarwinhelpers.h \
 	/usr/include/QtCore/qdatastream.h \
+	/usr/include/QtCore/qdatetime.h \
 	/usr/include/QtCore/qdebug.h \
 	/usr/include/QtCore/qendian.h \
 	/usr/include/QtCore/qexceptionhandling.h \
@@ -172,6 +197,7 @@ vckake_autogen/timestamp: \
 	/usr/include/QtGui/qtransform.h \
 	/usr/include/QtGui/qvalidator.h \
 	/usr/include/QtGui/qwindowdefs.h \
+	/usr/include/QtSql/QSqlDatabase \
 	/usr/include/QtSql/QSqlError \
 	/usr/include/QtSql/QSqlQuery \
 	/usr/include/QtSql/QSqlTableModel \
@@ -183,10 +209,12 @@ vckake_autogen/timestamp: \
 	/usr/include/QtSql/qtsql-config.h \
 	/usr/include/QtSql/qtsqlexports.h \
 	/usr/include/QtSql/qtsqlglobal.h \
+	/usr/include/QtWidgets/QComboBox \
 	/usr/include/QtWidgets/QMainWindow \
 	/usr/include/QtWidgets/QPushButton \
 	/usr/include/QtWidgets/QTableView \
 	/usr/include/QtWidgets/QVBoxLayout \
+	/usr/include/QtWidgets/QWidget \
 	/usr/include/QtWidgets/qabstractbutton.h \
 	/usr/include/QtWidgets/qabstractitemdelegate.h \
 	/usr/include/QtWidgets/qabstractitemview.h \
@@ -194,6 +222,7 @@ vckake_autogen/timestamp: \
 	/usr/include/QtWidgets/qabstractslider.h \
 	/usr/include/QtWidgets/qabstractspinbox.h \
 	/usr/include/QtWidgets/qboxlayout.h \
+	/usr/include/QtWidgets/qcombobox.h \
 	/usr/include/QtWidgets/qframe.h \
 	/usr/include/QtWidgets/qgridlayout.h \
 	/usr/include/QtWidgets/qlayout.h \
@@ -833,4 +862,5 @@ vckake_autogen/timestamp: \
 	/usr/share/cmake-3.31/Modules/Platform/Linux-Initialize.cmake \
 	/usr/share/cmake-3.31/Modules/Platform/Linux.cmake \
 	/usr/share/cmake-3.31/Modules/Platform/UnixPaths.cmake \
+	/home/user/vckake/mainwindow.ui \
 	/usr/bin/cmake

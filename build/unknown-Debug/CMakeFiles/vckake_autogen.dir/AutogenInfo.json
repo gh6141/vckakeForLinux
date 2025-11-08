@@ -609,9 +609,51 @@
 	"HEADERS" : 
 	[
 		[
+			"/home/user/vckake/BaseComboWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_BaseComboWidget.cpp",
+			null
+		],
+		[
 			"/home/user/vckake/BaseTableWidget.h",
 			"MU",
 			"EWIEGA46WW/moc_BaseTableWidget.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/BikoComboWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_BikoComboWidget.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/BikoWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_BikoWidget.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/HimokuComboWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_HimokuComboWidget.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/HimokuWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_HimokuWidget.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/KakeiboRowData.h",
+			"MU",
+			"EWIEGA46WW/moc_KakeiboRowData.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/KozaComboWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_KozaComboWidget.cpp",
 			null
 		],
 		[
@@ -620,7 +662,43 @@
 			"EWIEGA46WW/moc_KozaWidget.cpp",
 			null
 		],
-		[ "/home/user/vckake/koza.h", "MU", "EWIEGA46WW/moc_koza.cpp", null ]
+		[
+			"/home/user/vckake/ShiharaisakiComboWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_ShiharaisakiComboWidget.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/ShiharaisakimotoWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_ShiharaisakimotoWidget.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/SiharaiComboWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_SiharaiComboWidget.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/ThreeRelationShipsWidget.h",
+			"MU",
+			"EWIEGA46WW/moc_ThreeRelationShipsWidget.cpp",
+			null
+		],
+		[
+			"/home/user/vckake/kakeibotable.h",
+			"MU",
+			"EWIEGA46WW/moc_kakeibotable.cpp",
+			null
+		],
+		[ "/home/user/vckake/koza.h", "MU", "EWIEGA46WW/moc_koza.cpp", null ],
+		[
+			"/home/user/vckake/mainwindow.h",
+			"MU",
+			"EWIEGA46WW/moc_mainwindow.cpp",
+			null
+		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "/home/user/vckake/build/unknown-Debug/vckake_autogen/include",
@@ -682,9 +760,15 @@
 	"SOURCES" : 
 	[
 		[ "/home/user/vckake/BaseTableWidget.cpp", "MU", null ],
+		[ "/home/user/vckake/BikoWidget.cpp", "MU", null ],
+		[ "/home/user/vckake/HimokuWidget.cpp", "MU", null ],
 		[ "/home/user/vckake/KozaWidget.cpp", "MU", null ],
+		[ "/home/user/vckake/ShiharaisakimotoWidget.cpp", "MU", null ],
+		[ "/home/user/vckake/ThreeRelationShipsWidget.cpp", "MU", null ],
+		[ "/home/user/vckake/kakeibotable.cpp", "MU", null ],
 		[ "/home/user/vckake/koza.cpp", "MU", null ],
-		[ "/home/user/vckake/main.cpp", "MU", null ]
+		[ "/home/user/vckake/main.cpp", "MU", null ],
+		[ "/home/user/vckake/mainwindow.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],

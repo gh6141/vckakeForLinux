@@ -89,6 +89,54 @@ build CMakeFiles/vckake.dir/KozaWidget.cpp.o: CXX_COMPILER__vckake_unscanned_Deb
   OBJECT_DIR = CMakeFiles/vckake.dir
   OBJECT_FILE_DIR = CMakeFiles/vckake.dir
 
+build CMakeFiles/vckake.dir/mainwindow.cpp.o: CXX_COMPILER__vckake_unscanned_Debug /home/user/vckake/mainwindow.cpp || cmake_object_order_depends_target_vckake
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/vckake.dir/mainwindow.cpp.o.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always -fPIC
+  INCLUDES = -I/home/user/vckake/build/unknown-Debug/vckake_autogen/include -isystem /usr/include/QtCore -isystem /usr/mkspecs/linux-g++ -isystem /usr/include/QtWidgets -isystem /usr/include/QtGui -isystem /usr/include/QtSql
+  OBJECT_DIR = CMakeFiles/vckake.dir
+  OBJECT_FILE_DIR = CMakeFiles/vckake.dir
+
+build CMakeFiles/vckake.dir/HimokuWidget.cpp.o: CXX_COMPILER__vckake_unscanned_Debug /home/user/vckake/HimokuWidget.cpp || cmake_object_order_depends_target_vckake
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/vckake.dir/HimokuWidget.cpp.o.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always -fPIC
+  INCLUDES = -I/home/user/vckake/build/unknown-Debug/vckake_autogen/include -isystem /usr/include/QtCore -isystem /usr/mkspecs/linux-g++ -isystem /usr/include/QtWidgets -isystem /usr/include/QtGui -isystem /usr/include/QtSql
+  OBJECT_DIR = CMakeFiles/vckake.dir
+  OBJECT_FILE_DIR = CMakeFiles/vckake.dir
+
+build CMakeFiles/vckake.dir/BikoWidget.cpp.o: CXX_COMPILER__vckake_unscanned_Debug /home/user/vckake/BikoWidget.cpp || cmake_object_order_depends_target_vckake
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/vckake.dir/BikoWidget.cpp.o.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always -fPIC
+  INCLUDES = -I/home/user/vckake/build/unknown-Debug/vckake_autogen/include -isystem /usr/include/QtCore -isystem /usr/mkspecs/linux-g++ -isystem /usr/include/QtWidgets -isystem /usr/include/QtGui -isystem /usr/include/QtSql
+  OBJECT_DIR = CMakeFiles/vckake.dir
+  OBJECT_FILE_DIR = CMakeFiles/vckake.dir
+
+build CMakeFiles/vckake.dir/ShiharaisakimotoWidget.cpp.o: CXX_COMPILER__vckake_unscanned_Debug /home/user/vckake/ShiharaisakimotoWidget.cpp || cmake_object_order_depends_target_vckake
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/vckake.dir/ShiharaisakimotoWidget.cpp.o.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always -fPIC
+  INCLUDES = -I/home/user/vckake/build/unknown-Debug/vckake_autogen/include -isystem /usr/include/QtCore -isystem /usr/mkspecs/linux-g++ -isystem /usr/include/QtWidgets -isystem /usr/include/QtGui -isystem /usr/include/QtSql
+  OBJECT_DIR = CMakeFiles/vckake.dir
+  OBJECT_FILE_DIR = CMakeFiles/vckake.dir
+
+build CMakeFiles/vckake.dir/ThreeRelationShipsWidget.cpp.o: CXX_COMPILER__vckake_unscanned_Debug /home/user/vckake/ThreeRelationShipsWidget.cpp || cmake_object_order_depends_target_vckake
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/vckake.dir/ThreeRelationShipsWidget.cpp.o.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always -fPIC
+  INCLUDES = -I/home/user/vckake/build/unknown-Debug/vckake_autogen/include -isystem /usr/include/QtCore -isystem /usr/mkspecs/linux-g++ -isystem /usr/include/QtWidgets -isystem /usr/include/QtGui -isystem /usr/include/QtSql
+  OBJECT_DIR = CMakeFiles/vckake.dir
+  OBJECT_FILE_DIR = CMakeFiles/vckake.dir
+
+build CMakeFiles/vckake.dir/kakeibotable.cpp.o: CXX_COMPILER__vckake_unscanned_Debug /home/user/vckake/kakeibotable.cpp || cmake_object_order_depends_target_vckake
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/vckake.dir/kakeibotable.cpp.o.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always -fPIC
+  INCLUDES = -I/home/user/vckake/build/unknown-Debug/vckake_autogen/include -isystem /usr/include/QtCore -isystem /usr/mkspecs/linux-g++ -isystem /usr/include/QtWidgets -isystem /usr/include/QtGui -isystem /usr/include/QtSql
+  OBJECT_DIR = CMakeFiles/vckake.dir
+  OBJECT_FILE_DIR = CMakeFiles/vckake.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target vckake
@@ -97,7 +145,7 @@ build CMakeFiles/vckake.dir/KozaWidget.cpp.o: CXX_COMPILER__vckake_unscanned_Deb
 #############################################
 # Link the executable vckake
 
-build vckake: CXX_EXECUTABLE_LINKER__vckake_Debug CMakeFiles/vckake.dir/vckake_autogen/mocs_compilation.cpp.o CMakeFiles/vckake.dir/main.cpp.o CMakeFiles/vckake.dir/koza.cpp.o CMakeFiles/vckake.dir/BaseTableWidget.cpp.o CMakeFiles/vckake.dir/KozaWidget.cpp.o | /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.9.3 /usr/lib/x86_64-linux-gnu/libQt6Sql.so.6.9.3 /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.9.3 /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.9.3 || vckake_autogen vckake_autogen_timestamp_deps
+build vckake: CXX_EXECUTABLE_LINKER__vckake_Debug CMakeFiles/vckake.dir/vckake_autogen/mocs_compilation.cpp.o CMakeFiles/vckake.dir/main.cpp.o CMakeFiles/vckake.dir/koza.cpp.o CMakeFiles/vckake.dir/BaseTableWidget.cpp.o CMakeFiles/vckake.dir/KozaWidget.cpp.o CMakeFiles/vckake.dir/mainwindow.cpp.o CMakeFiles/vckake.dir/HimokuWidget.cpp.o CMakeFiles/vckake.dir/BikoWidget.cpp.o CMakeFiles/vckake.dir/ShiharaisakimotoWidget.cpp.o CMakeFiles/vckake.dir/ThreeRelationShipsWidget.cpp.o CMakeFiles/vckake.dir/kakeibotable.cpp.o | /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.9.3 /usr/lib/x86_64-linux-gnu/libQt6Sql.so.6.9.3 /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.9.3 /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.9.3 || vckake_autogen vckake_autogen_timestamp_deps
   DEP_FILE = CMakeFiles/vckake.dir/link.d
   FLAGS = -DQT_QML_DEBUG -g
   LINK_FLAGS = -Wl,--dependency-file=CMakeFiles/vckake.dir/link.d
@@ -184,7 +232,7 @@ build vckake_autogen_timestamp_deps: phony
 #############################################
 # Utility command for vckake_autogen
 
-build vckake_autogen: phony CMakeFiles/vckake_autogen vckake_autogen/timestamp vckake_autogen/mocs_compilation.cpp vckake_autogen_timestamp_deps
+build vckake_autogen: phony CMakeFiles/vckake_autogen vckake_autogen/include/ui_mainwindow.h vckake_autogen/timestamp vckake_autogen/mocs_compilation.cpp vckake_autogen_timestamp_deps
 
 
 #############################################
@@ -201,7 +249,7 @@ build vckake_autogen/timestamp vckake_autogen/mocs_compilation.cpp | ${cmake_nin
 #############################################
 # Phony custom command for CMakeFiles/vckake_autogen
 
-build CMakeFiles/vckake_autogen | ${cmake_ninja_workdir}CMakeFiles/vckake_autogen: phony vckake_autogen/timestamp || vckake_autogen_timestamp_deps
+build CMakeFiles/vckake_autogen vckake_autogen/include/ui_mainwindow.h | ${cmake_ninja_workdir}CMakeFiles/vckake_autogen ${cmake_ninja_workdir}vckake_autogen/include/ui_mainwindow.h: phony vckake_autogen/timestamp || vckake_autogen_timestamp_deps
 
 # =============================================================================
 # Target aliases.
