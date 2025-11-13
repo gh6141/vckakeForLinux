@@ -59,7 +59,8 @@ bool KakeiboTable::ensureTableExists(const QString &tableName)
                             "shunyu INTEGER,"
                             "zandaka INTEGER,"
                             "himoku TEXT,"
-                            "biko TEXT)"
+                            "biko TEXT,"
+                            "idosaki TEXT)"
                             ).arg(tableName);
 
     if (!query.exec(createSQL)) {
