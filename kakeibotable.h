@@ -18,9 +18,12 @@ public:
     bool initDB();
     void loadTable(int accountNum);  // 口座番号でテーブル切替
     void recalculateBalances();//残高更新
+    QSqlTableModel* loadModel(int accountNUm);
+    void addRowForCurrentAccountModel(const KakeiboRowData& data,bool sishutuFlg,int cnum);
+
 public slots:
    // void addRowForCurrentAccount();
-    void addRowForCurrentAccount(const KakeiboRowData& data,bool flg);
+    void addRowForCurrentAccount(const KakeiboRowData& data,bool flg,int knum);
 
 
 private:

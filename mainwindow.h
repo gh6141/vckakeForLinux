@@ -16,6 +16,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     static QString getDatabasePath();
+    int ckozanum;
+    int dst_ckozanum;
 
 private slots:
     void on_actionkozaEdit_triggered();
@@ -38,9 +40,12 @@ private slots:
 
     void on_actionexit_triggered();
 
+    void on_pushButton_3_clicked();
+
 private:
     Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
+    KakeiboTable *dst_table;
 
 };
 

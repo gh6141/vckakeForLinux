@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
         vbox->insertWidget(0, table);  // 👈 一番上（index=0）に挿入
     }
 
+
     KozaComboWidget kozaWidget;
     kozaWidget.fillComboBox(ui->comboBox_8);
     kozaWidget.fillComboBox(ui->comboBox);
@@ -57,13 +58,46 @@ MainWindow::MainWindow(QWidget *parent)
     ui->dateEdit_3->setDate(QDate::currentDate());
 
 
+    ckozanum=1;
+    dst_ckozanum=1;
 
     // ComboBox 選択が変わったらテーブルを切り替える
-    connect(ui->comboBox_8, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, [=](int index){
-                int num = ui->comboBox_8->itemData(index).toInt();
-                table->loadTable(num);
-            });
+    // ３つのコンボボックスを QList にまとめる
+    QList<QComboBox*> combos = { ui->comboBox_8, ui->comboBox, ui->comboBox_12 };
+
+    // 同期処理ラムダ
+    auto syncComboBoxes = [=](int index, QComboBox* senderCombo){
+        if (index < 0) return;
+        int value = senderCombo->itemData(index).toInt();
+        ckozanum = value;
+
+        // 他のコンボボックスの選択を合わせる
+        for (auto combo : combos) {
+            if (combo != senderCombo) {
+                // 無限ループ防止のためシグナルブロック
+                QSignalBlocker blocker(combo);
+                combo->setCurrentIndex(index);
+            }
+        }
+
+        table->loadTable(ckozanum);
+    };
+
+    // ３つとも同じラムダで接続
+    for (auto combo : combos) {
+        connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this, [=](int index){ syncComboBoxes(index, combo); });
+    }
+
+
+    connect(ui->comboBox_13, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, [=](int index){
+       dst_ckozanum=ui->comboBox_13->itemData(index).toInt();
+
+      });
+
+
+
 
     // 「追加」ボタンを押したら行追加
 
@@ -169,7 +203,8 @@ void MainWindow::on_pushButton_2_clicked()
     data.himoku = ui->comboBox_6->currentText();
     data.shiharaisaki = ui->comboBox_5->currentText();
     data.biko = ui->comboBox_7->currentText();
-    table->addRowForCurrentAccount(data,true);//true=sishutu false=shunyu
+    table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
+        table->loadTable(ckozanum);
 }
 
 
@@ -181,12 +216,52 @@ void MainWindow::on_pushButton_clicked()
     data.himoku = ui->comboBox_2->currentText();
     data.shiharaisaki = ui->comboBox_3->currentText();
     data.biko = ui->comboBox_4->currentText();
-    table->addRowForCurrentAccount(data,false);//true=sishutu false=shunyu
+    table->addRowForCurrentAccount(data,false,ckozanum);//true=sishutu false=shunyu
+        table->loadTable(ckozanum);
 }
 
 
 void MainWindow::on_actionexit_triggered()
 {
     QApplication::quit();
+}
+
+
+
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    if(ckozanum==dst_ckozanum){
+        QMessageBox::warning(this, "口座の一致", "送り先と元が同じになっています");
+        return;
+    }
+
+    KakeiboRowData data;
+    data.date = ui->dateEdit_3->date();
+    int kg=ui->lineEdit_3->text().toInt();
+    data.kingaku = kg;
+    QString cid=QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+    data.himoku = cid;
+    data.shiharaisaki = ui->comboBox_12->currentText()+">"+ui->comboBox_13->currentText();
+    data.biko = ui->comboBox_11->currentText();
+    table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
+  //  table->loadTable(ckozanum);
+
+ // QMessageBox::warning(this, "次の処理", "送り先の処理をします");
+    table->loadTable(dst_ckozanum);
+   //QMessageBox::warning(this, "次の処理", "送り先の処理をします2");
+    KakeiboRowData data2;
+    data2.date = ui->dateEdit_3->date();
+    data2.kingaku = kg;
+    data2.himoku =cid;
+    data2.shiharaisaki = ui->comboBox_12->currentText()+">"+ui->comboBox_13->currentText();
+    data2.biko = ui->comboBox_11->currentText();
+
+
+   table->addRowForCurrentAccount(data2,false,dst_ckozanum);//true=sishutu false=shunyu
+  //  QMessageBox::warning(this, "次の処理", "送り先の処理をします3");
+    table->loadTable(ckozanum);
+
 }
 

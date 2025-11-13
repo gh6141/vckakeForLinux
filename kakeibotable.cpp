@@ -6,6 +6,8 @@
 #include <QStyledItemDelegate>
 #include <QStyleOptionViewItem>
 #include "mainwindow.h"
+#include <QTimer>
+#include <QHeaderView>
 
 class RightAlignDelegate : public QStyledItemDelegate
 {
@@ -68,8 +70,8 @@ bool KakeiboTable::ensureTableExists(const QString &tableName)
     return true;
 }
 
-void KakeiboTable::loadTable(int accountNum)
-{
+QSqlTableModel* KakeiboTable::loadModel(int accountNum)
+ {
     currentAccountNum = accountNum;
     QString tableName = QString("shishutunyu%1").arg(accountNum);
 
@@ -82,16 +84,27 @@ void KakeiboTable::loadTable(int accountNum)
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->select();
 
-   // model->setHeaderData(0, Qt::Horizontal, "番号");
+    model->setHeaderData(0, Qt::Horizontal, "番号");
     model->setHeaderData(1, Qt::Horizontal, "日付");
     model->setHeaderData(2, Qt::Horizontal, "支出");
     model->setHeaderData(3, Qt::Horizontal, "収入");
     model->setHeaderData(4, Qt::Horizontal, "残高");
     model->setHeaderData(5, Qt::Horizontal, "費目");
     model->setHeaderData(6, Qt::Horizontal, "備考");
+    return model;
+}
 
-    view->setModel(model);
-    view->setColumnHidden(0, true);
+
+
+void KakeiboTable::loadTable(int accountNum)
+{
+
+
+    view->setModel(loadModel(accountNum));
+
+     // view->setColumnHidden(0, false);       // num列を表示
+      view->verticalHeader()->setVisible(false); // 左端の行番号を非表示
+
     //
     // ▼ ここから外観設定
     //
@@ -101,8 +114,12 @@ void KakeiboTable::loadTable(int accountNum)
     font.setPointSize(12);  // ← フォントサイズを指定（例: 12pt）
     view->setFont(font);
 
+    QFont headerFont = view->horizontalHeader()->font();
+    headerFont.setPointSize(12);        // 好きなサイズに変更
+    view->horizontalHeader()->setFont(headerFont);
+
     // --- セル幅を個別指定 ---
-   // view->setColumnWidth(0, 60);   // 番号
+    view->setColumnWidth(0, 10);   // 番号
     view->setColumnWidth(1, 100);  // 日付
     view->setColumnWidth(2, 80);   // 支出
     view->setColumnWidth(3, 80);   // 収入
@@ -111,6 +128,7 @@ void KakeiboTable::loadTable(int accountNum)
     view->setColumnWidth(6, 200);  // 備考
 
     // --- 数値列を右揃え ---
+    view->setItemDelegateForColumn(0, new RightAlignDelegate(view)); // num
     view->setItemDelegateForColumn(2, new RightAlignDelegate(view)); // 支出
     view->setItemDelegateForColumn(3, new RightAlignDelegate(view)); // 収入
     view->setItemDelegateForColumn(4, new RightAlignDelegate(view)); // 残高
@@ -119,7 +137,7 @@ void KakeiboTable::loadTable(int accountNum)
     view->resizeRowsToContents();
 
     // --- 列幅を全体にフィットさせる場合（手動指定の代替） ---
-    // view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+     view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     // --- テーブルのスタイルを少し見やすくする例 ---
     view->setAlternatingRowColors(true); // 交互色
@@ -129,13 +147,21 @@ void KakeiboTable::loadTable(int accountNum)
 
     KakeiboTable::recalculateBalances();
     //view->resizeColumnsToContents();
+
+    QTimer::singleShot(0, view, [this]() {
+        view->scrollToBottom();
+    });
+
 }
 
-
-
-void KakeiboTable::addRowForCurrentAccount(const KakeiboRowData& data,bool sishutuFlg)
-{
+void KakeiboTable::addRowForCurrentAccountModel(const KakeiboRowData& data,bool sishutuFlg,int knum){
     if (!model) return;
+
+
+    QString tableName = QString("shishutunyu%1").arg(knum);
+    ensureTableExists(tableName);
+    model->setTable(tableName);
+
 
     int row = model->rowCount();
     model->insertRow(row);
@@ -150,12 +176,16 @@ void KakeiboTable::addRowForCurrentAccount(const KakeiboRowData& data,bool sishu
 
 
     model->setData(model->index(row, 4), 0);
-    //model->setData(model->index(row, 5), "");
-    //model->setData(model->index(row, 6), "");
     model->setData(model->index(row, 5), data.himoku);   // 費目名
     model->setData(model->index(row, 6), data.shiharaisaki+"/"+data.biko);   // ID
 
     model->submitAll();
+}
+
+
+void KakeiboTable::addRowForCurrentAccount(const KakeiboRowData& data,bool sishutuFlg,int knum)
+{
+    addRowForCurrentAccountModel(data,sishutuFlg,knum);
 
      KakeiboTable::recalculateBalances();
 }
@@ -178,5 +208,5 @@ void KakeiboTable::recalculateBalances()
         model->setData(model->index(row, 4), currentBalance);
     }
 
-    //model->submitAll();  // DBに反映
+   // model->submitAll();  // DBに反映
 }
