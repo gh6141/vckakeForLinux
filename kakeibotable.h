@@ -20,6 +20,12 @@ public:
     void recalculateBalances();//残高更新
     QSqlTableModel* loadModel(int accountNUm);
     void addRowForCurrentAccountModel(const KakeiboRowData& data,bool sishutuFlg,int cnum);
+    QItemSelectionModel* selectionModel() const {
+        return view->selectionModel();
+    }
+    QSqlTableModel* getmodel(){
+        return model;
+    }
 
 public slots:
    // void addRowForCurrentAccount();

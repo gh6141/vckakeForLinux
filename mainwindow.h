@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "kakeibotable.h"
+#include <QPushButton>
 
 namespace Ui {
 class MainWindow;
@@ -46,6 +47,7 @@ private:
     Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
     KakeiboTable *dst_table;
+    QPushButton *deleteButton = nullptr;
 
 };
 

@@ -17,6 +17,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QMessageBox>
+#include <QPushButton>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -24,12 +25,40 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     table = new KakeiboTable(); // 親は addWidget() で設定されるので不要
     //ui->centralwidget->layout()->addWidget(table);
     QVBoxLayout *vbox = qobject_cast<QVBoxLayout*>(ui->centralwidget->layout());
+    // 削除ボタン作成
+    deleteButton = new QPushButton("削除", this);
+    deleteButton->setFixedWidth(80);
+    deleteButton->setVisible(false);
+    // 横レイアウト作成（右端に寄せる）
+    QHBoxLayout *hbox = new QHBoxLayout;
+    hbox->addStretch();                  // 左側を伸ばす
+    hbox->addWidget(deleteButton);       // 右端にボタン
+    hbox->setAlignment(deleteButton, Qt::AlignRight);
+    hbox->setContentsMargins(0, 0, 10, 0);
     if (vbox) {
         vbox->insertWidget(0, table);  // 👈 一番上（index=0）に挿入
+        deleteButton->setVisible(true);
+        vbox->insertLayout(1, hbox);  // table の下に配置
+
+        // 削除ボタンクリックで選択行削除
+        connect(deleteButton, &QPushButton::clicked, this, [this]() {
+            QItemSelectionModel *sel = table->selectionModel();
+            if (!sel->hasSelection()) return;
+
+            QModelIndexList selected = sel->selectedRows();
+            std::sort(selected.begin(), selected.end(),
+                      [](const QModelIndex &a, const QModelIndex &b) { return a.row() > b.row(); });
+
+            for (const QModelIndex &idx : selected) {
+                table->getmodel()->removeRow(idx.row());
+            }
+             table->loadTable(ckozanum);
+
+            // deleteButton->setVisible(false);
+        });
     }
 
 

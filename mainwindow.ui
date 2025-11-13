@@ -35,7 +35,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <property name="styleSheet">
@@ -469,7 +469,7 @@
         <property name="geometry">
          <rect>
           <x>670</x>
-          <y>30</y>
+          <y>20</y>
           <width>75</width>
           <height>41</height>
          </rect>
