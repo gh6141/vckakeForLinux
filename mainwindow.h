@@ -15,6 +15,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    static QString getDatabasePath();
 
 private slots:
     void on_actionkozaEdit_triggered();
@@ -26,6 +27,14 @@ private slots:
     void on_actionactionshiharaisaki_triggered();
 
     void on_actionaction3rsEdit_triggered();
+
+    void on_actiondbSet_triggered();
+
+    void on_tabWidget_currentChanged(int index);
+
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;

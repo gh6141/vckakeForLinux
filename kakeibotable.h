@@ -17,9 +17,10 @@ public:
     explicit KakeiboTable(QWidget *parent = nullptr);
     bool initDB();
     void loadTable(int accountNum);  // 口座番号でテーブル切替
+    void recalculateBalances();//残高更新
 public slots:
    // void addRowForCurrentAccount();
-    void addRowForCurrentAccount(const KakeiboRowData& data);
+    void addRowForCurrentAccount(const KakeiboRowData& data,bool flg);
 
 
 private:

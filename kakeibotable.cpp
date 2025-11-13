@@ -3,6 +3,20 @@
 #include <QSqlError>
 #include <QDebug>
 #include <QDate>
+#include <QStyledItemDelegate>
+#include <QStyleOptionViewItem>
+#include "mainwindow.h"
+
+class RightAlignDelegate : public QStyledItemDelegate
+{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
+    {
+        QStyledItemDelegate::initStyleOption(option, index);
+        option->displayAlignment = Qt::AlignRight | Qt::AlignVCenter;
+    }
+};
 
 KakeiboTable::KakeiboTable(QWidget *parent)
     : QWidget(parent),
@@ -21,7 +35,8 @@ KakeiboTable::KakeiboTable(QWidget *parent)
 bool KakeiboTable::initDB()
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("vckake.db");
+   // db.setDatabaseName("vckake.db");
+     db.setDatabaseName(MainWindow::getDatabasePath());
 
     if (!db.open()) {
         qDebug() << "DB open error:" << db.lastError().text();
@@ -67,7 +82,7 @@ void KakeiboTable::loadTable(int accountNum)
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->select();
 
-    model->setHeaderData(0, Qt::Horizontal, "番号");
+   // model->setHeaderData(0, Qt::Horizontal, "番号");
     model->setHeaderData(1, Qt::Horizontal, "日付");
     model->setHeaderData(2, Qt::Horizontal, "支出");
     model->setHeaderData(3, Qt::Horizontal, "収入");
@@ -76,20 +91,64 @@ void KakeiboTable::loadTable(int accountNum)
     model->setHeaderData(6, Qt::Horizontal, "備考");
 
     view->setModel(model);
-    view->resizeColumnsToContents();
+    view->setColumnHidden(0, true);
+    //
+    // ▼ ここから外観設定
+    //
+
+    // --- 文字サイズ変更 ---
+    QFont font = view->font();
+    font.setPointSize(12);  // ← フォントサイズを指定（例: 12pt）
+    view->setFont(font);
+
+    // --- セル幅を個別指定 ---
+   // view->setColumnWidth(0, 60);   // 番号
+    view->setColumnWidth(1, 100);  // 日付
+    view->setColumnWidth(2, 80);   // 支出
+    view->setColumnWidth(3, 80);   // 収入
+    view->setColumnWidth(4, 80);   // 残高
+    view->setColumnWidth(5, 120);  // 費目
+    view->setColumnWidth(6, 200);  // 備考
+
+    // --- 数値列を右揃え ---
+    view->setItemDelegateForColumn(2, new RightAlignDelegate(view)); // 支出
+    view->setItemDelegateForColumn(3, new RightAlignDelegate(view)); // 収入
+    view->setItemDelegateForColumn(4, new RightAlignDelegate(view)); // 残高
+
+    // --- 行の高さ自動調整 ---
+    view->resizeRowsToContents();
+
+    // --- 列幅を全体にフィットさせる場合（手動指定の代替） ---
+    // view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    // --- テーブルのスタイルを少し見やすくする例 ---
+    view->setAlternatingRowColors(true); // 交互色
+    view->setSelectionBehavior(QAbstractItemView::SelectRows); // 行単位選択
+
+
+
+    KakeiboTable::recalculateBalances();
+    //view->resizeColumnsToContents();
 }
 
 
 
-void KakeiboTable::addRowForCurrentAccount(const KakeiboRowData& data)
+void KakeiboTable::addRowForCurrentAccount(const KakeiboRowData& data,bool sishutuFlg)
 {
     if (!model) return;
 
     int row = model->rowCount();
     model->insertRow(row);
     model->setData(model->index(row, 1), data.date.toString("yyyy-MM-dd"));
-    model->setData(model->index(row, 2), data.kingaku);
-    model->setData(model->index(row, 3), data.kingaku);
+    if(sishutuFlg){
+        model->setData(model->index(row, 2), data.kingaku);
+        model->setData(model->index(row, 3), 0);
+    }else{
+        model->setData(model->index(row, 2), 0);
+        model->setData(model->index(row, 3), data.kingaku);
+    }
+
+
     model->setData(model->index(row, 4), 0);
     //model->setData(model->index(row, 5), "");
     //model->setData(model->index(row, 6), "");
@@ -97,4 +156,27 @@ void KakeiboTable::addRowForCurrentAccount(const KakeiboRowData& data)
     model->setData(model->index(row, 6), data.shiharaisaki+"/"+data.biko);   // ID
 
     model->submitAll();
+
+     KakeiboTable::recalculateBalances();
+}
+
+
+void KakeiboTable::recalculateBalances()
+{
+    if (!model) return;
+
+    double currentBalance = 0.0;
+
+    // モデルの全行をループ
+    for (int row = 0; row < model->rowCount(); ++row)
+    {
+        double shishutsu = model->data(model->index(row, 2)).toDouble();
+        double shuunyuu  = model->data(model->index(row, 3)).toDouble();
+
+        currentBalance += (shuunyuu - shishutsu);
+
+        model->setData(model->index(row, 4), currentBalance);
+    }
+
+    //model->submitAll();  // DBに反映
 }

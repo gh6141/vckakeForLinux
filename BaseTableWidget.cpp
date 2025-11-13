@@ -1,5 +1,6 @@
 // BaseTableWidget.cpp
 #include "BaseTableWidget.h"
+#include "mainwindow.h"
 
 BaseTableWidget::BaseTableWidget(QWidget *parent,QString createSQL)
     : QMainWindow(parent),
@@ -49,7 +50,9 @@ void BaseTableWidget::setTableName(const QString &name,const QString createSQL,c
 void BaseTableWidget::initDB(const QString createSQL)
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("vckake.db");
+
+
+    db.setDatabaseName(MainWindow::getDatabasePath());
 
     if (!db.open()) {
         qDebug() << "DB接続失敗";

@@ -35,7 +35,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <property name="styleSheet">
@@ -238,7 +238,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
        </widget>
@@ -298,6 +298,11 @@
           <height>31</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
        </widget>
        <widget class="QLabel" name="label">
         <property name="geometry">
@@ -344,6 +349,11 @@
           <height>31</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
        </widget>
        <widget class="QLabel" name="label_3">
         <property name="geometry">
@@ -372,6 +382,11 @@
           <height>31</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
        </widget>
        <widget class="QComboBox" name="comboBox_4">
         <property name="geometry">
@@ -381,6 +396,11 @@
           <width>181</width>
           <height>31</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
         </property>
        </widget>
        <widget class="QLabel" name="label_4">
@@ -427,6 +447,11 @@
           <width>131</width>
           <height>31</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
         </property>
        </widget>
       </widget>
@@ -601,7 +626,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
        </widget>
@@ -633,6 +658,8 @@
     <addaction name="actionactionbikoEdit"/>
     <addaction name="actionactionshiharaisaki"/>
     <addaction name="actionaction3rsEdit"/>
+    <addaction name="separator"/>
+    <addaction name="actiondbSet"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -683,6 +710,11 @@
   <action name="actionaction3rsEdit">
    <property name="text">
     <string>リレーション設定</string>
+   </property>
+  </action>
+  <action name="actiondbSet">
+   <property name="text">
+    <string>DB保存場所</string>
    </property>
   </action>
  </widget>

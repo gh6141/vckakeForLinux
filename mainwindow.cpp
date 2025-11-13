@@ -12,8 +12,11 @@
 #include "BikoComboWidget.h"
 #include "KakeiboRowData.h"
 #include <QWidget>
-
 #include <QShowEvent>
+
+#include <QFileDialog>
+#include <QSettings>
+#include <QMessageBox>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -31,15 +34,27 @@ MainWindow::MainWindow(QWidget *parent)
 
     KozaComboWidget kozaWidget;
     kozaWidget.fillComboBox(ui->comboBox_8);
+    kozaWidget.fillComboBox(ui->comboBox);
+    kozaWidget.fillComboBox(ui->comboBox_12);
+    kozaWidget.fillComboBox(ui->comboBox_13);
 
     HimokuComboWidget himokuWidget;
     himokuWidget.fillComboBox(ui->comboBox_6);
+    himokuWidget.fillComboBox(ui->comboBox_2);
+
 
     ShiharaisakiComboWidget shiharaisakiWidget;
     shiharaisakiWidget.fillComboBox(ui->comboBox_5);
+    shiharaisakiWidget.fillComboBox(ui->comboBox_3);
 
     BikoComboWidget bikoWidget;
     bikoWidget.fillComboBox(ui->comboBox_7);
+    bikoWidget.fillComboBox(ui->comboBox_4);
+    bikoWidget.fillComboBox(ui->comboBox_11);
+
+    ui->dateEdit->setDate(QDate::currentDate());
+    ui->dateEdit_2->setDate(QDate::currentDate());
+    ui->dateEdit_3->setDate(QDate::currentDate());
 
 
 
@@ -54,13 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButton_2, &QPushButton::clicked, this, [=](){
 
-        KakeiboRowData data;
-        data.date = ui->dateEdit_2->date();
-        data.kingaku = ui->lineEdit->text().toInt();
-        data.himoku = ui->comboBox_6->currentText();
-        data.shiharaisaki = ui->comboBox_5->currentText();
-        data.biko = ui->comboBox_7->currentText();
-        table->addRowForCurrentAccount(data);
+
     });
 
 }
@@ -112,4 +121,66 @@ void MainWindow::on_actionaction3rsEdit_triggered()
 
 
 
+
+
+void MainWindow::on_actiondbSet_triggered()
+{
+    QSettings settings("MyCompany", "QtKakeibo");  // ① 設定ファイル（自動で作成される）
+
+    QString currentPath = settings.value("Database/Path", "qtkake.db").toString();
+
+    QString fileName = QFileDialog::getSaveFileName(
+        this,
+        tr("データベースの保存場所を選択"),
+        currentPath,
+        tr("SQLite Database (*.db);;All Files (*.*)")
+        );
+
+    if (fileName.isEmpty())
+        return; // キャンセル時
+
+    // ② 選択されたパスを保存
+    settings.setValue("Database/Path", fileName);
+
+    QMessageBox::information(this, tr("設定完了"),
+                             tr("データベースの保存場所を設定しました:\n%1").arg(fileName));
+}
+
+
+QString MainWindow::getDatabasePath()
+{
+    QSettings settings("MyCompany", "QtKakeibo");
+    // ③ 設定値がなければ "qtkake.db" を返す
+    return settings.value("Database/Path", "qtkake.db").toString();
+}
+
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+
+}
+
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    KakeiboRowData data;
+    data.date = ui->dateEdit_2->date();
+    data.kingaku = ui->lineEdit->text().toInt();
+    data.himoku = ui->comboBox_6->currentText();
+    data.shiharaisaki = ui->comboBox_5->currentText();
+    data.biko = ui->comboBox_7->currentText();
+    table->addRowForCurrentAccount(data,true);//true=sishutu false=shunyu
+}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    KakeiboRowData data;
+    data.date = ui->dateEdit->date();
+    data.kingaku = ui->lineEdit_2->text().toInt();
+    data.himoku = ui->comboBox_2->currentText();
+    data.shiharaisaki = ui->comboBox_3->currentText();
+    data.biko = ui->comboBox_4->currentText();
+    table->addRowForCurrentAccount(data,false);//true=sishutu false=shunyu
+}
 
