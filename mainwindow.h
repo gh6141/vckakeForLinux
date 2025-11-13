@@ -36,6 +36,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_actionexit_triggered();
+
 private:
     Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持

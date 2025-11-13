@@ -39,18 +39,18 @@ MainWindow::MainWindow(QWidget *parent)
     kozaWidget.fillComboBox(ui->comboBox_13);
 
     HimokuComboWidget himokuWidget;
-    himokuWidget.fillComboBox(ui->comboBox_6);
-    himokuWidget.fillComboBox(ui->comboBox_2);
+    himokuWidget.fillComboBox(ui->comboBox_6,"yomi");
+    himokuWidget.fillComboBox(ui->comboBox_2,"yomi");
 
 
     ShiharaisakiComboWidget shiharaisakiWidget;
-    shiharaisakiWidget.fillComboBox(ui->comboBox_5);
-    shiharaisakiWidget.fillComboBox(ui->comboBox_3);
+    shiharaisakiWidget.fillComboBox(ui->comboBox_5,"yomi");
+    shiharaisakiWidget.fillComboBox(ui->comboBox_3,"yomi");
 
     BikoComboWidget bikoWidget;
-    bikoWidget.fillComboBox(ui->comboBox_7);
-    bikoWidget.fillComboBox(ui->comboBox_4);
-    bikoWidget.fillComboBox(ui->comboBox_11);
+    bikoWidget.fillComboBox(ui->comboBox_7,"yomi");
+    bikoWidget.fillComboBox(ui->comboBox_4,"yomi");
+    bikoWidget.fillComboBox(ui->comboBox_11,"yomi");
 
     ui->dateEdit->setDate(QDate::currentDate());
     ui->dateEdit_2->setDate(QDate::currentDate());
@@ -182,5 +182,11 @@ void MainWindow::on_pushButton_clicked()
     data.shiharaisaki = ui->comboBox_3->currentText();
     data.biko = ui->comboBox_4->currentText();
     table->addRowForCurrentAccount(data,false);//true=sishutu false=shunyu
+}
+
+
+void MainWindow::on_actionexit_triggered()
+{
+    QApplication::quit();
 }
 

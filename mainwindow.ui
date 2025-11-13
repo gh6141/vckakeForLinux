@@ -648,6 +648,7 @@
     <property name="title">
      <string>ファイル</string>
     </property>
+    <addaction name="actionexit"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -715,6 +716,11 @@
   <action name="actiondbSet">
    <property name="text">
     <string>DB保存場所</string>
+   </property>
+  </action>
+  <action name="actionexit">
+   <property name="text">
+    <string>終了</string>
    </property>
   </action>
  </widget>
