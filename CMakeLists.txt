@@ -67,6 +67,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         PeriodSelectDialog.cpp
         BalanceTrendWidget.h
         BalanceTrendWidget.cpp
+        BikoSearchDialog.h
+        BikoSearchDialog.cpp
 
 
     )

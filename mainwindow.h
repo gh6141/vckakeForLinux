@@ -49,6 +49,8 @@ private slots:
 
     void on_actionsuii_triggered();
 
+    void on_actionsearch_triggered();
+
 private:
     Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持

@@ -22,7 +22,7 @@
 #include "BalanceListWidget.h"
 #include "PeriodSelectDialog.h"
 #include "BalanceTrendWidget.h"
-
+#include "BikoSearchDialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -382,5 +382,12 @@ void MainWindow::on_actionsuii_triggered()
     trend->chart();
 
 
+}
+
+
+void MainWindow::on_actionsearch_triggered()
+{
+    BikoSearchDialog dlg(this);
+    dlg.exec();
 }
 
