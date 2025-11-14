@@ -8,4 +8,5 @@ struct KakeiboRowData {
     QString himoku;
     QString shiharaisaki;
     QString biko;
+    int idosaki; //koza number
 };

@@ -662,8 +662,15 @@
     <addaction name="separator"/>
     <addaction name="actiondbSet"/>
    </widget>
+   <widget class="QMenu" name="menudisp">
+    <property name="title">
+     <string>分析</string>
+    </property>
+    <addaction name="actionzandakaList"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
+   <addaction name="menudisp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -721,6 +728,11 @@
   <action name="actionexit">
    <property name="text">
     <string>終了</string>
+   </property>
+  </action>
+  <action name="actionzandakaList">
+   <property name="text">
+    <string>残高リスト</string>
    </property>
   </action>
  </widget>

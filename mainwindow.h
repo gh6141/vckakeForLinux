@@ -19,6 +19,8 @@ public:
     static QString getDatabasePath();
     int ckozanum;
     int dst_ckozanum;
+    double calculateBalance(int accountNum, const QDate& date);
+    QList<int> getAccountList();
 
 private slots:
     void on_actionkozaEdit_triggered();
@@ -42,6 +44,8 @@ private slots:
     void on_actionexit_triggered();
 
     void on_pushButton_3_clicked();
+
+    void on_actionzandakaList_triggered();
 
 private:
     Ui::MainWindow *ui;

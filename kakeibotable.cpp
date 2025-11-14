@@ -90,7 +90,7 @@ QSqlTableModel* KakeiboTable::loadModel(int accountNum)
     model->setHeaderData(2, Qt::Horizontal, "支出");
     model->setHeaderData(3, Qt::Horizontal, "収入");
     model->setHeaderData(4, Qt::Horizontal, "残高");
-    model->setHeaderData(5, Qt::Horizontal, "費目");
+    model->setHeaderData(5, Qt::Horizontal, "費目/移動ID");
     model->setHeaderData(6, Qt::Horizontal, "備考");
     return model;
 }
@@ -99,17 +99,11 @@ QSqlTableModel* KakeiboTable::loadModel(int accountNum)
 
 void KakeiboTable::loadTable(int accountNum)
 {
-
-
     view->setModel(loadModel(accountNum));
-
-     // view->setColumnHidden(0, false);       // num列を表示
-      view->verticalHeader()->setVisible(false); // 左端の行番号を非表示
-
+    view->verticalHeader()->setVisible(false); // 左端の行番号を非表示
     //
     // ▼ ここから外観設定
     //
-
     // --- 文字サイズ変更 ---
     QFont font = view->font();
     font.setPointSize(12);  // ← フォントサイズを指定（例: 12pt）
@@ -149,10 +143,12 @@ void KakeiboTable::loadTable(int accountNum)
     KakeiboTable::recalculateBalances();
     //view->resizeColumnsToContents();
 
+
     QTimer::singleShot(0, view, [this]() {
         view->scrollToBottom();
     });
 
+    view->setColumnHidden(7, true);       // idosaki列を非表示
 }
 
 void KakeiboTable::addRowForCurrentAccountModel(const KakeiboRowData& data,bool sishutuFlg,int knum){
@@ -179,6 +175,7 @@ void KakeiboTable::addRowForCurrentAccountModel(const KakeiboRowData& data,bool 
     model->setData(model->index(row, 4), 0);
     model->setData(model->index(row, 5), data.himoku);   // 費目名
     model->setData(model->index(row, 6), data.shiharaisaki+"/"+data.biko);   // ID
+    model->setData(model->index(row, 7), data.idosaki);
 
     model->submitAll();
 }

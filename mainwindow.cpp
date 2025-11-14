@@ -18,6 +18,7 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <QPushButton>
+#include "koza.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -52,12 +53,37 @@ MainWindow::MainWindow(QWidget *parent)
             std::sort(selected.begin(), selected.end(),
                       [](const QModelIndex &a, const QModelIndex &b) { return a.row() > b.row(); });
 
-            for (const QModelIndex &idx : selected) {
-                table->getmodel()->removeRow(idx.row());
-            }
-             table->loadTable(ckozanum);
+            const int himokuColumn = 5;  // 例: 5列目が himoku
+            const int idosakiColumn = 7; // 例: 7列目が idosaki
 
-            // deleteButton->setVisible(false);
+            for (const QModelIndex &idx : selected) {
+                QSqlTableModel *model = table->getmodel();
+
+                // --- himoku と idosaki を取得 ---
+                QString himoku = model->data(model->index(idx.row(), himokuColumn)).toString();
+                int idosaki = model->data(model->index(idx.row(), idosakiColumn)).toInt();
+
+                // --- idosaki 番の別テーブルを操作 ---
+                QSqlDatabase db = QSqlDatabase::database(); // デフォルト接続を取得
+                QSqlTableModel otherModel(nullptr, db);  // どこかで db を保持している前提
+                QString otherTableName = QString("shishutunyu%1").arg(idosaki); // 例: idosaki の番号でテーブル名
+                otherModel.setTable(otherTableName);
+                otherModel.select();
+
+                // himoku が一致する行を削除
+                for (int r = otherModel.rowCount() - 1; r >= 0; --r) {
+                    if (otherModel.data(otherModel.index(r, himokuColumn)).toString() == himoku) {
+                        otherModel.removeRow(r);
+                    }
+                }
+                otherModel.submitAll();  // 変更を確定
+                // --- 元のテーブルの行を削除 ---
+                model->removeRow(idx.row());
+            }
+            table->getmodel()->submitAll(); // 元テーブルの変更確定
+            table->loadTable(ckozanum);
+
+
         });
     }
 
@@ -272,8 +298,9 @@ void MainWindow::on_pushButton_3_clicked()
     data.kingaku = kg;
     QString cid=QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
     data.himoku = cid;
-    data.shiharaisaki = ui->comboBox_12->currentText()+">"+ui->comboBox_13->currentText();
+    data.shiharaisaki = "移動先:"+ui->comboBox_13->currentText();
     data.biko = ui->comboBox_11->currentText();
+    data.idosaki=dst_ckozanum;
     table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
   //  table->loadTable(ckozanum);
 
@@ -284,8 +311,9 @@ void MainWindow::on_pushButton_3_clicked()
     data2.date = ui->dateEdit_3->date();
     data2.kingaku = kg;
     data2.himoku =cid;
-    data2.shiharaisaki = ui->comboBox_12->currentText()+">"+ui->comboBox_13->currentText();
+    data2.shiharaisaki = "移動元:"+ui->comboBox_12->currentText();
     data2.biko = ui->comboBox_11->currentText();
+    data2.idosaki=ckozanum;
 
 
    table->addRowForCurrentAccount(data2,false,dst_ckozanum);//true=sishutu false=shunyu
@@ -294,3 +322,65 @@ void MainWindow::on_pushButton_3_clicked()
 
 }
 
+
+void MainWindow::on_actionzandakaList_triggered()
+{
+    QDate targetDate = QDate::currentDate(); // 例: 今日まで
+  //  QList<int> accounts = getAccountList();  // 口座番号リスト
+
+    // koza テーブルから全口座情報を取得
+    QString dbpath=MainWindow::getDatabasePath();
+    QList<koza> accounts = koza::selectAll(dbpath);
+
+    QString result;
+    double total=0;
+    for (const koza &k : accounts) {
+        double bal = calculateBalance(k.num, targetDate);
+        total += bal;
+        result += QString("%1 (%2) : %3 円\n").arg(k.kozaName).arg(k.num).arg(bal);
+    }
+
+    result += QString("総計 : %1 円").arg(QString::number(total));
+    QMessageBox::information(this, "残高リスト", result);
+}
+
+double MainWindow::calculateBalance(int accountNum, const QDate& date)
+{
+    // テーブル名を口座番号から生成
+    QString tableName = QString("shishutunyu%1").arg(accountNum);
+
+    QSqlTableModel model(nullptr, QSqlDatabase::database());
+    model.setTable(tableName);
+    model.setFilter(QString("date <= '%1'").arg(date.toString("yyyy-MM-dd"))); // 日付まで
+    model.select();
+
+    double balance = 0.0;
+    int rows = model.rowCount();
+    for (int r = 0; r < rows; ++r) {
+        double income  = model.data(model.index(r, 3)).toDouble(); // 収入列
+        double expense = model.data(model.index(r, 2)).toDouble(); // 支出列
+        balance += (income - expense);
+    }
+
+    return balance;
+}
+
+QList<int> MainWindow::getAccountList()
+{
+    QList<int> accountList;
+    QSqlDatabase db = QSqlDatabase::database(); // デフォルト接続
+
+    QStringList tables = db.tables(); // DB 内の全テーブル名を取得
+    QRegularExpression re("^shishutunyu(\\d+)$"); // shishutunyu + 数字 のパターン
+
+    for (const QString &t : tables) {
+        QRegularExpressionMatch match = re.match(t);
+        if (match.hasMatch()) {
+            int accountNum = match.captured(1).toInt(); // 数字部分だけ取得
+            accountList.append(accountNum);
+        }
+    }
+
+    std::sort(accountList.begin(), accountList.end()); // 必要なら番号順にソート
+    return accountList;
+}
