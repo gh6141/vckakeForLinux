@@ -11,6 +11,7 @@
 #include <QtCharts/QValueAxis>
 //using namespace QtCharts;>s
 #include <QDateTimeAxis>
+#include <QDateTime>
 
 BalanceTrendWidget::BalanceTrendWidget(QDate start, QDate end, QWidget *parent)
     : QWidget(parent)
@@ -87,9 +88,16 @@ void BalanceTrendWidget::loadData(QDate start, QDate end)
 
 void BalanceTrendWidget::chart() {
     QLineSeries *series = new QLineSeries();
+
     for(auto &pair : balances){
-        series->append(pair.first.toJulianDay(), pair.second);
+        //series->append(pair.first.toJulianDay(), pair.second);
+       // QDateTime dt(pair.first);  // QDate → QDateTime
+        QDateTime dt(pair.first, QTime(0, 0));  // QDate + QTime で QDateTime を作成
+        series->append(dt.toMSecsSinceEpoch(), pair.second); // ミリ秒で追加
     }
+
+
+
 
     QChart *chart = new QChart();
     chart->addSeries(series);
