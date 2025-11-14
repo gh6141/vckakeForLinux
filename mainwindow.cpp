@@ -19,6 +19,9 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include "koza.h"
+#include "BalanceListWidget.h"
+#include "PeriodSelectDialog.h"
+#include "BalanceTrendWidget.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -325,45 +328,17 @@ void MainWindow::on_pushButton_3_clicked()
 
 void MainWindow::on_actionzandakaList_triggered()
 {
-    QDate targetDate = QDate::currentDate(); // 例: 今日まで
-  //  QList<int> accounts = getAccountList();  // 口座番号リスト
 
-    // koza テーブルから全口座情報を取得
-    QString dbpath=MainWindow::getDatabasePath();
-    QList<koza> accounts = koza::selectAll(dbpath);
+    BalanceListWidget *blw = new BalanceListWidget(); // 親は nullptr にする
+    blw->setAttribute(Qt::WA_DeleteOnClose);
+    blw->resize(400, 400);
+    blw->show();
 
-    QString result;
-    double total=0;
-    for (const koza &k : accounts) {
-        double bal = calculateBalance(k.num, targetDate);
-        total += bal;
-        result += QString("%1 (%2) : %3 円\n").arg(k.kozaName).arg(k.num).arg(bal);
-    }
 
-    result += QString("総計 : %1 円").arg(QString::number(total));
-    QMessageBox::information(this, "残高リスト", result);
+
 }
 
-double MainWindow::calculateBalance(int accountNum, const QDate& date)
-{
-    // テーブル名を口座番号から生成
-    QString tableName = QString("shishutunyu%1").arg(accountNum);
 
-    QSqlTableModel model(nullptr, QSqlDatabase::database());
-    model.setTable(tableName);
-    model.setFilter(QString("date <= '%1'").arg(date.toString("yyyy-MM-dd"))); // 日付まで
-    model.select();
-
-    double balance = 0.0;
-    int rows = model.rowCount();
-    for (int r = 0; r < rows; ++r) {
-        double income  = model.data(model.index(r, 3)).toDouble(); // 収入列
-        double expense = model.data(model.index(r, 2)).toDouble(); // 支出列
-        balance += (income - expense);
-    }
-
-    return balance;
-}
 
 QList<int> MainWindow::getAccountList()
 {
@@ -384,3 +359,28 @@ QList<int> MainWindow::getAccountList()
     std::sort(accountList.begin(), accountList.end()); // 必要なら番号順にソート
     return accountList;
 }
+
+
+
+void MainWindow::on_actionsuii_triggered()
+{
+    PeriodSelectDialog dlg(this);
+    if (dlg.exec() == QDialog::Accepted) {
+        // ここで集計処理へ
+        dlg.disp();
+    }else{
+        return;
+    }
+
+    QDate start = dlg.startDate();
+    QDate end   = dlg.endDate();
+
+    // 推移ウィジェット表示
+    BalanceTrendWidget *trend = new BalanceTrendWidget(start, end, this);
+    trend->setAttribute(Qt::WA_DeleteOnClose);
+    trend->show();
+    trend->chart();
+
+
+}
+

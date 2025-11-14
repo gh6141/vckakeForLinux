@@ -667,6 +667,7 @@
      <string>分析</string>
     </property>
     <addaction name="actionzandakaList"/>
+    <addaction name="actionsuii"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -733,6 +734,11 @@
   <action name="actionzandakaList">
    <property name="text">
     <string>残高リスト</string>
+   </property>
+  </action>
+  <action name="actionsuii">
+   <property name="text">
+    <string>残高推移</string>
    </property>
   </action>
  </widget>

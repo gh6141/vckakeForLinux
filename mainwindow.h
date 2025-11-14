@@ -47,11 +47,14 @@ private slots:
 
     void on_actionzandakaList_triggered();
 
+    void on_actionsuii_triggered();
+
 private:
     Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
     KakeiboTable *dst_table;
     QPushButton *deleteButton = nullptr;
+
 
 };
 

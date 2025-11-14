@@ -15,6 +15,9 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools Sql)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools Sql)
 
+find_package(Qt6 COMPONENTS Charts REQUIRED)
+
+
 
 set(TS_FILES vckake_ja_JP.ts)
 
@@ -58,6 +61,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ShiharaisakiComboWidget.h
         BikoComboWidget.h
         KakeiboRowData.h
+        BalanceListWidget.h
+        BalanceListWidget.cpp
+        PeriodSelectDialog.h
+        PeriodSelectDialog.cpp
+        BalanceTrendWidget.h
+        BalanceTrendWidget.cpp
 
 
     )
@@ -86,6 +95,7 @@ endif()
 target_link_libraries(vckake PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 target_link_libraries(vckake PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Sql)
+target_link_libraries(vckake PRIVATE Qt6::Charts)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
