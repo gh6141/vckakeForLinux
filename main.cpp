@@ -23,6 +23,10 @@ int main(int argc, char *argv[])
    // MainWindow w;
    // w.show();
 
+    QFont font = a.font();
+    font.setPointSize(12);
+    a.setFont(font);
+
     MainWindow *w = new MainWindow();
     w->show();
     //KakeiboTable table;

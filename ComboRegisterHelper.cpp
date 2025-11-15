@@ -32,32 +32,47 @@ ComboRegisterHelper::ComboRegisterHelper(QComboBox* combo,
 void ComboRegisterHelper::createUi()
 {
 
-    // m_parent は QWidget* で渡していると仮定
-    m_labelFurigana = new QLabel("フリガナ", m_parent);
-    //m_editFurigana = new QLineEdit(m_parent);
+   // m_labelFurigana = new QLabel("フリガナ", m_parent);
     m_editFurigana = new ClearOnClickLineEdit(m_parent);
-
+    m_editFurigana->setPlaceholderText("ふりがなを入力");
     connect(m_combo->lineEdit(), &QLineEdit::textEdited,
             this, [this](const QString &text){
-                 qDebug() << "入力中：" << text;
                  cFurigana=text;
-
             });
+
+
     m_buttonRegister = new QPushButton("登録", m_parent);
+    m_buttonCancel = new QPushButton("キャンセル", m_parent);
 
-    m_labelFurigana->setVisible(false);
     m_editFurigana->setVisible(false);
-
     m_buttonRegister->setVisible(false);
 
-    QVBoxLayout* vLayout = new QVBoxLayout(m_parent);
-    vLayout->addWidget(m_labelFurigana);
-    vLayout->addWidget(m_editFurigana);
-    vLayout->addWidget(m_buttonRegister);
-    m_parent->setLayout(vLayout);
+  //  m_buttonCancel->setFixedWidth(120); // 幅を揃えると見た目がきれい
 
-    // 親コンテナ上に配置
-    //this->setParent(m_parent);
+    connect(m_buttonCancel, &QPushButton::clicked, this, [this]() {
+        m_editFurigana->clear();
+        m_editFurigana->setVisible(false);
+        m_buttonRegister->setVisible(false);
+        m_buttonCancel->setVisible(false);
+    });
+
+    m_buttonCancel->setVisible(false);
+
+    QVBoxLayout* vLayout = qobject_cast<QVBoxLayout*>(m_parent->layout());
+    if (!vLayout) {
+        vLayout = new QVBoxLayout(m_parent);
+        m_parent->setLayout(vLayout);
+    }
+
+   // vLayout->addWidget(m_labelFurigana);
+    vLayout->addWidget(m_editFurigana);
+
+    QHBoxLayout* hLayout = new QHBoxLayout();
+    hLayout->addWidget(m_buttonRegister);
+    hLayout->addWidget(m_buttonCancel);
+    hLayout->addStretch();
+    vLayout->addLayout(hLayout);
+
 }
 
 void ComboRegisterHelper::connectSignals()
@@ -87,9 +102,10 @@ void ComboRegisterHelper::onComboTextChanged(const QString &text)
     query.next();
     bool exists = query.value(0).toInt() > 0;
 
-    m_labelFurigana->setVisible(!exists);
+    //m_labelFurigana->setVisible(!exists);
     m_editFurigana->setVisible(!exists);
     m_buttonRegister->setVisible(!exists);
+    m_buttonCancel->setVisible(!exists);
 
     if(!exists){
         // 自動で読みを設定（仮に全角カタカナなどの簡易変換）
@@ -123,16 +139,19 @@ void ComboRegisterHelper::onRegisterClicked()
     }
 
     m_combo->addItem(name); // コンボに追加
-    m_labelFurigana->setVisible(false);
+    //m_labelFurigana->setVisible(false);
     m_editFurigana->setVisible(false);
     m_buttonRegister->setVisible(false);
+    m_buttonCancel->setVisible(false);
 
-/*
+
     MainWindow* mainWin = qobject_cast<MainWindow*>(this->parent());
+   // qDebug() << "parent =" << this->parent();
     if(mainWin) {
         mainWin->comboTwoUpdate();
+       // qDebug()<<"test";
     }
-*/
+
 }
 
 

@@ -28,7 +28,8 @@ private:
     QComboBox* m_combo;
     QLineEdit* m_editFurigana;
     QPushButton* m_buttonRegister;
-    QLabel* m_labelFurigana;
+    QPushButton* m_buttonCancel;
+   // QLabel* m_labelFurigana;
     QWidget* m_parent;
     QString m_tableName;
     QSqlDatabase m_db;
