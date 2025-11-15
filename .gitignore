@@ -9,6 +9,12 @@ cmake_install.cmake
 *.exe
 *.log
 
+
+Testing/
+CTestTestfile.cmake
+*.log
+
+
 # Qt auto-generated files
 moc_*.cpp
 ui_*.h

@@ -285,7 +285,7 @@ void MainWindow::on_pushButton_2_clicked()
     data.shiharaisaki = ui->comboBox_5->currentText();
     data.biko = ui->comboBox_7->currentText();
     table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
-        table->loadTable(ckozanum);
+    table->loadTable(ckozanum);
 }
 
 
@@ -298,7 +298,7 @@ void MainWindow::on_pushButton_clicked()
     data.shiharaisaki = ui->comboBox_3->currentText();
     data.biko = ui->comboBox_4->currentText();
     table->addRowForCurrentAccount(data,false,ckozanum);//true=sishutu false=shunyu
-        table->loadTable(ckozanum);
+    table->loadTable(ckozanum);
 }
 
 

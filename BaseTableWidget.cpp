@@ -49,7 +49,8 @@ void BaseTableWidget::setTableName(const QString &name,const QString createSQL,c
 
 void BaseTableWidget::initDB(const QString createSQL)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    //QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "mainConnection");
 
 
     db.setDatabaseName(MainWindow::getDatabasePath());
@@ -59,9 +60,10 @@ void BaseTableWidget::initDB(const QString createSQL)
         return;
     }
 
-        QSqlQuery query;        
-        query.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='test'");
-        if (!query.next()&&!createSQL.isEmpty()) {
+        QSqlQuery query;
+        //query.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='test'");
+       // if (!query.next()&&!createSQL.isEmpty()) {
+        if (!createSQL.isEmpty()) {
             if (!query.exec(createSQL))
                 qDebug() << "テーブル作成失敗:" << query.lastError().text();
             else
