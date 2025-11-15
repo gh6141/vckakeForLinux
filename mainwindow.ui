@@ -35,7 +35,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <property name="styleSheet">
@@ -66,7 +66,7 @@
         <property name="geometry">
          <rect>
           <x>650</x>
-          <y>20</y>
+          <y>70</y>
           <width>75</width>
           <height>31</height>
          </rect>
@@ -251,6 +251,19 @@
          </font>
         </property>
        </widget>
+       <widget class="QPushButton" name="pushButton_4">
+        <property name="geometry">
+         <rect>
+          <x>650</x>
+          <y>20</y>
+          <width>75</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>関連保存</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab">
        <property name="autoFillBackground">
@@ -269,7 +282,7 @@
         <property name="geometry">
          <rect>
           <x>650</x>
-          <y>20</y>
+          <y>70</y>
           <width>75</width>
           <height>31</height>
          </rect>
@@ -467,6 +480,19 @@
          <font>
           <pointsize>14</pointsize>
          </font>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_5">
+        <property name="geometry">
+         <rect>
+          <x>650</x>
+          <y>20</y>
+          <width>75</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>関連保存</string>
         </property>
        </widget>
       </widget>

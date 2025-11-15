@@ -180,6 +180,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     });
 
+
+     m_trw = new ThreeRelationShipsWidget(this);
+
 }
 
 MainWindow::~MainWindow()
@@ -221,9 +224,13 @@ void MainWindow::on_actionactionshiharaisaki_triggered()
 
 void MainWindow::on_actionaction3rsEdit_triggered()
 {
-    ThreeRelationShipsWidget *w = new ThreeRelationShipsWidget(this);
-    w->setAttribute(Qt::WA_DeleteOnClose);
-    w->show();
+   // ThreeRelationShipsWidget *w = new ThreeRelationShipsWidget(this);
+    //m_trw->setAttribute(Qt::WA_DeleteOnClose);
+   // m_trw->show();
+
+  // m_trw->raise();
+ //  m_trw->activateWindow();
+    m_trw->show();
 }
 
 
@@ -418,5 +425,25 @@ void MainWindow::comboTwoUpdate(){
     bikoWidget.fillComboBox(ui->comboBox_7,"yomi");
     bikoWidget.fillComboBox(ui->comboBox_4,"yomi");
     bikoWidget.fillComboBox(ui->comboBox_11,"yomi");
+}
+
+
+void MainWindow::on_pushButton_5_clicked()
+{
+    //関連保存
+    //ThreeRelationShipsWidget* trw=new ThreeRelationShipsWidget();
+    m_trw->addRow(ui->comboBox_4->currentText(),ui->comboBox_2->currentText(),ui->comboBox_3->currentText());
+
+
+}
+
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    //関連保存　支出
+    //ThreeRelationShipsWidget* trw=new ThreeRelationShipsWidget();
+    m_trw->addRow(ui->comboBox_7->currentText(),ui->comboBox_6->currentText(),ui->comboBox_5->currentText());
+
+
 }
 

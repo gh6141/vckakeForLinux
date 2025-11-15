@@ -8,6 +8,7 @@
 #include "ShiharaisakiComboWidget.h"
 #include "BikoComboWidget.h"
 #include "ComboRegisterHelper.h"
+#include "ThreeRelationShipsWidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -59,12 +60,18 @@ private slots:
 
     void on_actionsearch_triggered();
 
+    void on_pushButton_5_clicked();
+
+    void on_pushButton_4_clicked();
+
 private:
        Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
     KakeiboTable *dst_table;
     QPushButton *deleteButton = nullptr;
     ComboRegisterHelper* comboHelper;  // ← ここが必要
+
+    ThreeRelationShipsWidget *m_trw = nullptr;
 
 
 };
