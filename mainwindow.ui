@@ -35,7 +35,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <property name="styleSheet">
@@ -57,6 +57,9 @@
          <font>
           <pointsize>12</pointsize>
          </font>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
         </property>
        </widget>
        <widget class="QPushButton" name="pushButton_2">
@@ -91,6 +94,9 @@
           <pointsize>12</pointsize>
          </font>
         </property>
+        <property name="editable">
+         <bool>false</bool>
+        </property>
        </widget>
        <widget class="QLabel" name="label_6">
         <property name="geometry">
@@ -123,6 +129,9 @@
          <font>
           <pointsize>12</pointsize>
          </font>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
         </property>
        </widget>
        <widget class="QLabel" name="label_7">
@@ -387,6 +396,9 @@
           <pointsize>12</pointsize>
          </font>
         </property>
+        <property name="editable">
+         <bool>true</bool>
+        </property>
        </widget>
        <widget class="QComboBox" name="comboBox_4">
         <property name="geometry">
@@ -401,6 +413,9 @@
          <font>
           <pointsize>12</pointsize>
          </font>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
         </property>
        </widget>
        <widget class="QLabel" name="label_4">
@@ -514,6 +529,9 @@
          <font>
           <pointsize>12</pointsize>
          </font>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
         </property>
        </widget>
        <widget class="QLabel" name="label_12">

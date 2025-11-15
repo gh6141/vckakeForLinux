@@ -23,10 +23,16 @@
 #include "PeriodSelectDialog.h"
 #include "BalanceTrendWidget.h"
 #include "BikoSearchDialog.h"
+//#include "ComboRegisterHelper.h"
+
+
+//ShiharaisakiComboWidget MainWindow::shiharaisakiWidget;
+//BikoComboWidget MainWindow::bikoWidget;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+
 {
     ui->setupUi(this);
     table = new KakeiboTable(); // 親は addWidget() で設定されるので不要
@@ -101,20 +107,37 @@ MainWindow::MainWindow(QWidget *parent)
     himokuWidget.fillComboBox(ui->comboBox_6,"yomi");
     himokuWidget.fillComboBox(ui->comboBox_2,"yomi");
 
-
-    ShiharaisakiComboWidget shiharaisakiWidget;
+/*
+    //ShiharaisakiComboWidget shiharaisakiWidget;
+    // インスタンス生成してメンバ変数に保持
+    //shiharaisakiWidget = new ShiharaisakiComboWidget(this);
     shiharaisakiWidget.fillComboBox(ui->comboBox_5,"yomi");
     shiharaisakiWidget.fillComboBox(ui->comboBox_3,"yomi");
 
-    BikoComboWidget bikoWidget;
+   // BikoComboWidget bikoWidget;
+    //bikoWidget=new BikoComboWidget;
     bikoWidget.fillComboBox(ui->comboBox_7,"yomi");
     bikoWidget.fillComboBox(ui->comboBox_4,"yomi");
     bikoWidget.fillComboBox(ui->comboBox_11,"yomi");
+*/
+
+
+    MainWindow::comboTwoUpdate();
 
     ui->dateEdit->setDate(QDate::currentDate());
     ui->dateEdit_2->setDate(QDate::currentDate());
     ui->dateEdit_3->setDate(QDate::currentDate());
 
+
+  //  new ComboRegisterHelper(ui->comboBox_6, ui->tab_3, "Himoku",  QSqlDatabase::database());
+ //  new ComboRegisterHelper(ui->comboBox_2, ui->tab, "Himoku",  QSqlDatabase::database());
+
+    new ComboRegisterHelper(ui->comboBox_5, ui->tab_3, "shiharaisakimoto",  QSqlDatabase::database());
+    new ComboRegisterHelper(ui->comboBox_3, ui->tab, "shiharaisakimoto",  QSqlDatabase::database());
+
+    new ComboRegisterHelper(ui->comboBox_7, ui->tab_3, "Biko",  QSqlDatabase::database());
+    new ComboRegisterHelper(ui->comboBox_4, ui->tab, "Biko",  QSqlDatabase::database());
+    new ComboRegisterHelper(ui->comboBox_11, ui->tab_2, "Biko",  QSqlDatabase::database());
 
     ckozanum=1;
     dst_ckozanum=1;
@@ -389,5 +412,20 @@ void MainWindow::on_actionsearch_triggered()
 {
     BikoSearchDialog dlg(this);
     dlg.exec();
+}
+
+void MainWindow::comboTwoUpdate(){
+
+    ShiharaisakiComboWidget shiharaisakiWidget;
+
+    BikoComboWidget bikoWidget;
+
+
+    shiharaisakiWidget.fillComboBox(ui->comboBox_5,"yomi");
+    shiharaisakiWidget.fillComboBox(ui->comboBox_3,"yomi");
+
+    bikoWidget.fillComboBox(ui->comboBox_7,"yomi");
+    bikoWidget.fillComboBox(ui->comboBox_4,"yomi");
+    bikoWidget.fillComboBox(ui->comboBox_11,"yomi");
 }
 

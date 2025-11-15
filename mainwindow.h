@@ -1,9 +1,13 @@
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
 #include "kakeibotable.h"
 #include <QPushButton>
+#include "ShiharaisakiComboWidget.h"
+#include "BikoComboWidget.h"
+#include "ComboRegisterHelper.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,6 +25,10 @@ public:
     int dst_ckozanum;
     double calculateBalance(int accountNum, const QDate& date);
     QList<int> getAccountList();
+
+    void comboTwoUpdate();
+    Ui::MainWindow* getUi() { return ui; }
+
 
 private slots:
     void on_actionkozaEdit_triggered();
@@ -52,10 +60,11 @@ private slots:
     void on_actionsearch_triggered();
 
 private:
-    Ui::MainWindow *ui;
+       Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
     KakeiboTable *dst_table;
     QPushButton *deleteButton = nullptr;
+    ComboRegisterHelper* comboHelper;  // ← ここが必要
 
 
 };

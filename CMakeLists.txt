@@ -69,6 +69,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         BalanceTrendWidget.cpp
         BikoSearchDialog.h
         BikoSearchDialog.cpp
+        ComboRegisterHelper.h
+        ComboRegisterHelper.cpp
+        ClearOnClickLineEdit.cpp
+        ClearOnClickLineEdit.h
 
 
     )
