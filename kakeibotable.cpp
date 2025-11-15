@@ -91,7 +91,7 @@ QSqlTableModel* KakeiboTable::loadModel(int accountNum)
     model->setHeaderData(3, Qt::Horizontal, "収入");
     model->setHeaderData(4, Qt::Horizontal, "残高");
     model->setHeaderData(5, Qt::Horizontal, "費目/移動ID");
-    model->setHeaderData(6, Qt::Horizontal, "備考");
+    model->setHeaderData(6, Qt::Horizontal, "支払/備考");
     return model;
 }
 

@@ -35,7 +35,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <property name="styleSheet">
@@ -218,7 +218,7 @@
          </font>
         </property>
         <property name="text">
-         <string>支払元</string>
+         <string>支払先</string>
         </property>
        </widget>
        <widget class="QDateEdit" name="dateEdit_2">
@@ -252,6 +252,9 @@
         </property>
        </widget>
        <widget class="QPushButton" name="pushButton_4">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="geometry">
          <rect>
           <x>650</x>
@@ -483,6 +486,9 @@
         </property>
        </widget>
        <widget class="QPushButton" name="pushButton_5">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="geometry">
          <rect>
           <x>650</x>

@@ -42,3 +42,27 @@ void ThreeRelationShipsWidget::addRow(const QString &biko, const QString &himoku
  model->submitAll();  // ★ これが必要！！
 
 }
+
+
+// ThreeRelationShipsWidget.cpp に実装
+bool ThreeRelationShipsWidget::checkExist(const QString& himoku, const QString& shiharai, const QString& biko)
+{
+    // model が QSqlTableModel の場合、その database() を利用
+    QSqlQuery query(model->database());
+    query.prepare("SELECT COUNT(*) FROM ThreeRelationShips WHERE himoku = :himoku AND shiharaiSakiMoto = :shiharai AND biko = :biko");
+    query.bindValue(":himoku", himoku);
+    query.bindValue(":shiharai", shiharai);
+    query.bindValue(":biko", biko);
+
+    if (!query.exec()) {
+        qDebug() << "checkExist query failed:" << query.lastError();
+        return false;
+    }
+
+    if (query.next()) {
+        int count = query.value(0).toInt();
+        return count > 0;  // 1件以上あれば存在する
+    }
+
+    return false;
+}
