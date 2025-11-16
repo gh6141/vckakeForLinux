@@ -525,5 +525,25 @@ void MainWindow::on_comboBox_3_currentIndexChanged(int index)
 void MainWindow::on_checkBox_checkStateChanged(const Qt::CheckState &arg1)
 {
 
+    pcbx->setFilterEnabled(ui->checkBox->isChecked());
+
+    if(!ui->checkBox->isChecked()){
+        pcbx->populateAll(ui->comboBox_6);
+        pcbx->populateAll(ui->comboBox_5);
+        pcbx->populateAll(ui->comboBox_7);
+    }
+
+}
+
+
+void MainWindow::on_checkBox_2_checkStateChanged(const Qt::CheckState &arg1)
+{
+    pcbx2->setFilterEnabled(ui->checkBox_2->isChecked());
+    if(!ui->checkBox_2->isChecked()){
+        pcbx2->populateAll(ui->comboBox_2);
+        pcbx2->populateAll(ui->comboBox_3);
+        pcbx2->populateAll(ui->comboBox_4);
+    }
+
 }
 

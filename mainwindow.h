@@ -76,6 +76,8 @@ private slots:
 
     void on_checkBox_checkStateChanged(const Qt::CheckState &arg1);
 
+    void on_checkBox_2_checkStateChanged(const Qt::CheckState &arg1);
+
 private:
        Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
