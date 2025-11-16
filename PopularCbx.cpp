@@ -73,6 +73,9 @@ void PopularCbx::updateComboBoxes(QComboBox* sender,const QList<QComboBox*>& tar
 
 // フィルタOFF時の全件表示
 void PopularCbx::populateAll(QComboBox* cb) {
+
+     if (filterEnabled) return;
+
     QString field = cb->property("popularField").toString();
     if (field.isEmpty()) return;
 

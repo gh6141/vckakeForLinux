@@ -107,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent)
     himokuWidget.fillComboBox(ui->comboBox_6,"yomi");
     himokuWidget.fillComboBox(ui->comboBox_2,"yomi");
 
+    /*
     ShiharaisakiComboWidget shiharaisakiWidget;
     BikoComboWidget bikoWidget;
 
@@ -116,6 +117,8 @@ MainWindow::MainWindow(QWidget *parent)
     bikoWidget.fillComboBox(ui->comboBox_7,"yomi");
     bikoWidget.fillComboBox(ui->comboBox_4,"yomi");
     bikoWidget.fillComboBox(ui->comboBox_11,"yomi");
+*/
+    comboTwoUpdate();
 
    // MainWindow::();
 
@@ -489,9 +492,8 @@ QList<ThreeRelationShip> MainWindow::loadThreeRelationList()
 void MainWindow::on_comboBox_6_currentIndexChanged(int index)
 {
     if (comboInitializing) return;  // 初期化中は無視
-    // 下位コンボをまとめてリストに
+    pcbx->setDataList(ssnLtrs);
     QList<QComboBox*> targetCbs = { ui->comboBox_5, ui->comboBox_7 };
-    // PopularCbx に更新を依頼
     pcbx->updateComboBoxes(ui->comboBox_6, targetCbs);
 }
 
@@ -499,6 +501,7 @@ void MainWindow::on_comboBox_6_currentIndexChanged(int index)
 void MainWindow::on_comboBox_5_currentIndexChanged(int index)
 {
     if (comboInitializing) return;
+    pcbx->setDataList(ssnLtrs);
     QList<QComboBox*> targetCbs = {  ui->comboBox_7 };
     pcbx->updateComboBoxes(ui->comboBox_5, targetCbs);
 }
@@ -507,9 +510,8 @@ void MainWindow::on_comboBox_5_currentIndexChanged(int index)
 void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 {
     if (comboInitializing) return;  // 初期化中は無視
-    // 下位コンボをまとめてリストに
+    pcbx2->setDataList(ssnLtrs);
     QList<QComboBox*> targetCbs = { ui->comboBox_3, ui->comboBox_4 };
-    // PopularCbx に更新を依頼
     pcbx2->updateComboBoxes(ui->comboBox_2, targetCbs);
 }
 
@@ -517,22 +519,21 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 void MainWindow::on_comboBox_3_currentIndexChanged(int index)
 {
     if (comboInitializing) return;
+    pcbx2->setDataList(ssnLtrs);
     QList<QComboBox*> targetCbs = {  ui->comboBox_4 };
     pcbx2->updateComboBoxes(ui->comboBox_3, targetCbs);
 }
 
 
 void MainWindow::on_checkBox_checkStateChanged(const Qt::CheckState &arg1)
-{
-
+{  
+    pcbx->setDataList(ssnLtrs);
     pcbx->setFilterEnabled(ui->checkBox->isChecked());
 
     if(!ui->checkBox->isChecked()){
         cbh1_payee->setPrevent(true);   // コンボ更新の間は無効
         cbh1_biko->setPrevent(true);
-        pcbx->populateAll(ui->comboBox_6);
-        pcbx->populateAll(ui->comboBox_5);
-        pcbx->populateAll(ui->comboBox_7);
+          comboTwoUpdate();
         cbh1_payee->setPrevent(false);
         cbh1_biko->setPrevent(false);
     }
@@ -541,14 +542,14 @@ void MainWindow::on_checkBox_checkStateChanged(const Qt::CheckState &arg1)
 
 
 void MainWindow::on_checkBox_2_checkStateChanged(const Qt::CheckState &arg1)
-{
+{  
+    pcbx2->setDataList(ssnLtrs);
     pcbx2->setFilterEnabled(ui->checkBox_2->isChecked());
+
     if(!ui->checkBox_2->isChecked()){
         cbh2_payee->setPrevent(true);
         cbh2_biko->setPrevent(true);
-        pcbx2->populateAll(ui->comboBox_2);
-        pcbx2->populateAll(ui->comboBox_3);
-        pcbx2->populateAll(ui->comboBox_4);
+          comboTwoUpdate();
         cbh2_payee->setPrevent(false);
         cbh2_biko->setPrevent(false);
     }

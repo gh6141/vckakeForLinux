@@ -21,7 +21,7 @@ void HimokuWidget::addRow()
     BaseTableWidget::addRow();  // 空行追加
     int row = model->rowCount() - 1;
     if (row >= 0) {
-        model->setData(model->index(row, 1), "〇費");
-        model->setData(model->index(row, 2), "〇ひ");
+        model->setData(model->index(row, 1), "");
+        model->setData(model->index(row, 2), "");
     }
 }
