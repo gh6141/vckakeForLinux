@@ -86,7 +86,7 @@ void ComboRegisterHelper::connectSignals()
 
 void ComboRegisterHelper::onComboTextChanged(const QString &text)
 {
-
+    if (comboPreventFlg) return;  // フラグで動作制御
     // 未登録なら表示
     QSqlQuery query(m_db);
     if(m_tableName=="Biko"){

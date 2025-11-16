@@ -17,6 +17,9 @@ public:
                         const QString& tableName,
                         QSqlDatabase db,
                         QObject* parent = nullptr);
+    bool comboPreventFlg = false;  // ここにフラグを置く
+
+    void setPrevent(bool val) { comboPreventFlg = val; }
 
 
 private slots:

@@ -125,12 +125,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    new ComboRegisterHelper(ui->comboBox_5, ui->tab_3, "shiharaisakimoto",  QSqlDatabase::database(),this);
-    new ComboRegisterHelper(ui->comboBox_3, ui->tab, "shiharaisakimoto",  QSqlDatabase::database(),this);
+    cbh1_payee=new ComboRegisterHelper(ui->comboBox_5, ui->tab_3, "shiharaisakimoto",  QSqlDatabase::database(),this);
+    cbh2_payee=new ComboRegisterHelper(ui->comboBox_3, ui->tab, "shiharaisakimoto",  QSqlDatabase::database(),this);
 
-    new ComboRegisterHelper(ui->comboBox_7, ui->tab_3, "Biko",  QSqlDatabase::database(),this);
-    new ComboRegisterHelper(ui->comboBox_4, ui->tab, "Biko",  QSqlDatabase::database(),this);
-    new ComboRegisterHelper(ui->comboBox_11, ui->tab_2, "Biko",  QSqlDatabase::database(),this);
+    cbh1_biko=new ComboRegisterHelper(ui->comboBox_7, ui->tab_3, "Biko",  QSqlDatabase::database(),this);
+    cbh2_biko=new ComboRegisterHelper(ui->comboBox_4, ui->tab, "Biko",  QSqlDatabase::database(),this);
+    cbh3_biko=new ComboRegisterHelper(ui->comboBox_11, ui->tab_2, "Biko",  QSqlDatabase::database(),this);
 
     ckozanum=1;
     dst_ckozanum=1;
@@ -528,9 +528,13 @@ void MainWindow::on_checkBox_checkStateChanged(const Qt::CheckState &arg1)
     pcbx->setFilterEnabled(ui->checkBox->isChecked());
 
     if(!ui->checkBox->isChecked()){
+        cbh1_payee->setPrevent(true);   // コンボ更新の間は無効
+        cbh1_biko->setPrevent(true);
         pcbx->populateAll(ui->comboBox_6);
         pcbx->populateAll(ui->comboBox_5);
         pcbx->populateAll(ui->comboBox_7);
+        cbh1_payee->setPrevent(false);
+        cbh1_biko->setPrevent(false);
     }
 
 }
@@ -540,9 +544,13 @@ void MainWindow::on_checkBox_2_checkStateChanged(const Qt::CheckState &arg1)
 {
     pcbx2->setFilterEnabled(ui->checkBox_2->isChecked());
     if(!ui->checkBox_2->isChecked()){
+        cbh2_payee->setPrevent(true);
+        cbh2_biko->setPrevent(true);
         pcbx2->populateAll(ui->comboBox_2);
         pcbx2->populateAll(ui->comboBox_3);
         pcbx2->populateAll(ui->comboBox_4);
+        cbh2_payee->setPrevent(false);
+        cbh2_biko->setPrevent(false);
     }
 
 }
