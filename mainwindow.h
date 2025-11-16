@@ -74,7 +74,7 @@ private:
     ComboRegisterHelper* comboHelper;  // ← ここが必要
 
     ThreeRelationShipsWidget *m_trw = nullptr;
-
+    PopularCbx *pcbx;
 
 };
 

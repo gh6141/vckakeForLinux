@@ -194,6 +194,9 @@ MainWindow::MainWindow(QWidget *parent)
      ui->comboBox_7->setProperty("popularField", "biko");
      ui->comboBox_4->setProperty("popularField", "biko");
 
+      pcbx=new PopularCbx(this);
+      pcbx->setDataList(ssnLtrs);
+
 }
 
 MainWindow::~MainWindow()
