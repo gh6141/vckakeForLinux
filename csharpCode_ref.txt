@@ -1,0 +1,224 @@
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            comboBox4.Text = "";
+            comboBox5.Text = "";
+            comboBox4.Items.Clear();
+            comboBox5.Items.Clear();
+
+            pcbx.kosin(ssnLtrs);
+            pcbx.cbHimoku_SelectedIndexChanged(comboBox1,comboBox4,comboBox5);
+           
+        }
+
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            comboBox5.Text = "";
+            comboBox5.Items.Clear();
+
+            pcbx.kosin(ssnLtrs);
+            pcbx.cbPayee_SelectedIndexChanged(comboBox1, comboBox4, comboBox5);
+
+        }
+
+        private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            pcbx.kosin(ssnLtrs);
+            pcbx.cbRemarks_SelectedIndexChanged(comboBox1, comboBox4, comboBox5);
+
+        }
+
+        private void radioButton6_CheckedChanged(object sender, EventArgs e)
+        {
+            tabPage1.BackColor = Color.LightGray;
+            tabPage4.BackColor = Color.LightCoral;
+            pcbx.filterEnabled= radioButtonFilter.Checked;
+            pcbx2.filterEnabled = radioButtonFilter.Checked;
+
+            Properties.Settings.Default.filterFlg = false;
+            Properties.Settings.Default.Save();
+        }
+
+        private void radioButtonFilter_CheckedChanged(object sender, EventArgs e)
+        {
+            tabPage1.BackColor=Color.DarkGray;
+            tabPage4.BackColor = Color.RosyBrown;
+            pcbx.filterEnabled = radioButtonFilter.Checked;
+            pcbx2.filterEnabled = radioButtonFilter.Checked;
+
+            Properties.Settings.Default.filterFlg = true;
+            Properties.Settings.Default.Save();
+        }
+
+        private void comboBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!pcbx.filterEnabled)
+            {
+                pcbx.noFilter1(cstring,comboBox1);
+            }
+            
+        }
+
+        private void comboBox4_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!pcbx.filterEnabled)
+            {
+                pcbx.noFilter4(cstring,comboBox4);
+            }
+        }
+
+        private void comboBox5_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!pcbx.filterEnabled)
+            {
+                pcbx.noFilter5(cstring,comboBox5);
+            }
+        }
+
+////////////////////////////////////
+
+ public class PopularCbx
+ {
+     protected List<ThreeRelationShips> dataList = new List<ThreeRelationShips>();
+     public bool filterEnabled = false;
+     private Form1 fm1;
+
+     public PopularCbx(Form1 fm1_)
+     {
+         fm1 = fm1_;
+        
+         PopulateComboBoxes();
+     }
+
+
+     public void kosin( List<ThreeRelationShips> dataList_)
+     {
+         dataList = dataList_;
+     }
+
+ 
+  
+
+     private void PopulateComboBoxes()
+     {
+         // ComboBoxの初期設定: すべてのアイテムを追加
+         PopulateComboBox(fm1.comboBox5, dataList.Select(d => d.biko).Distinct().ToList());
+         PopulateComboBox(fm1.comboBox1, dataList.Select(d => d.himoku).Distinct().ToList());
+         PopulateComboBox(fm1.comboBox4, dataList.Select(d => d.shiharaiSakiMoto).Distinct().ToList());
+     }
+
+     private void PopulateComboBox(ComboBox comboBox, List<string> items)
+     {
+         int orgIndex;
+         //  MessageBox.Show(dataList.Count.ToString());
+         try
+         {
+             orgIndex= comboBox.SelectedIndex;
+             comboBox.Items.Clear();
+             comboBox.Items.AddRange(items.ToArray());
+       
+                 comboBox.Text = items[orgIndex].ToString();
+             
+         }
+         catch (Exception ex) {
+             
+         
+         }
+      
+      
+         
+     }
+
+   
+
+     public void cbHimoku_SelectedIndexChanged(ComboBox chHimoku,ComboBox cbPayee,ComboBox cbRemarks)
+     {
+         if (filterEnabled )
+         {
+             string selectedHimoku = chHimoku.SelectedItem as string;
+             if (selectedHimoku != null)
+             {
+                 List<ThreeRelationShips> filteredData = dataList.Where(d => d.himoku.Trim() == selectedHimoku.Trim()).ToList();
+                 if (cbRemarks.Text.Trim() == "")
+                 {
+                     PopulateComboBox(cbRemarks, filteredData.Select(d => d.biko).Distinct().ToList());
+                 }
+                 if (cbPayee.Text.Trim() == "")
+                 {
+                     PopulateComboBox(cbPayee, filteredData.Select(d => d.shiharaiSakiMoto).Distinct().ToList());
+                 }                        
+             }
+         }
+
+     }
+
+     public void cbPayee_SelectedIndexChanged(ComboBox chHimoku, ComboBox cbPayee, ComboBox cbRemarks)
+     {
+         if (filterEnabled   )
+         {
+             string selectedShiharaiSakiMoto = cbPayee.SelectedItem as string;
+             if (selectedShiharaiSakiMoto != null)
+             {
+                 List<ThreeRelationShips> filteredData = dataList.Where(d => d.shiharaiSakiMoto.Trim() == selectedShiharaiSakiMoto.Trim()).ToList();
+                 if (cbRemarks.Text.Trim() == "")
+                 {
+                     PopulateComboBox(cbRemarks, filteredData.Select(d => d.biko).Distinct().ToList());
+                 }                  
+                 
+                 if (chHimoku.Text.Trim() == "")
+                 {
+                     PopulateComboBox(chHimoku, filteredData.Select(d => d.himoku).Distinct().ToList());
+                 }
+             }
+         }
+        
+     }
+
+     public void cbRemarks_SelectedIndexChanged(ComboBox chHimoku, ComboBox cbPayee, ComboBox cbRemarks)
+     {
+         if (filterEnabled)
+         {
+             string selectedBiko = cbRemarks.SelectedItem as string;
+             if (selectedBiko != null)
+             {
+                 List<ThreeRelationShips> filteredData = dataList.Where(d => d.biko.Trim() == selectedBiko.Trim()).ToList();
+                 if (chHimoku.Text.Trim() == "")
+                 {
+                     PopulateComboBox(chHimoku, filteredData.Select(d => d.himoku).Distinct().ToList());
+                 }
+
+                 if (cbPayee.Text.Trim() == "")
+                 {
+                     PopulateComboBox(cbPayee, filteredData.Select(d => d.shiharaiSakiMoto).Distinct().ToList());
+                 }
+             }
+
+         }
+     }
+
+
+     private bool moreFlg()
+     {
+         return (fm1.comboBox1.Text != "" || fm1.comboBox4.Text != "" || fm1.comboBox5.Text != "");
+     }
+
+
+     public void noFilter1(string cst,ComboBox cbHimoku) {
+         PopulateComboBox(cbHimoku, new Himoku(cst, fm1).HimokuLselect().Select(d => d.himoku).Distinct().ToList());
+     }
+
+     public void noFilter4(string cst,ComboBox cbPayee)
+     {     
+         PopulateComboBox(cbPayee, new shiharaiSakiMoto(cst, fm1).shiharaisakimotoLselect().Select(d => d.shiharaisaki).Distinct().ToList());
+     }
+
+     public void noFilter5(string cst,ComboBox cbRemarks)
+     {
+         PopulateComboBox(cbRemarks, new Biko(cst, fm1).BikoLselect().Select(d => d.biko).Distinct().ToList());
+     }
+
+
+
+
+ }

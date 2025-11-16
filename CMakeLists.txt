@@ -73,6 +73,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ComboRegisterHelper.cpp
         ClearOnClickLineEdit.cpp
         ClearOnClickLineEdit.h
+        PopularCbx.cpp
+        PopularCbx.h
 
 
     )

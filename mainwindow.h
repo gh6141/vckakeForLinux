@@ -9,6 +9,7 @@
 #include "BikoComboWidget.h"
 #include "ComboRegisterHelper.h"
 #include "ThreeRelationShipsWidget.h"
+#include "PopularCbx.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,7 +30,8 @@ public:
 
     void comboTwoUpdate();
     Ui::MainWindow* getUi() { return ui; }
-
+    QList<ThreeRelationShip> loadThreeRelationList();
+    QList<ThreeRelationShip> ssnLtrs;
 
 private slots:
     void on_actionkozaEdit_triggered();

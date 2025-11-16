@@ -183,6 +183,17 @@ MainWindow::MainWindow(QWidget *parent)
 
      m_trw = new ThreeRelationShipsWidget(this);
 
+     ssnLtrs = loadThreeRelationList();
+
+     ui->comboBox_6->setProperty("popularField", "himoku");
+     ui->comboBox_2->setProperty("popularField", "himoku");
+
+     ui->comboBox_5->setProperty("popularField", "payee");
+     ui->comboBox_3->setProperty("popularField", "payee");
+
+     ui->comboBox_7->setProperty("popularField", "biko");
+     ui->comboBox_4->setProperty("popularField", "biko");
+
 }
 
 MainWindow::~MainWindow()
@@ -224,12 +235,7 @@ void MainWindow::on_actionactionshiharaisaki_triggered()
 
 void MainWindow::on_actionaction3rsEdit_triggered()
 {
-   // ThreeRelationShipsWidget *w = new ThreeRelationShipsWidget(this);
-    //m_trw->setAttribute(Qt::WA_DeleteOnClose);
-   // m_trw->show();
 
-  // m_trw->raise();
- //  m_trw->activateWindow();
     m_trw->show();
 }
 
@@ -455,4 +461,21 @@ void MainWindow::on_pushButton_4_clicked()
     ui->pushButton_4->setEnabled(false);
 
 }
+
+QList<ThreeRelationShip> MainWindow::loadThreeRelationList()
+{
+    QList<ThreeRelationShip> list;
+
+    QSqlQuery query("SELECT himoku, shiharaiSakiMoto, biko FROM ThreeRelationShips");
+    while (query.next()) {
+        ThreeRelationShip t;
+        t.himoku = query.value(0).toString();
+        t.shiharaiSakiMoto = query.value(1).toString();
+        t.biko = query.value(2).toString();
+        list << t;
+    }
+
+    return list;
+}
+
 
