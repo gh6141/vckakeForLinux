@@ -4,7 +4,7 @@ BikoWidget::BikoWidget(QWidget* parent)
     : BaseTableWidget(parent)
 {
 
-    QString sql = "CREATE TABLE Biko ("
+    QString sql = "CREATE TABLE IF NOT EXISTS Biko ("
                   "num INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "biko TEXT, "
                   "yomi TEXT)";

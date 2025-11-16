@@ -130,7 +130,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     cbh1_biko=new ComboRegisterHelper(ui->comboBox_7, ui->tab_3, "Biko",  QSqlDatabase::database(),this);
     cbh2_biko=new ComboRegisterHelper(ui->comboBox_4, ui->tab, "Biko",  QSqlDatabase::database(),this);
-    cbh3_biko=new ComboRegisterHelper(ui->comboBox_11, ui->tab_2, "Biko",  QSqlDatabase::database(),this);
+    new ComboRegisterHelper(ui->comboBox_11, ui->tab_2, "Biko",  QSqlDatabase::database(),this);
 
     ckozanum=1;
     dst_ckozanum=1;

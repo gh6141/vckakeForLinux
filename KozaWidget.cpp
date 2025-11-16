@@ -6,7 +6,7 @@ KozaWidget::KozaWidget(QWidget* parent)
 
 
 
-    QString sql = "CREATE TABLE koza ("
+    QString sql = "CREATE TABLE IF NOT EXISTS koza ("
                   "num INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "kozaName TEXT, "
                   "tabColor TEXT)";

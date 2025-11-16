@@ -4,7 +4,7 @@ ShiharaisakimotoWidget::ShiharaisakimotoWidget(QWidget* parent)
     : BaseTableWidget(parent)
 {
 
-    QString sql = "CREATE TABLE shiharaisakimoto ("
+    QString sql = "CREATE TABLE IF NOT EXISTS shiharaisakimoto ("
                   "num INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "shiharaisaki TEXT, "
                   "yomi TEXT)";

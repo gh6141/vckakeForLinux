@@ -4,7 +4,7 @@ HimokuWidget::HimokuWidget(QWidget* parent)
     : BaseTableWidget(parent)
 {
 
-    QString sql = "CREATE TABLE Himoku ("
+    QString sql = "CREATE TABLE IF NOT EXISTS Himoku ("
                   "num INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "himoku TEXT, "
                   "yomi TEXT)";

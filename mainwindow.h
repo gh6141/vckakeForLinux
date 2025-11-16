@@ -83,8 +83,8 @@ private:
     KakeiboTable *table;  // メンバとして保持
     KakeiboTable *dst_table;
     QPushButton *deleteButton = nullptr;
-    ComboRegisterHelper *cbh1_payee,*cbh1_biko,*cbh1_himoku;
-    ComboRegisterHelper *cbh2_payee,*cbh2_biko,*cbh2_himoku,*cbh3_biko;
+    ComboRegisterHelper *cbh1_payee,*cbh1_biko;
+    ComboRegisterHelper *cbh2_payee,*cbh2_biko;
 
     ThreeRelationShipsWidget *m_trw = nullptr;
     PopularCbx *pcbx,*pcbx2;
