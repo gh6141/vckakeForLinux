@@ -196,6 +196,8 @@ MainWindow::MainWindow(QWidget *parent)
 
       pcbx=new PopularCbx(this);
       pcbx->setDataList(ssnLtrs);
+      pcbx2=new PopularCbx(this);
+      pcbx2->setDataList(ssnLtrs);
       comboInitializing = false;
 
 }
@@ -508,7 +510,7 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
     // 下位コンボをまとめてリストに
     QList<QComboBox*> targetCbs = { ui->comboBox_3, ui->comboBox_4 };
     // PopularCbx に更新を依頼
-    pcbx->updateComboBoxes(ui->comboBox_2, targetCbs);
+    pcbx2->updateComboBoxes(ui->comboBox_2, targetCbs);
 }
 
 
@@ -516,6 +518,12 @@ void MainWindow::on_comboBox_3_currentIndexChanged(int index)
 {
     if (comboInitializing) return;
     QList<QComboBox*> targetCbs = {  ui->comboBox_4 };
-    pcbx->updateComboBoxes(ui->comboBox_3, targetCbs);
+    pcbx2->updateComboBoxes(ui->comboBox_3, targetCbs);
+}
+
+
+void MainWindow::on_checkBox_checkStateChanged(const Qt::CheckState &arg1)
+{
+
 }
 

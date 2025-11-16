@@ -74,6 +74,8 @@ private slots:
 
     void on_comboBox_3_currentIndexChanged(int index);
 
+    void on_checkBox_checkStateChanged(const Qt::CheckState &arg1);
+
 private:
        Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
@@ -82,7 +84,7 @@ private:
     ComboRegisterHelper* comboHelper;  // ← ここが必要
 
     ThreeRelationShipsWidget *m_trw = nullptr;
-    PopularCbx *pcbx;
+    PopularCbx *pcbx,*pcbx2;
     bool comboInitializing = true; // 初期化中は true
 };
 

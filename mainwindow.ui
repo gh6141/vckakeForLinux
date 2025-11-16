@@ -35,7 +35,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <property name="styleSheet">
@@ -265,6 +265,22 @@
         </property>
         <property name="text">
          <string>関連保存</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox">
+        <property name="geometry">
+         <rect>
+          <x>650</x>
+          <y>160</y>
+          <width>75</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>フィルター</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </widget>
@@ -499,6 +515,22 @@
         </property>
         <property name="text">
          <string>関連保存</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_2">
+        <property name="geometry">
+         <rect>
+          <x>650</x>
+          <y>150</y>
+          <width>75</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>フィルター</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </widget>
