@@ -196,6 +196,7 @@ MainWindow::MainWindow(QWidget *parent)
 
       pcbx=new PopularCbx(this);
       pcbx->setDataList(ssnLtrs);
+      comboInitializing = false;
 
 }
 
@@ -481,4 +482,40 @@ QList<ThreeRelationShip> MainWindow::loadThreeRelationList()
     return list;
 }
 
+
+
+void MainWindow::on_comboBox_6_currentIndexChanged(int index)
+{
+    if (comboInitializing) return;  // 初期化中は無視
+    // 下位コンボをまとめてリストに
+    QList<QComboBox*> targetCbs = { ui->comboBox_5, ui->comboBox_7 };
+    // PopularCbx に更新を依頼
+    pcbx->updateComboBoxes(ui->comboBox_6, targetCbs);
+}
+
+
+void MainWindow::on_comboBox_5_currentIndexChanged(int index)
+{
+    if (comboInitializing) return;
+    QList<QComboBox*> targetCbs = {  ui->comboBox_7 };
+    pcbx->updateComboBoxes(ui->comboBox_5, targetCbs);
+}
+
+
+void MainWindow::on_comboBox_2_currentIndexChanged(int index)
+{
+    if (comboInitializing) return;  // 初期化中は無視
+    // 下位コンボをまとめてリストに
+    QList<QComboBox*> targetCbs = { ui->comboBox_3, ui->comboBox_4 };
+    // PopularCbx に更新を依頼
+    pcbx->updateComboBoxes(ui->comboBox_2, targetCbs);
+}
+
+
+void MainWindow::on_comboBox_3_currentIndexChanged(int index)
+{
+    if (comboInitializing) return;
+    QList<QComboBox*> targetCbs = {  ui->comboBox_4 };
+    pcbx->updateComboBoxes(ui->comboBox_3, targetCbs);
+}
 

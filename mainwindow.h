@@ -66,6 +66,14 @@ private slots:
 
     void on_pushButton_4_clicked();
 
+    void on_comboBox_6_currentIndexChanged(int index);
+
+    void on_comboBox_5_currentIndexChanged(int index);
+
+    void on_comboBox_2_currentIndexChanged(int index);
+
+    void on_comboBox_3_currentIndexChanged(int index);
+
 private:
        Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
@@ -75,7 +83,7 @@ private:
 
     ThreeRelationShipsWidget *m_trw = nullptr;
     PopularCbx *pcbx;
-
+    bool comboInitializing = true; // 初期化中は true
 };
 
 #endif // MAINWINDOW_H
