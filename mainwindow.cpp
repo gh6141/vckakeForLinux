@@ -29,6 +29,58 @@
 #include "OricoRowData.h"
 
 
+QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr) {
+    QDialog dialog(parent);
+    dialog.setWindowTitle("日付範囲を選択");
+
+    QVBoxLayout* mainLayout = new QVBoxLayout(&dialog);
+
+    // 前月1日を計算
+    QDate today = QDate::currentDate();
+    QDate firstOfLastMonth = QDate(today.year(), today.month(), 1).addMonths(-1);
+
+    // From
+    QHBoxLayout* fromLayout = new QHBoxLayout;
+    fromLayout->addWidget(new QLabel("開始日:"));
+    QDateEdit* fromEdit = new QDateEdit(firstOfLastMonth);
+    fromEdit->setCalendarPopup(true);
+    fromLayout->addWidget(fromEdit);
+    mainLayout->addLayout(fromLayout);
+
+    // To
+    QHBoxLayout* toLayout = new QHBoxLayout;
+    toLayout->addWidget(new QLabel("終了日:"));
+    QDateEdit* toEdit = new QDateEdit(today);
+    toEdit->setCalendarPopup(true);
+    toLayout->addWidget(toEdit);
+    mainLayout->addLayout(toLayout);
+
+    // OK / Cancel ボタン
+    QHBoxLayout* btnLayout = new QHBoxLayout;
+    QPushButton* okBtn = new QPushButton("OK");
+    QPushButton* cancelBtn = new QPushButton("キャンセル");
+    btnLayout->addWidget(okBtn);
+    btnLayout->addWidget(cancelBtn);
+    mainLayout->addLayout(btnLayout);
+
+    QObject::connect(okBtn, &QPushButton::clicked, &dialog, &QDialog::accept);
+    QObject::connect(cancelBtn, &QPushButton::clicked, &dialog, &QDialog::reject);
+
+    QPair<QDate,QDate> result;
+    if (dialog.exec() == QDialog::Accepted) {
+        result.first = fromEdit->date();
+        result.second = toEdit->date();
+    } else {
+        result.first = QDate();
+        result.second = QDate();
+    }
+    return result;
+}
+
+
+
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -550,8 +602,15 @@ void MainWindow::on_checkBox_2_checkStateChanged(const Qt::CheckState &arg1)
 
 void MainWindow::on_actionimport_triggered()
 {
-    QDate fromDate(2025, 7, 1);
-    QDate toDate(2025, 11, 30);
+    auto dates = getDateRangeFromUser(this);
+
+    if (!dates.first.isValid() || !dates.second.isValid()) {
+        // キャンセルされた
+        return;
+    }
+
+    QDate fromDate = dates.first;
+    QDate toDate   = dates.second;
 
     KakeiboTable* kakeiboTable;
 
@@ -580,7 +639,7 @@ void MainWindow::on_actionimport_triggered()
     QDialog dlg(this);
     dlg.setWindowTitle("Draggable Grid");
     dlg.resize(800, 400);
-    int rows = 30;
+    int rows = oricoRows.length()+kRows.length()+1;
     int cols = 3;
     DraggableGridWidget *grid = new DraggableGridWidget(rows, cols);
     QScrollArea *scrollArea = new QScrollArea(&dlg);
@@ -606,6 +665,8 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
                                    )
 {
 
+    QVector<bool> matchFlg(kRows.size(), false);  // size() 個の false を用意
+
     grid->clear(); // 既存ボタンを消すメソッドを追加しておくと安全
 
     for (int r = 0; r < oricoRows.size(); ++r)
@@ -617,21 +678,24 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         grid->addButton(btnOricoDate, r, 0);
 
         // 2列目：Orico 金額
-        auto btnOricoKingaku = new DraggableButton(QString::number(o.kingaku)+":"+o.usePlace.left(5), grid);
+        auto btnOricoKingaku = new DraggableButton(QString::number(o.kingaku)+":"+o.usePlace.left(10), grid);
         grid->addButton(btnOricoKingaku, r, 1);
 
         // 3列目：一致する Kakeibo を探す
         bool found = false;
-        for (const auto& k : kRows) {
+
+
+        for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
+            const auto& k = kRows[kIdx];
             if (k.kingaku == o.kingaku) {
-                QString text = QString::number(k.kingaku)+":"+ k.biko.left(5);
+                QString text = QString::number(k.kingaku)+"("+k.date.toString("MM/dd")+"):"+ k.biko.left(6);
                 auto btnKakeibo = new DraggableButton(text, grid);
                 grid->addButton(btnKakeibo, r, 2);
                 found = true;
-                break;  // 最初の1件だけ使用
+                matchFlg[kIdx] = true;  // ここで正しいインデックスにフラグを立てる
+                break;  // 最初の1件だけ
             }
         }
-
 
         // マッチしなかった場合：空欄 or "未一致"
         if (!found) {
@@ -641,6 +705,22 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
     }
     auto ttl = new DraggableButton(QString::number(total), grid);
     grid->addButton(ttl, oricoRows.size(), 1);
+
+
+    // 一致しなかった kRows を下にまとめて表示
+    int offset = oricoRows.size()+1;
+    for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
+        if (!matchFlg[kIdx]) {
+            const auto& k = kRows[kIdx];
+            QString text = QString::number(k.kingaku)+"("+k.date.toString("MM/dd")+"):"+ k.biko.left(6);
+            auto btnKakeibo = new DraggableButton(text, grid);
+            grid->addButton(btnKakeibo, offset, 2);
+            offset++;  // 次の行にずらす
+        }
+    }
+
+
+
 }
 
 void MainWindow::on_comboBox_8_currentIndexChanged(int index)
