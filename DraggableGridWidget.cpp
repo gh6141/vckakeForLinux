@@ -1,4 +1,5 @@
 #include "DraggableGridWidget.h"
+#include "DraggableButton.h"
 #include <QPainter>
 #include <QDragEnterEvent>
 #include <QMimeData>
@@ -8,13 +9,17 @@ DraggableGridWidget::DraggableGridWidget(int rows, int cols, QWidget *parent)
     : QWidget(parent), m_rows(rows), m_cols(cols)
 {
     setAcceptDrops(true);
+
+    // 縦方向固定サイズ
+    setMinimumHeight(m_rows * cellH);
+    setMaximumHeight(m_rows * cellH);
 }
 
 void DraggableGridWidget::addButton(DraggableButton *btn, int row, int col)
 {
     btn->setParent(this);
     btn->setCell(row, col);
-    btn->resize(width()/m_cols, height()/m_rows);
+    btn->resize(width()/m_cols, cellH);
     btn->move(cellTopLeft(row, col));
     btn->show();
 }
@@ -22,14 +27,12 @@ void DraggableGridWidget::addButton(DraggableButton *btn, int row, int col)
 QPoint DraggableGridWidget::cellTopLeft(int row, int col) const
 {
     int w = width() / m_cols;
-    int h = height() / m_rows;
-    return QPoint(col * w, row * h);
+    return QPoint(col * w, row * cellH);
 }
 
 DraggableButton* DraggableGridWidget::buttonAtCell(int row, int col) const
 {
-    for (auto btn : findChildren<DraggableButton*>())
-    {
+    for (auto btn : findChildren<DraggableButton*>()) {
         if (btn->row() == row && btn->col() == col)
             return btn;
     }
@@ -43,10 +46,9 @@ void DraggableGridWidget::paintEvent(QPaintEvent *event)
     painter.setPen(QPen(Qt::gray, 1));
 
     int w = width() / m_cols;
-    int h = height() / m_rows;
 
     for (int r = 1; r < m_rows; ++r)
-        painter.drawLine(0, r*h, width(), r*h);
+        painter.drawLine(0, r*cellH, width(), r*cellH);
     for (int c = 1; c < m_cols; ++c)
         painter.drawLine(c*w, 0, c*w, height());
 }
@@ -56,10 +58,8 @@ void DraggableGridWidget::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
 
     int cellW = width() / m_cols;
-    int cellH = height() / m_rows;
 
-    for (auto btn : findChildren<DraggableButton*>())
-    {
+    for (auto btn : findChildren<DraggableButton*>()) {
         int row = btn->row();
         int col = btn->col();
         btn->resize(cellW, cellH);
@@ -90,8 +90,8 @@ void DraggableGridWidget::dropEvent(QDropEvent *event)
     stream >> fromRow >> fromCol;
 
     int cellW = width()/m_cols;
-    int cellH = height()/m_rows;
-    int toCol = event->position().x() / cellW;
+    //int toCol = event->position().x() / cellW;
+    int toCol=fromCol;
     int toRow = event->position().y() / cellH;
 
     auto *fromBtn = buttonAtCell(fromRow, fromCol);
@@ -99,17 +99,12 @@ void DraggableGridWidget::dropEvent(QDropEvent *event)
 
     if (!fromBtn) return;
 
-    if (toBtn)
-    {
-        // 交換
+    if (toBtn) {
         fromBtn->move(cellTopLeft(toRow, toCol));
         toBtn->move(cellTopLeft(fromRow, fromCol));
-
         fromBtn->setCell(toRow, toCol);
         toBtn->setCell(fromRow, fromCol);
-    }
-    else
-    {
+    } else {
         fromBtn->move(cellTopLeft(toRow, toCol));
         fromBtn->setCell(toRow, toCol);
     }

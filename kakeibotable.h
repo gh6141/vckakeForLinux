@@ -26,6 +26,8 @@ public:
     QSqlTableModel* getmodel(){
         return model;
     }
+    QVector<KakeiboRowData> getAllRows() const;
+
 
 public slots:
    // void addRowForCurrentAccount();

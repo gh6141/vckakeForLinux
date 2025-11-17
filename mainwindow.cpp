@@ -24,6 +24,8 @@
 #include "BalanceTrendWidget.h"
 #include "BikoSearchDialog.h"
 #include "DraggableGridWidget.h"
+#include <QScrollArea>
+#include "DraggableButton.h"
 
 
 
@@ -561,17 +563,25 @@ void MainWindow::on_actionimport_triggered()
     dlg.setWindowTitle("Draggable Grid");
     dlg.resize(800, 400);
 
-    int rows=20;int cols=3;
-    auto *grid = new DraggableGridWidget(rows, cols, &dlg);
-    QVBoxLayout *vbox = new QVBoxLayout(&dlg);
-    vbox->addWidget(grid);
+    int rows = 30;
+    int cols = 3;
+
+    DraggableGridWidget *grid = new DraggableGridWidget(rows, cols);
+    QScrollArea *scrollArea = new QScrollArea(&dlg);
+    scrollArea->setWidget(grid);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+    QVBoxLayout *vbox = new QVBoxLayout(&dlg); // ✅ dlg にレイアウトを設定
+    vbox->addWidget(scrollArea);
 
     for (int r = 0; r < rows; ++r)
         for (int c = 0; c < cols; ++c)
         {
-            if(c>0&&r>0){
-            auto btn = new DraggableButton(QString("B%1%2").arg(r).arg(c), grid);
-            grid->addButton(btn, r, c);
+            if(c > 0 && r > 0){
+                auto btn = new DraggableButton(QString("B%1%2").arg(r).arg(c), grid);
+                grid->addButton(btn, r, c);
             }
         }
 
