@@ -26,7 +26,7 @@
 #include "DraggableGridWidget.h"
 #include <QScrollArea>
 #include "DraggableButton.h"
-
+#include "OricoRowData.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -557,24 +557,36 @@ void MainWindow::on_checkBox_2_checkStateChanged(const Qt::CheckState &arg1)
 }
 
 
+
 void MainWindow::on_actionimport_triggered()
 {
+    QDate fromDate(2025, 9, 1);
+    QDate toDate(2025, 11, 1);
+
+    KakeiboTable* kakeiboTable;
+    QVector<OricoRowData> oricoRows = loadOricoCSV("orico.csv");
+    QVector<KakeiboRowData> kRows = kakeiboTable->getAllRows(fromDate, toDate);
+
     QDialog dlg(this);
     dlg.setWindowTitle("Draggable Grid");
     dlg.resize(800, 400);
-
     int rows = 30;
     int cols = 3;
-
     DraggableGridWidget *grid = new DraggableGridWidget(rows, cols);
     QScrollArea *scrollArea = new QScrollArea(&dlg);
     scrollArea->setWidget(grid);
     scrollArea->setWidgetResizable(true);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
     QVBoxLayout *vbox = new QVBoxLayout(&dlg); // ✅ dlg にレイアウトを設定
     vbox->addWidget(scrollArea);
+
+    // ここで kRows と oricoRows を DraggableGrid に渡してボタン配置
+    populateOricoGrid(grid, kRows, oricoRows);
+
+       dlg.exec();
+/*
+
 
     for (int r = 0; r < rows; ++r)
         for (int c = 0; c < cols; ++c)
@@ -585,6 +597,37 @@ void MainWindow::on_actionimport_triggered()
             }
         }
 
-    dlg.exec();
+
+
+*/
 }
 
+
+void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
+                                   const QVector<KakeiboRowData>& kRows,
+                                   const QVector<OricoRowData>& oricoRows)
+{
+    int rows = kRows.size(); // 家計簿行数に合わせる
+    int cols = 3;            // 日付・家計簿・オリコ
+
+    grid->clear(); // 既存ボタンを消すメソッドを追加しておくと安全
+
+    for (int r = 0; r < rows; ++r) {
+        // 1列目: 日付
+        auto btnDate = new DraggableButton(kRows[r].date.toString("yyyy/MM/dd"), grid);
+        grid->addButton(btnDate, r, 0);
+
+        // 2列目: 家計簿金額
+        auto btnKakeibo = new DraggableButton(QString::number(kRows[r].kingaku), grid);
+        grid->addButton(btnKakeibo, r, 1);
+
+        // 3列目: オリコ金額一致のものを探す
+        for (const auto& o : oricoRows) {
+            if (o.kingaku == kRows[r].kingaku) {
+                auto btnOrico = new DraggableButton(QString::number(o.kingaku), grid);
+                grid->addButton(btnOrico, r, 2);
+                break;
+            }
+        }
+    }
+}

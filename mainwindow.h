@@ -10,6 +10,8 @@
 #include "ComboRegisterHelper.h"
 #include "ThreeRelationShipsWidget.h"
 #include "PopularCbx.h"
+#include "DraggableGridWidget.h"
+#include "OricoRowData.h"
 
 namespace Ui {
 class MainWindow;
@@ -92,6 +94,9 @@ private:
     PopularCbx *pcbx,*pcbx2;
     bool comboInitializing = true; // 初期化中は true
     QDialog *dlg;
+    void populateOricoGrid(DraggableGridWidget* grid,
+                                       const QVector<KakeiboRowData>& kRows,
+                           const QVector<OricoRowData>& oricoRows);
 };
 
 #endif // MAINWINDOW_H

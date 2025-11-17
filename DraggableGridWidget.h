@@ -11,6 +11,7 @@ public:
 
     void addButton(DraggableButton *btn, int row, int col);
     DraggableButton* buttonAtCell(int row, int col) const;
+    void clear();
 
 protected:
     void paintEvent(QPaintEvent *event) override;

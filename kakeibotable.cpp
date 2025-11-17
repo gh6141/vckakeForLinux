@@ -212,6 +212,31 @@ void KakeiboTable::recalculateBalances()
    // model->submitAll();  // DBに反映
 }
 
+
+QVector<KakeiboRowData> KakeiboTable::getAllRows(const QDate& fromDate, const QDate& toDate) const
+{
+    QVector<KakeiboRowData> rows;
+    if (!model) return rows;
+
+    for (int r = 0; r < model->rowCount(); ++r) {
+        QDate date = model->data(model->index(r, 1)).toDate();
+        if (date < fromDate || date > toDate) continue;
+
+        KakeiboRowData data;
+        data.date = date;
+        data.kingaku = model->data(model->index(r, 2)).toInt(); // 支出 or 収入に応じて分ける場合あり
+        data.himoku = model->data(model->index(r, 5)).toString();
+        data.shiharaisaki = model->data(model->index(r, 6)).toString();
+        data.biko = model->data(model->index(r, 6)).toString();
+        data.idosaki = model->data(model->index(r, 7)).toInt();
+
+        rows.append(data);
+    }
+    return rows;
+}
+
+
+
 QVector<KakeiboRowData> KakeiboTable::getAllRows() const
 {
     QVector<KakeiboRowData> rows;

@@ -111,3 +111,15 @@ void DraggableGridWidget::dropEvent(QDropEvent *event)
 
     event->acceptProposedAction();
 }
+
+
+void DraggableGridWidget::clear()
+{
+    // すべての DraggableButton を削除
+    auto buttons = findChildren<DraggableButton*>();
+    for (auto btn : buttons) {
+        btn->hide();    // 非表示
+        btn->setParent(nullptr); // QWidget から切り離す
+        delete btn;     // メモリ解放
+    }
+}
