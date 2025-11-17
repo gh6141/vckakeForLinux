@@ -75,6 +75,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ClearOnClickLineEdit.h
         PopularCbx.cpp
         PopularCbx.h
+        DraggableButton.h
+
+
+        DraggableGridWidget.cpp
+        DraggableGridWidget.h
+
 
 
     )

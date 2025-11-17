@@ -6,6 +6,7 @@
 #include <QLocale>
 #include <QTranslator>
 
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -20,8 +21,7 @@ int main(int argc, char *argv[])
         }
     }
 
-   // MainWindow w;
-   // w.show();
+
 
     QFont font = a.font();
     font.setPointSize(12);
@@ -29,14 +29,7 @@ int main(int argc, char *argv[])
 
     MainWindow *w = new MainWindow();
     w->show();
-    //KakeiboTable table;
-    //table.resize(800, 400);
-    //table.show();
 
-    // mainwindow.cpp 内
-  //  KakeiboTable *table = new KakeiboTable(this);  // this = MainWindow
- //   KakeiboTable *table=new KakeiboTable(w);
-  //  ui->centralWidget->layout()->addWidget(table); // レイアウトに組み込むだけ
 
 
     return a.exec();

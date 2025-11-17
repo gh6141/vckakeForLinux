@@ -78,6 +78,8 @@ private slots:
 
     void on_checkBox_2_checkStateChanged(const Qt::CheckState &arg1);
 
+    void on_actionimport_triggered();
+
 private:
        Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
@@ -89,6 +91,7 @@ private:
     ThreeRelationShipsWidget *m_trw = nullptr;
     PopularCbx *pcbx,*pcbx2;
     bool comboInitializing = true; // 初期化中は true
+    QDialog *dlg;
 };
 
 #endif // MAINWINDOW_H

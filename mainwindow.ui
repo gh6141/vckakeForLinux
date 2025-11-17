@@ -730,6 +730,7 @@
     <property name="title">
      <string>ファイル</string>
     </property>
+    <addaction name="actionimport"/>
     <addaction name="actionexit"/>
    </widget>
    <widget class="QMenu" name="menu_2">
@@ -827,6 +828,11 @@
   <action name="actionsearch">
    <property name="text">
     <string>備考検索</string>
+   </property>
+  </action>
+  <action name="actionimport">
+   <property name="text">
+    <string>インポート（Orico）</string>
    </property>
   </action>
  </widget>
