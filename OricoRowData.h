@@ -22,10 +22,12 @@ inline QVector<OricoRowData> loadOricoCSV(const QString& filePath)
         return list;
 
     QTextStream in(&file);
+
     bool inDetail = false;
     int rowCounter = 0;
 
     while (!in.atEnd()) {
+
         QString line = in.readLine();
 
         if (line.startsWith("<利用明細>")) {

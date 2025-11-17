@@ -213,8 +213,13 @@ void KakeiboTable::recalculateBalances()
 }
 
 
-QVector<KakeiboRowData> KakeiboTable::getAllRows(const QDate& fromDate, const QDate& toDate) const
+QVector<KakeiboRowData> KakeiboTable::getAllRows(const QDate& fromDate, const QDate& toDate,const int& tbnum) const
 {
+    //model = new QSqlTableModel(this, QSqlDatabase::database());
+QSqlTableModel* model = new QSqlTableModel(nullptr, QSqlDatabase::database());
+    model->setTable("shishutunyu"+QString::number(tbnum));
+    model->select();
+
     QVector<KakeiboRowData> rows;
     if (!model) return rows;
 
@@ -239,6 +244,8 @@ QVector<KakeiboRowData> KakeiboTable::getAllRows(const QDate& fromDate, const QD
 
 QVector<KakeiboRowData> KakeiboTable::getAllRows() const
 {
+
+
     QVector<KakeiboRowData> rows;
     if (!model) return rows;
 

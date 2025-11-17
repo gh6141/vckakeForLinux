@@ -564,8 +564,39 @@ void MainWindow::on_actionimport_triggered()
     QDate toDate(2025, 11, 1);
 
     KakeiboTable* kakeiboTable;
-    QVector<OricoRowData> oricoRows = loadOricoCSV("orico.csv");
-    QVector<KakeiboRowData> kRows = kakeiboTable->getAllRows(fromDate, toDate);
+
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        "Orico CSV を選択",
+        "",                 // 初期フォルダ
+        "CSV ファイル (*.csv);;すべてのファイル (*)"
+        );
+
+    if (filePath.isEmpty()) {
+        // ユーザーがキャンセルした場合は処理を中止
+        return;
+    }
+
+    QVector<OricoRowData> oricoRows = loadOricoCSV(filePath);
+
+    if (oricoRows.isEmpty()) {
+        QMessageBox::warning(this, "CSV Error", filePath+":Orico CSV ファイルが存在しないか読み込めません");
+        return;
+    }
+
+    QVector<KakeiboRowData> kRows = kakeiboTable->getAllRows(fromDate, toDate,1);
+    if (kRows.isEmpty()) {
+        qDebug() << "指定期間内に家計簿データがありません:"
+                 << fromDate.toString("yyyy/MM/dd") << "〜" << toDate.toString("yyyy/MM/dd");
+    } else {
+        for (const auto &row : kRows) {
+            qDebug() << "日付:" << row.date.toString("yyyy/MM/dd")
+                     << "金額:" << row.kingaku
+                     << "費目:" << row.himoku
+                     << "支払先/備考:" << row.shiharaisaki << "/" << row.biko
+                     << "移動先ID:" << row.idosaki;
+        }
+    }
 
     QDialog dlg(this);
     dlg.setWindowTitle("Draggable Grid");
@@ -585,21 +616,7 @@ void MainWindow::on_actionimport_triggered()
     populateOricoGrid(grid, kRows, oricoRows);
 
        dlg.exec();
-/*
 
-
-    for (int r = 0; r < rows; ++r)
-        for (int c = 0; c < cols; ++c)
-        {
-            if(c > 0 && r > 0){
-                auto btn = new DraggableButton(QString("B%1%2").arg(r).arg(c), grid);
-                grid->addButton(btn, r, c);
-            }
-        }
-
-
-
-*/
 }
 
 
