@@ -674,12 +674,13 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         const auto& o = oricoRows[r];
 
         // 1列目：Orico 日付
-        auto btnOricoDate = new DraggableButton(o.date, grid);
-        grid->addButton(btnOricoDate, r, 0);
-
+       // auto btnOricoDate = new DraggableButton(o.date, grid);
+        //grid->addButton(btnOricoDate, r, 0);
+        grid->addButton(o.date, r, 0);
         // 2列目：Orico 金額
         auto btnOricoKingaku = new DraggableButton(QString::number(o.kingaku)+":"+o.usePlace.left(10), grid);
-        grid->addButton(btnOricoKingaku, r, 1);
+       grid->addButton(btnOricoKingaku, r, 1);
+       // grid->addButton(QString::number(o.kingaku)+":"+o.usePlace.left(10), r, 1);
 
         // 3列目：一致する Kakeibo を探す
         bool found = false;
@@ -687,10 +688,11 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 
         for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
             const auto& k = kRows[kIdx];
-            if (k.kingaku == o.kingaku) {
+            if (k.kingaku == o.kingaku&&!matchFlg[kIdx]) {
                 QString text = QString::number(k.kingaku)+"("+k.date.toString("MM/dd")+"):"+ k.biko.left(6);
                 auto btnKakeibo = new DraggableButton(text, grid);
                 grid->addButton(btnKakeibo, r, 2);
+
                 found = true;
                 matchFlg[kIdx] = true;  // ここで正しいインデックスにフラグを立てる
                 break;  // 最初の1件だけ
@@ -703,8 +705,9 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
            // grid->addButton(btnEmpty, r, 2);
         }
     }
-    auto ttl = new DraggableButton(QString::number(total), grid);
-    grid->addButton(ttl, oricoRows.size(), 1);
+   // auto ttl = new DraggableButton(QString::number(total), grid);
+  //  grid->addButton(ttl, oricoRows.size(), 1);
+     grid->addButton(QString::number(total), oricoRows.size(), 1);
 
 
     // 一致しなかった kRows を下にまとめて表示

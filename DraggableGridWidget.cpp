@@ -24,6 +24,28 @@ void DraggableGridWidget::addButton(DraggableButton *btn, int row, int col)
     btn->show();
 }
 
+void DraggableGridWidget::addButton(QString text, int row, int col)
+{
+    QLabel* lbl = new QLabel(text, this);
+
+    // テキストが隠れないように
+    lbl->setAlignment(Qt::AlignCenter);     // 中央寄せ
+    lbl->setWordWrap(false);                // 折り返し禁止
+    lbl->setMargin(0);                      // 余計な余白削除
+    lbl->setFrameStyle(QFrame::NoFrame);    // 余計な枠無し
+
+    int minW = lbl->fontMetrics().horizontalAdvance(text) + 8; // 余裕を見て+8
+    int cellW = width() / m_cols;
+    int finalW = qMax(minW, cellW);
+
+    lbl->resize(finalW, cellH);
+    lbl->setMinimumWidth(finalW);
+    lbl->setAlignment(Qt::AlignCenter);
+    lbl->move(cellTopLeft(row, 8*col));
+    lbl->show();
+
+}
+
 QPoint DraggableGridWidget::cellTopLeft(int row, int col) const
 {
     int w = width() / m_cols;
@@ -90,8 +112,8 @@ void DraggableGridWidget::dropEvent(QDropEvent *event)
     stream >> fromRow >> fromCol;
 
     int cellW = width()/m_cols;
-    //int toCol = event->position().x() / cellW;
-    int toCol=fromCol;
+    int toCol = event->position().x() / cellW;
+    //int toCol=fromCol;
     int toRow = event->position().y() / cellH;
 
     auto *fromBtn = buttonAtCell(fromRow, fromCol);

@@ -1,6 +1,6 @@
 #pragma once
 #include <QWidget>
-
+#include <QLabel>
 class DraggableButton;
 
 class DraggableGridWidget : public QWidget
@@ -10,6 +10,7 @@ public:
     explicit DraggableGridWidget(int rows, int cols, QWidget *parent = nullptr);
 
     void addButton(DraggableButton *btn, int row, int col);
+    void addButton(QString text, int row, int col);
     DraggableButton* buttonAtCell(int row, int col) const;
     void clear();
 
