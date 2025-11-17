@@ -4,7 +4,7 @@
 #include <QVector>
 #include <QFile>
 #include <QTextStream>
-
+//#include <QTextCodec>
 struct OricoRowData {
     QString date;         // 利用日
     int kingaku;        // ご利用金額
@@ -45,29 +45,29 @@ inline QVector<OricoRowData> loadOricoCSV(const QString& filePath, int& total)
 {
     QVector<OricoRowData> list;
     QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!file.open(QIODevice::ReadOnly))
         return list;
 
-    QTextStream in(&file);
+    QByteArray data = file.readAll();  // バイナリとして読み込む
 
-    bool inDetail = false;
+    // Shift-JIS から QString に変換
+    QString content = QString::fromLocal8Bit(data);
+
+    QTextStream in(&content, QIODevice::ReadOnly);  // QTextStream の代わりに文字列を読む
     int rowCounter = 0;
-
+    bool inDetail = false;
 
     while (!in.atEnd()) {
-
         QString line = in.readLine();
 
-        //ご請求総額,"\61,523"
         if (line.startsWith("ご請求総額")) {
             QRegularExpression re("(\\d[\\d,]*)");
             QRegularExpressionMatch m = re.match(line);
-
             if (m.hasMatch()) {
-                QString num = m.captured(1); // "61,523"
-                num.remove(",");             // "61523"
+                QString num = m.captured(1);
+                num.remove(",");
                 total = num.toInt();
-                qDebug() << total;           // 61523
+                qDebug() << total;
             }
             continue;
         }
@@ -84,13 +84,11 @@ inline QVector<OricoRowData> loadOricoCSV(const QString& filePath, int& total)
         OricoRowData item;
         item.date = fields[0];
         item.usePlace = fields[1];
-        //item.kingaku = fields[8].remove("\\\",").toInt(); // 金額を int に変換
-        item.kingaku=extractKingaku(line).toInt();
-        item.payType = fields[6];                          // 支払区分など
+        item.kingaku = extractKingaku(line).toInt();
+        item.payType = fields[6];
         item.rowId = rowCounter++;
         list.append(item);
     }
-
 
     return list;
 }
