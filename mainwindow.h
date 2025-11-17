@@ -82,6 +82,12 @@ private slots:
 
     void on_actionimport_triggered();
 
+    void on_comboBox_8_currentIndexChanged(int index);
+
+    void on_comboBox_8_activated(int index);
+
+    void on_comboBox_8_currentTextChanged(const QString &arg1);
+
 private:
        Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
@@ -96,7 +102,7 @@ private:
     QDialog *dlg;
     void populateOricoGrid(DraggableGridWidget* grid,
                                        const QVector<KakeiboRowData>& kRows,
-                           const QVector<OricoRowData>& oricoRows);
+                           const QVector<OricoRowData>& oricoRows,int& total);
 };
 
 #endif // MAINWINDOW_H

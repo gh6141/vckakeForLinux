@@ -27,7 +27,7 @@ public:
         return model;
     }
     QVector<KakeiboRowData> getAllRows(const QDate& fromDate, const QDate& toDate,const int& tableNum) const;
-    QVector<KakeiboRowData> getAllRows() const;
+
 
 
 

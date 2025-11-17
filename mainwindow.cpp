@@ -107,17 +107,7 @@ MainWindow::MainWindow(QWidget *parent)
     himokuWidget.fillComboBox(ui->comboBox_6,"yomi");
     himokuWidget.fillComboBox(ui->comboBox_2,"yomi");
 
-    /*
-    ShiharaisakiComboWidget shiharaisakiWidget;
-    BikoComboWidget bikoWidget;
 
-    shiharaisakiWidget.fillComboBox(ui->comboBox_5,"yomi");
-    shiharaisakiWidget.fillComboBox(ui->comboBox_3,"yomi");
-
-    bikoWidget.fillComboBox(ui->comboBox_7,"yomi");
-    bikoWidget.fillComboBox(ui->comboBox_4,"yomi");
-    bikoWidget.fillComboBox(ui->comboBox_11,"yomi");
-*/
     comboTwoUpdate();
 
    // MainWindow::();
@@ -560,8 +550,8 @@ void MainWindow::on_checkBox_2_checkStateChanged(const Qt::CheckState &arg1)
 
 void MainWindow::on_actionimport_triggered()
 {
-    QDate fromDate(2025, 9, 1);
-    QDate toDate(2025, 11, 1);
+    QDate fromDate(2025, 7, 1);
+    QDate toDate(2025, 11, 30);
 
     KakeiboTable* kakeiboTable;
 
@@ -576,27 +566,16 @@ void MainWindow::on_actionimport_triggered()
         // ユーザーがキャンセルした場合は処理を中止
         return;
     }
-
-    QVector<OricoRowData> oricoRows = loadOricoCSV(filePath);
+    int total;
+    QVector<OricoRowData> oricoRows = loadOricoCSV(filePath,total);
 
     if (oricoRows.isEmpty()) {
         QMessageBox::warning(this, "CSV Error", filePath+":Orico CSV ファイルが存在しないか読み込めません");
         return;
     }
 
-    QVector<KakeiboRowData> kRows = kakeiboTable->getAllRows(fromDate, toDate,1);
-    if (kRows.isEmpty()) {
-        qDebug() << "指定期間内に家計簿データがありません:"
-                 << fromDate.toString("yyyy/MM/dd") << "〜" << toDate.toString("yyyy/MM/dd");
-    } else {
-        for (const auto &row : kRows) {
-            qDebug() << "日付:" << row.date.toString("yyyy/MM/dd")
-                     << "金額:" << row.kingaku
-                     << "費目:" << row.himoku
-                     << "支払先/備考:" << row.shiharaisaki << "/" << row.biko
-                     << "移動先ID:" << row.idosaki;
-        }
-    }
+    QVector<KakeiboRowData> kRows = kakeiboTable->getAllRows(fromDate, toDate,ckozanum);
+
 
     QDialog dlg(this);
     dlg.setWindowTitle("Draggable Grid");
@@ -613,7 +592,7 @@ void MainWindow::on_actionimport_triggered()
     vbox->addWidget(scrollArea);
 
     // ここで kRows と oricoRows を DraggableGrid に渡してボタン配置
-    populateOricoGrid(grid, kRows, oricoRows);
+    populateOricoGrid(grid, kRows, oricoRows,total);
 
        dlg.exec();
 
@@ -622,29 +601,62 @@ void MainWindow::on_actionimport_triggered()
 
 void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
                                    const QVector<KakeiboRowData>& kRows,
-                                   const QVector<OricoRowData>& oricoRows)
+                                   const QVector<OricoRowData>& oricoRows,
+                                   int& total
+                                   )
 {
-    int rows = kRows.size(); // 家計簿行数に合わせる
-    int cols = 3;            // 日付・家計簿・オリコ
 
     grid->clear(); // 既存ボタンを消すメソッドを追加しておくと安全
 
-    for (int r = 0; r < rows; ++r) {
-        // 1列目: 日付
-        auto btnDate = new DraggableButton(kRows[r].date.toString("yyyy/MM/dd"), grid);
-        grid->addButton(btnDate, r, 0);
+    for (int r = 0; r < oricoRows.size(); ++r)
+    {
+        const auto& o = oricoRows[r];
 
-        // 2列目: 家計簿金額
-        auto btnKakeibo = new DraggableButton(QString::number(kRows[r].kingaku), grid);
-        grid->addButton(btnKakeibo, r, 1);
+        // 1列目：Orico 日付
+        auto btnOricoDate = new DraggableButton(o.date, grid);
+        grid->addButton(btnOricoDate, r, 0);
 
-        // 3列目: オリコ金額一致のものを探す
-        for (const auto& o : oricoRows) {
-            if (o.kingaku == kRows[r].kingaku) {
-                auto btnOrico = new DraggableButton(QString::number(o.kingaku), grid);
-                grid->addButton(btnOrico, r, 2);
-                break;
+        // 2列目：Orico 金額
+        auto btnOricoKingaku = new DraggableButton(QString::number(o.kingaku)+":"+o.usePlace.left(5), grid);
+        grid->addButton(btnOricoKingaku, r, 1);
+
+        // 3列目：一致する Kakeibo を探す
+        bool found = false;
+        for (const auto& k : kRows) {
+            if (k.kingaku == o.kingaku) {
+                QString text = QString::number(k.kingaku)+":"+ k.biko.left(5);
+                auto btnKakeibo = new DraggableButton(text, grid);
+                grid->addButton(btnKakeibo, r, 2);
+                found = true;
+                break;  // 最初の1件だけ使用
             }
         }
+
+
+        // マッチしなかった場合：空欄 or "未一致"
+        if (!found) {
+           // auto btnEmpty = new DraggableButton("未一致", grid);
+           // grid->addButton(btnEmpty, r, 2);
+        }
     }
+    auto ttl = new DraggableButton(QString::number(total), grid);
+    grid->addButton(ttl, oricoRows.size(), 1);
 }
+
+void MainWindow::on_comboBox_8_currentIndexChanged(int index)
+{
+
+}
+
+
+void MainWindow::on_comboBox_8_activated(int index)
+{
+
+}
+
+
+void MainWindow::on_comboBox_8_currentTextChanged(const QString &arg1)
+{
+
+}
+

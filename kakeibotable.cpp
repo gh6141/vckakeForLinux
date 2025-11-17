@@ -241,31 +241,3 @@ QSqlTableModel* model = new QSqlTableModel(nullptr, QSqlDatabase::database());
 }
 
 
-
-QVector<KakeiboRowData> KakeiboTable::getAllRows() const
-{
-
-
-    QVector<KakeiboRowData> rows;
-    if (!model) return rows;
-
-    for (int r = 0; r < model->rowCount(); ++r) {
-        KakeiboRowData data;
-        data.date = QDate::fromString(model->data(model->index(r, 1)).toString(), "yyyy-MM-dd");
-        int shishutsu = model->data(model->index(r, 2)).toInt();
-        int shuunyuu  = model->data(model->index(r, 3)).toInt();
-        data.kingaku = shishutsu > 0 ? shishutsu : shuunyuu;
-
-        data.himoku = model->data(model->index(r, 5)).toString();
-        QString shiharaiBiko = model->data(model->index(r, 6)).toString();
-        QStringList parts = shiharaiBiko.split('/');
-        data.shiharaisaki = parts.value(0);
-        data.biko = parts.value(1);
-
-        data.idosaki = model->data(model->index(r, 7)).toInt();
-
-        rows.append(data);
-    }
-
-    return rows;
-}
