@@ -622,14 +622,11 @@ void MainWindow::on_actionimport_triggered()
     auto dates = getDateRangeFromUser(this);
 
     if (!dates.first.isValid() || !dates.second.isValid()) {
-        // キャンセルされた
-        return;
+         return;
     }
 
      fromDate = dates.first;
      toDate   = dates.second;
-
-   // KakeiboTable* kakeiboTable;
 
     QString filePath = QFileDialog::getOpenFileName(
         this,
@@ -639,7 +636,6 @@ void MainWindow::on_actionimport_triggered()
         );
 
     if (filePath.isEmpty()) {
-        // ユーザーがキャンセルした場合は処理を中止
         return;
     }
     int total;
@@ -650,8 +646,7 @@ void MainWindow::on_actionimport_triggered()
         return;
     }
 
-   // QVector<KakeiboRowData> kRows = kakeiboTable->getAllRows(fromDate, toDate,ckozanum);
-   QVector<KakeiboRowData> kRows = table->getAllRows(fromDate, toDate,ckozanum);
+    QVector<KakeiboRowData> kRows = table->getAllRows(fromDate, toDate,ckozanum);
 
     QDialog dlg(this);
     dlg.setWindowTitle("Draggable Grid");
@@ -668,13 +663,9 @@ void MainWindow::on_actionimport_triggered()
     vbox->addWidget(scrollArea);
     QPushButton* kosinBtn = new QPushButton("更新");
     vbox->addWidget(kosinBtn);
-    // スロットに接続
-   // connect(kosinBtn, &QPushButton::clicked, this, &MainWindow::onKosinClicked);
 
-    // ここで kRows と oricoRows を DraggableGrid に渡してボタン配置
     populateOricoGrid(grid, kRows, oricoRows,total);
-
-       dlg.exec();
+    dlg.exec();
 
 }
 
@@ -687,7 +678,6 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
                                    )
 {
 
-   // QVector<bool> matchFlg(kRows.size()+oricoRows.size()+1, false);  // size() 個の false を用意
     tmpOkV.resize(kRows.size() + oricoRows.size() + 1);
     grid->clear(); // 既存ボタンを消すメソッドを追加しておくと安全
 
@@ -700,9 +690,9 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         const auto& o = oricoRows[r];
         auto btnOricoKingaku = new DraggableButton(QString::number(o.kingaku)+"("+o.date+"):"+o.usePlace.left(10), grid);
         grid->addButton(btnOricoKingaku, r, 1);
-       // tmpOkV[kRows.size()+r].dbtn=btnOricoKingaku;
         tmpOkV[kRows.size()+r].ordata=o;
-        tmpOkV[kRows.size()+r].obtnX=1;
+        tmpOkV[kRows.size()+r].obtnX=1;  //o button
+        tmpOkV[kRows.size()+r].kbtnX=-1; //no apply
 
 
         // 2列目：kakeibo
@@ -712,16 +702,16 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
                 QString text = QString::number(k.kingaku)+"("+k.date.toString("MM/dd")+"):"+ k.biko.left(6);
                 auto btnKakeibo = new DraggableButton(text, grid);
                 grid->addButton(btnKakeibo, r, 1);
-                tmpOkV[kIdx].matchFlg=true;
+                tmpOkV[kIdx].matchFlg=true;   //k button
                 tmpOkV[kIdx].ordata=o;
-                tmpOkV[kIdx].obtnX=0;
-                tmpOkV[kIdx].kbtnX=1;
-                tmpOkV[kIdx].addFlg=false;
+                tmpOkV[kIdx].krdata=k;
+                tmpOkV[kIdx].obtnX=-1;  //no apply
+                tmpOkV[kIdx].kbtnX=1;  //k button
+
               //  一致ならボタンは左にある↓
                 grid->moveButton(btnOricoKingaku->row(), btnOricoKingaku->col(), r, 0);
-                tmpOkV[kRows.size()+r].obtnX=0;
-                tmpOkV[kRows.size()+r].kbtnX=1;
-                tmpOkV[kRows.size()+r].addFlg=false;//ociroをまるまる追加でなく調整
+                tmpOkV[kRows.size()+r].obtnX=0; //o button
+                tmpOkV[kRows.size()+r].kbtnX=-1; //no apply
                 break;  // 最初の1件だけ
             }
         }
@@ -748,50 +738,37 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 
     //集計チェック
     int kei=0;
-    QString sk="2日に変更:";
-    QString del="削除必要：";
-    for (int i = 0; i < oricoRows.size()+kRows.size()+1; ++i)
+    QString sk=" 2日に変更:";
+    QString del=" 削除必要：";
+    for (int i = 0; i < kRows.size(); ++i)
     {
-        if(tmpOkV[i].matchFlg){
-
+        if(tmpOkV[i].matchFlg){  //一致した分
             kei=kei+tmpOkV[i].krdata.kingaku;
-            //sk=sk+" "+QString::number(tmpOkV[i].ordata.kingaku);
-        }
-
-        if(!tmpOkV[i].matchFlg&&tmpOkV[i].obtnX==1&&tmpOkV[i].ordata.kingaku>0){
-            kei=kei+tmpOkV[i].ordata.kingaku;
-           //qDebug()<<tmpOkV[i].ordata.date;
-            QDate ordDate = QDate::fromString(tmpOkV[i].ordata.date, "yyyy-MM-dd");
-            if(ordDate<=toDate && ordDate>=fromDate){
-
-            }else{ //日付変更したもの
-              sk=sk+" "+QString::number(tmpOkV[i].ordata.kingaku)+":"+tmpOkV[i].ordata.usePlace;
-
-
-              tmpOkV[i].ordata.date=fromDate.toString("yyyy-MM-dd");
+        } else{
+            if(tmpOkV[i].kbtnX==0){
+                del=del+" "+QString::number(tmpOkV[i].krdata.kingaku)+":"+tmpOkV[i].krdata.biko;
             }
-
-            //db.add(ordata);//このようなメソッドをつくりたい
-            // DB に追加
-
-            tmpOkV[i].krdata.biko=tmpOkV[i].ordata.usePlace;
-            tmpOkV[i].krdata.date=fromDate;
-            tmpOkV[i].krdata.kingaku=tmpOkV[i].ordata.kingaku;
-
-
-            table->add(tmpOkV[i].krdata, true, ckozanum);  // knum は対象アカウント番号など
-
-
         }
-
-        if(tmpOkV[i].kbtnX==0&&tmpOkV[i].ordata.kingaku>0){
-            del=del+" "+QString::number(tmpOkV[i].krdata.kingaku)+":"+tmpOkV[i].krdata.biko;
-        }
-
-
-
     }
 
+    for (int r = 0; r < oricoRows.size(); ++r)
+    {
+        if(tmpOkV[kRows.size()+r].obtnX==1){  //追加分
+            kei=kei+tmpOkV[kRows.size()+r].ordata.kingaku;
+
+            QDate ordDate = QDate::fromString(tmpOkV[kRows.size()+r].ordata.date, "yyyy-MM-dd");
+            if(ordDate<=toDate && ordDate>=fromDate){
+                tmpOkV[kRows.size()+r].krdata.date=ordDate;
+            }else{ //日付変更したもの
+                sk=sk+" "+QString::number(tmpOkV[kRows.size()+r].ordata.kingaku)+":"+tmpOkV[kRows.size()+r].ordata.usePlace;
+                //tmpOkV[kRows.size()+r].ordata.date=fromDate.toString("yyyy-MM-dd");
+                tmpOkV[kRows.size()+r].krdata.date=fromDate;  //QDate
+            }
+            tmpOkV[kRows.size()+r].krdata.biko=tmpOkV[kRows.size()+r].ordata.usePlace;
+            tmpOkV[kRows.size()+r].krdata.kingaku=tmpOkV[kRows.size()+r].ordata.kingaku;
+            table->add(tmpOkV[kRows.size()+r].krdata, true, ckozanum);  // knum は対象アカウント番号など
+        }
+    }
 
 
     if(total==kei){
@@ -799,8 +776,6 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
     }else{
         QMessageBox::information(this, "集計結果", fromDate.toString()+"~"+toDate.toString()+"の結果は"+QString::number(kei)+"で一致しませんでした。"+QString::number(total)+"になるはずです。合計したいものが日付が範囲内にあるか、確認必要です。");
     }
-
-
 
 
 }
