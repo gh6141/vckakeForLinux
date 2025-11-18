@@ -244,4 +244,47 @@ QSqlTableModel* model = new QSqlTableModel(nullptr, QSqlDatabase::database());
     return rows;
 }
 
+bool KakeiboTable::add(const KakeiboRowData& data, bool sishutuFlg, int knum)
+{
+    if (!model) return false;
 
+    // テーブル名
+    QString tableName = QString("shishutunyu%1").arg(knum);
+
+    // 存在しなければ作成
+    ensureTableExists(tableName);
+    model->setTable(tableName);
+
+    int row = model->rowCount();
+    if (!model->insertRow(row)) return false;
+
+    // 日付
+    model->setData(model->index(row, 1), data.date.toString("yyyy-MM-dd"));
+
+    // 支出 or 収入
+    if (sishutuFlg) {
+        model->setData(model->index(row, 2), data.kingaku);
+        model->setData(model->index(row, 3), 0);
+    } else {
+        model->setData(model->index(row, 2), 0);
+        model->setData(model->index(row, 3), data.kingaku);
+    }
+
+    // 残高（あとで再計算する場合は 0）
+    model->setData(model->index(row, 4), 0);
+
+    // 費目・備考
+    model->setData(model->index(row, 5), data.himoku);
+    model->setData(model->index(row, 6), data.shiharaisaki + "/" + data.biko);
+
+    // 移動先（idosaki）
+    model->setData(model->index(row, 7), data.idosaki);
+
+    // DB に反映
+    if (!model->submitAll()) {
+        qDebug() << "Add failed:" << model->lastError();
+        return false;
+    }
+
+    return true;
+}

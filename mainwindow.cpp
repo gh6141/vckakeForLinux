@@ -629,7 +629,7 @@ void MainWindow::on_actionimport_triggered()
      fromDate = dates.first;
      toDate   = dates.second;
 
-    KakeiboTable* kakeiboTable;
+   // KakeiboTable* kakeiboTable;
 
     QString filePath = QFileDialog::getOpenFileName(
         this,
@@ -650,8 +650,8 @@ void MainWindow::on_actionimport_triggered()
         return;
     }
 
-    QVector<KakeiboRowData> kRows = kakeiboTable->getAllRows(fromDate, toDate,ckozanum);
-
+   // QVector<KakeiboRowData> kRows = kakeiboTable->getAllRows(fromDate, toDate,ckozanum);
+   QVector<KakeiboRowData> kRows = table->getAllRows(fromDate, toDate,ckozanum);
 
     QDialog dlg(this);
     dlg.setWindowTitle("Draggable Grid");
@@ -748,22 +748,46 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 
     //集計チェック
     int kei=0;
-   // QString sk="";
+    QString sk="2日に変更したもの:";
     for (int i = 0; i < oricoRows.size()+kRows.size()+1; ++i)
     {
         if(tmpOkV[i].matchFlg){
-            kei=kei+tmpOkV[i].ordata.kingaku;
+
+            kei=kei+tmpOkV[i].krdata.kingaku;
             //sk=sk+" "+QString::number(tmpOkV[i].ordata.kingaku);
         }
 
-        if(!tmpOkV[i].matchFlg&&tmpOkV[i].obtnX==1){
+        if(!tmpOkV[i].matchFlg&&tmpOkV[i].obtnX==1&&tmpOkV[i].ordata.kingaku>0){
             kei=kei+tmpOkV[i].ordata.kingaku;
-            //sk=sk+" "+QString::number(tmpOkV[i].ordata.kingaku);
+            QDate ordDate = QDate::fromString(tmpOkV[i].ordata.date, "yyyy/MM/dd");
+            if(ordDate<=toDate && ordDate>=fromDate){
+
+            }else{ //日付変更したもの
+              sk=sk+" "+QString::number(tmpOkV[i].ordata.kingaku)+":"+tmpOkV[i].ordata.usePlace;
+
+
+              tmpOkV[i].ordata.date=fromDate.toString("yyyy-MM-dd");
+            }
+
+            //db.add(ordata);//このようなメソッドをつくりたい
+            // DB に追加
+
+            tmpOkV[i].krdata.biko=tmpOkV[i].ordata.usePlace;
+            tmpOkV[i].krdata.date=fromDate;
+            tmpOkV[i].krdata.kingaku=tmpOkV[i].ordata.kingaku;
+
+
+            table->add(tmpOkV[i].krdata, true, ckozanum);  // knum は対象アカウント番号など
+
+
         }
 
     }
+
+
+
     if(total==kei){
-        QMessageBox::information(this, "集計結果", fromDate.toString()+"~"+toDate.toString()+"の結果は"+QString::number(kei)+"で、一致しました！!右にあるもので不足分を追加し、左にあるものは削除または日付を変更してください。");
+        QMessageBox::information(this, "集計結果", fromDate.toString()+"~"+toDate.toString()+"の結果は"+QString::number(kei)+"で、一致しました！!右にあるもので不足分を追加し、左にあるものは削除または日付を変更してください。日付変更データ："+sk);
     }else{
         QMessageBox::information(this, "集計結果", fromDate.toString()+"~"+toDate.toString()+"の結果は"+QString::number(kei)+"で一致しませんでした。"+QString::number(total)+"になるはずです。合計したいものが日付が範囲内にあるか、確認必要です。");
     }

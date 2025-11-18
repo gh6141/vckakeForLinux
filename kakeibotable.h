@@ -29,7 +29,7 @@ public:
     QVector<KakeiboRowData> getAllRows(const QDate& fromDate, const QDate& toDate,const int& tableNum) const;
 
 
-
+    bool add(const KakeiboRowData& data, bool sishutuFlg, int knum);
 
 public slots:
    // void addRowForCurrentAccount();
