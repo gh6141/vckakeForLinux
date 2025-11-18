@@ -58,13 +58,28 @@ void PopularCbx::updateComboBoxes(QComboBox* sender,const QList<QComboBox*>& tar
         }
 
         items.removeDuplicates();
+
+      /*  QString oldText = cb->currentText();  // 現在の文字を保存
+        cb->blockSignals(true);  // イベントを一時的に無効化
         cb->clear();
         cb->addItems(items);
+        cb->setCurrentText(oldText);  // 元の文字に戻す
+        cb->blockSignals(false);  // イベント再開*/
+        QString oldText = cb->currentText();
+        {
+            QSignalBlocker blocker(cb);  // ブロック開始
+            cb->clear();
+            cb->addItems(items);
+            cb->setCurrentText(oldText);
+        } // ブロック終了と同時に自動復帰
 
+        /*
         if (!currentText.isEmpty() && items.contains(currentText))
             cb->setCurrentText(currentText);
         else if (!items.isEmpty())
             cb->setCurrentIndex(0);
+        */
+        //cb->setCurrentIndex(-1);
     }
 }
 

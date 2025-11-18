@@ -108,9 +108,6 @@ void ComboRegisterHelper::onComboTextChanged(const QString &text)
     m_buttonCancel->setVisible(!exists);
 
     if(!exists){
-        // 自動で読みを設定（仮に全角カタカナなどの簡易変換）
-      //  combo->lineEdit()->setPlaceholderText("ここに入力");
-
         m_editFurigana->setText(cFurigana);
     }
 }

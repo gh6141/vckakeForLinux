@@ -88,6 +88,12 @@ private slots:
 
     void on_comboBox_8_currentTextChanged(const QString &arg1);
 
+    void on_comboBox_5_currentTextChanged(const QString &arg1);
+
+    void on_comboBox_6_editTextChanged(const QString &arg1);
+
+    void on_comboBox_6_currentTextChanged(const QString &arg1);
+
 private:
        Ui::MainWindow *ui;
     KakeiboTable *table;  // メンバとして保持
