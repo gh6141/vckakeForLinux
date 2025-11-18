@@ -6,7 +6,7 @@
 #include <QTextStream>
 //#include <QTextCodec>
 struct OricoRowData {
-    QString date;         // 利用日
+    QDate date;         // 利用日
     int kingaku;        // ご利用金額
     QString usePlace;   // ご利用先
     QString payType;    // 支払区分（任意）
@@ -91,7 +91,28 @@ inline QVector<OricoRowData> loadOricoCSV(const QString& filePath, int& total)
         if (fields.size() < 10) continue;
 
         OricoRowData item;
-        item.date = fields[0];
+
+        auto parseJapaneseDate = [](const QString& s)->QDate {
+            // 正規表現で「yyyy年m月d日」を抽出
+            QRegularExpression re(R"((\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日)");
+            QRegularExpressionMatch m = re.match(s);
+
+            if (m.hasMatch()) {
+                int y = m.captured(1).toInt();
+                int mo = m.captured(2).toInt();
+                int d = m.captured(3).toInt();
+                return QDate(y, mo, d);
+            }
+
+            // フォールバック（スラッシュ区切りやハイフンにも対応）
+            QDate dt = QDate::fromString(s, "yyyy/MM/dd");
+            if (dt.isValid()) return dt;
+
+            dt = QDate::fromString(s, "yyyy-MM-dd");
+            return dt;
+        };
+
+        item.date = parseJapaneseDate(fields[0]);
         item.usePlace = fields[1];
         item.kingaku = extractKingaku(line).toInt();
         item.payType = fields[6];

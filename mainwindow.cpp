@@ -679,6 +679,14 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 {
 
     tmpOkV.resize(kRows.size() + oricoRows.size() + 1);
+    // 処理前に tmpOkV を初期化
+    for (auto &t : tmpOkV) {
+        t.matchFlg = false;
+        t.obtnX = -1;
+        t.kbtnX = -1;
+        t.addFlg = false;
+    }
+
     grid->clear(); // 既存ボタンを消すメソッドを追加しておくと安全
 
     for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
@@ -688,7 +696,7 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
     for (int r = 0; r < oricoRows.size(); ++r)
     {
         const auto& o = oricoRows[r];
-        auto btnOricoKingaku = new DraggableButton(QString::number(o.kingaku)+"("+o.date+"):"+o.usePlace.left(10), grid);
+        auto btnOricoKingaku = new DraggableButton(QString::number(o.kingaku)+"("+o.date.toString("mm/dd")+"):"+o.usePlace.left(10), grid);
         grid->addButton(btnOricoKingaku, r, 1);
         tmpOkV[kRows.size()+r].ordata=o;
         tmpOkV[kRows.size()+r].obtnX=1;  //o button
@@ -698,11 +706,12 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         // 2列目：kakeibo
         for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
             const auto& k = kRows[kIdx];
-            if (k.kingaku == o.kingaku&&!tmpOkV[kIdx].matchFlg) {
+            if (k.kingaku == o.kingaku&&!tmpOkV[kIdx].matchFlg&&!tmpOkV[kRows.size()+r].matchFlg) {
                 QString text = QString::number(k.kingaku)+"("+k.date.toString("MM/dd")+"):"+ k.biko.left(6);
                 auto btnKakeibo = new DraggableButton(text, grid);
                 grid->addButton(btnKakeibo, r, 1);
                 tmpOkV[kIdx].matchFlg=true;   //k button
+                tmpOkV[kRows.size()+r].matchFlg=true;
                 tmpOkV[kIdx].ordata=o;
                 tmpOkV[kIdx].krdata=k;
                 tmpOkV[kIdx].obtnX=-1;  //no apply
@@ -756,12 +765,11 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         if(tmpOkV[kRows.size()+r].obtnX==1){  //追加分
             kei=kei+tmpOkV[kRows.size()+r].ordata.kingaku;
 
-            QDate ordDate = QDate::fromString(tmpOkV[kRows.size()+r].ordata.date, "yyyy-MM-dd");
+            QDate ordDate = tmpOkV[kRows.size()+r].ordata.date;
             if(ordDate<=toDate && ordDate>=fromDate){
                 tmpOkV[kRows.size()+r].krdata.date=ordDate;
             }else{ //日付変更したもの
                 sk=sk+" "+QString::number(tmpOkV[kRows.size()+r].ordata.kingaku)+":"+tmpOkV[kRows.size()+r].ordata.usePlace;
-                //tmpOkV[kRows.size()+r].ordata.date=fromDate.toString("yyyy-MM-dd");
                 tmpOkV[kRows.size()+r].krdata.date=fromDate;  //QDate
             }
             tmpOkV[kRows.size()+r].krdata.biko=tmpOkV[kRows.size()+r].ordata.usePlace;
