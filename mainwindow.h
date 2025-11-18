@@ -104,6 +104,9 @@ private slots:
     void on_comboBox_6_editTextChanged(const QString &arg1);
 
     void on_comboBox_6_currentTextChanged(const QString &arg1);
+    void onKosinClicked(DraggableGridWidget* grid,
+                        const QVector<KakeiboRowData>& kRows,
+                        const QVector<OricoRowData>& oricoRows,int& total);
 
 private:
        Ui::MainWindow *ui;
@@ -124,6 +127,8 @@ private:
     tmpOricoKake *tmpOk;
     KakeiboRowData *krdata;
     OricoRowData *ordata;
+    QDate fromDate;
+    QDate toDate;
 };
 
 #endif // MAINWINDOW_H

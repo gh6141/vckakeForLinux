@@ -42,7 +42,8 @@ QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr) {
     // From
     QHBoxLayout* fromLayout = new QHBoxLayout;
     fromLayout->addWidget(new QLabel("開始日:"));
-    QDateEdit* fromEdit = new QDateEdit(firstOfLastMonth);
+    QDate sndOfLastMonth= QDate(today.year(), today.month(), 2).addMonths(-1);
+    QDateEdit* fromEdit = new QDateEdit(sndOfLastMonth);
     fromEdit->setCalendarPopup(true);
     fromLayout->addWidget(fromEdit);
     mainLayout->addLayout(fromLayout);
@@ -50,7 +51,11 @@ QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr) {
     // To
     QHBoxLayout* toLayout = new QHBoxLayout;
     toLayout->addWidget(new QLabel("終了日:"));
-    QDateEdit* toEdit = new QDateEdit(today);
+
+    // 前月末日
+    QDate lastOfLastMonth = firstOfLastMonth.addMonths(1).addDays(-1);
+
+    QDateEdit* toEdit = new QDateEdit(lastOfLastMonth);
     toEdit->setCalendarPopup(true);
     toLayout->addWidget(toEdit);
     mainLayout->addLayout(toLayout);
@@ -621,8 +626,8 @@ void MainWindow::on_actionimport_triggered()
         return;
     }
 
-    QDate fromDate = dates.first;
-    QDate toDate   = dates.second;
+     fromDate = dates.first;
+     toDate   = dates.second;
 
     KakeiboTable* kakeiboTable;
 
@@ -661,6 +666,10 @@ void MainWindow::on_actionimport_triggered()
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     QVBoxLayout *vbox = new QVBoxLayout(&dlg); // ✅ dlg にレイアウトを設定
     vbox->addWidget(scrollArea);
+    QPushButton* kosinBtn = new QPushButton("更新");
+    vbox->addWidget(kosinBtn);
+    // スロットに接続
+   // connect(kosinBtn, &QPushButton::clicked, this, &MainWindow::onKosinClicked);
 
     // ここで kRows と oricoRows を DraggableGrid に渡してボタン配置
     populateOricoGrid(grid, kRows, oricoRows,total);
@@ -668,6 +677,7 @@ void MainWindow::on_actionimport_triggered()
        dlg.exec();
 
 }
+
 
 
 void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
@@ -752,7 +762,11 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         }
 
     }
-    qDebug()<<kei;
+    if(total==kei){
+        QMessageBox::information(this, "集計結果", fromDate.toString()+"~"+toDate.toString()+"の結果は"+QString::number(kei)+"で、一致しました！!右にあるもので不足分を追加し、左にあるものは削除または日付を変更してください。");
+    }else{
+        QMessageBox::information(this, "集計結果", fromDate.toString()+"~"+toDate.toString()+"の結果は"+QString::number(kei)+"で一致しませんでした。"+QString::number(total)+"になるはずです。合計したいものが日付が範囲内にあるか、確認必要です。");
+    }
 
 
 
