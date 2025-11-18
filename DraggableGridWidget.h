@@ -13,6 +13,8 @@ public:
     void addButton(QString text, int row, int col);
     DraggableButton* buttonAtCell(int row, int col) const;
     void clear();
+    bool moveButton(int fromRow, int fromCol, int toRow, int toCol);
+
 
 protected:
     void paintEvent(QPaintEvent *event) override;

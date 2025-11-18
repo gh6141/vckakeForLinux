@@ -681,29 +681,44 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
     tmpOkV.resize(kRows.size() + oricoRows.size() + 1);
     grid->clear(); // 既存ボタンを消すメソッドを追加しておくと安全
 
+    for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
+        tmpOkV[kIdx].krdata=kRows[kIdx];
+    }
+
     for (int r = 0; r < oricoRows.size(); ++r)
     {
         const auto& o = oricoRows[r];
         auto btnOricoKingaku = new DraggableButton(QString::number(o.kingaku)+"("+o.date+"):"+o.usePlace.left(10), grid);
-        grid->addButton(btnOricoKingaku, r, 0);
+        grid->addButton(btnOricoKingaku, r, 1);
+       // tmpOkV[kRows.size()+r].dbtn=btnOricoKingaku;
+        tmpOkV[kRows.size()+r].ordata=o;
+        tmpOkV[kRows.size()+r].obtnX=1;
+
 
         // 2列目：kakeibo
-        bool found = false;
         for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
             const auto& k = kRows[kIdx];
             if (k.kingaku == o.kingaku&&!tmpOkV[kIdx].matchFlg) {
                 QString text = QString::number(k.kingaku)+"("+k.date.toString("MM/dd")+"):"+ k.biko.left(6);
                 auto btnKakeibo = new DraggableButton(text, grid);
                 grid->addButton(btnKakeibo, r, 1);
-                found = true;
-                //matchFlg[kIdx] = true;  // ここで正しいインデックスにフラグを立てる
                 tmpOkV[kIdx].matchFlg=true;
+                tmpOkV[kIdx].ordata=o;
+                tmpOkV[kIdx].obtnX=0;
+                tmpOkV[kIdx].kbtnX=1;
+                tmpOkV[kIdx].addFlg=false;
+              //  一致ならボタンは左にある↓
+                grid->moveButton(btnOricoKingaku->row(), btnOricoKingaku->col(), r, 0);
+                tmpOkV[kRows.size()+r].obtnX=0;
+                tmpOkV[kRows.size()+r].kbtnX=1;
+                tmpOkV[kRows.size()+r].addFlg=false;//ociroをまるまる追加でなく調整
                 break;  // 最初の1件だけ
             }
         }
 
-
     }
+
+
 
      grid->addButton(QString::number(total), oricoRows.size(), 0);
 
@@ -714,10 +729,31 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
             const auto& k = kRows[kIdx];
             QString text = QString::number(k.kingaku)+"("+k.date.toString("MM/dd")+"):"+ k.biko.left(6);
             auto btnKakeibo = new DraggableButton(text, grid);
-            grid->addButton(btnKakeibo, offset, 1);
+            grid->addButton(btnKakeibo, offset, 0);
             offset++;  // 次の行にずらす
+
         }
     }
+
+
+    //集計チェック
+    int kei=0;
+   // QString sk="";
+    for (int i = 0; i < oricoRows.size()+kRows.size()+1; ++i)
+    {
+        if(tmpOkV[i].matchFlg){
+            kei=kei+tmpOkV[i].ordata.kingaku;
+            //sk=sk+" "+QString::number(tmpOkV[i].ordata.kingaku);
+        }
+
+        if(!tmpOkV[i].matchFlg&&tmpOkV[i].obtnX==1){
+            kei=kei+tmpOkV[i].ordata.kingaku;
+            //sk=sk+" "+QString::number(tmpOkV[i].ordata.kingaku);
+        }
+
+    }
+    qDebug()<<kei;
+
 
 
 

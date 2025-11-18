@@ -145,3 +145,13 @@ void DraggableGridWidget::clear()
         delete btn;     // メモリ解放
     }
 }
+
+bool DraggableGridWidget::moveButton(int fromRow, int fromCol, int toRow, int toCol)
+{
+    auto* btn = buttonAtCell(fromRow, fromCol);
+    if (!btn) return false;
+
+    btn->setCell(toRow, toCol);
+    btn->move(cellTopLeft(toRow, toCol));
+    return true;
+}

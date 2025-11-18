@@ -20,6 +20,11 @@ class MainWindow;
 
 struct tmpOricoKake{
     bool matchFlg = false;  // デフォルト値 false
+    KakeiboRowData krdata;
+    OricoRowData ordata;
+    bool addFlg=true; //ディフォルトでOrico追加　falseは一致したとき追加でなく調整
+    int obtnX=1;//オリコボタン　右がディフォルト　追加状態
+    int kbtnX=0;//家計簿データ　左がディフォルト　追加しない状態
 };
 
 class MainWindow : public QMainWindow
@@ -117,6 +122,8 @@ private:
                                        const QVector<KakeiboRowData>& kRows,
                            const QVector<OricoRowData>& oricoRows,int& total);
     tmpOricoKake *tmpOk;
+    KakeiboRowData *krdata;
+    OricoRowData *ordata;
 };
 
 #endif // MAINWINDOW_H
