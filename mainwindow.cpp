@@ -760,7 +760,7 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 
         if(!tmpOkV[i].matchFlg&&tmpOkV[i].obtnX==1&&tmpOkV[i].ordata.kingaku>0){
             kei=kei+tmpOkV[i].ordata.kingaku;
-           qDebug()<<tmpOkV[i].ordata.date;
+           //qDebug()<<tmpOkV[i].ordata.date;
             QDate ordDate = QDate::fromString(tmpOkV[i].ordata.date, "yyyy-MM-dd");
             if(ordDate<=toDate && ordDate>=fromDate){
 
