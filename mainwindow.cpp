@@ -748,7 +748,8 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 
     //集計チェック
     int kei=0;
-    QString sk="2日に変更したもの:";
+    QString sk="2日に変更:";
+    QString del="削除必要：";
     for (int i = 0; i < oricoRows.size()+kRows.size()+1; ++i)
     {
         if(tmpOkV[i].matchFlg){
@@ -782,12 +783,18 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 
         }
 
+        if(tmpOkV[i].kbtnX==0&&tmpOkV[i].ordata.kingaku>0){
+            del=del+" "+QString::number(tmpOkV[i].krdata.kingaku)+":"+tmpOkV[i].krdata.biko;
+        }
+
+
+
     }
 
 
 
     if(total==kei){
-        QMessageBox::information(this, "集計結果", fromDate.toString()+"~"+toDate.toString()+"の結果は"+QString::number(kei)+"で、一致しました！!右にあるもので不足分を追加し、左にあるものは削除または日付を変更してください。日付変更データ："+sk);
+        QMessageBox::information(this, "集計結果", fromDate.toString()+"~"+toDate.toString()+"の結果は"+QString::number(kei)+"で、一致しました！! "+sk+del);
     }else{
         QMessageBox::information(this, "集計結果", fromDate.toString()+"~"+toDate.toString()+"の結果は"+QString::number(kei)+"で一致しませんでした。"+QString::number(total)+"になるはずです。合計したいものが日付が範囲内にあるか、確認必要です。");
     }
