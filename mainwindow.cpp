@@ -90,6 +90,10 @@ MainWindow::MainWindow(QWidget *parent)
     table = new KakeiboTable(); // 親は addWidget() で設定されるので不要
     //ui->centralwidget->layout()->addWidget(table);
     QVBoxLayout *vbox = qobject_cast<QVBoxLayout*>(ui->centralwidget->layout());
+
+    updateButton = new QPushButton("再表示", this);
+    updateButton->setFixedWidth(100);
+
     // 削除ボタン作成
     deleteButton = new QPushButton("削除", this);
     deleteButton->setFixedWidth(80);
@@ -97,8 +101,10 @@ MainWindow::MainWindow(QWidget *parent)
     // 横レイアウト作成（右端に寄せる）
     QHBoxLayout *hbox = new QHBoxLayout;
     hbox->addStretch();                  // 左側を伸ばす
+    hbox->addWidget(updateButton);
     hbox->addWidget(deleteButton);       // 右端にボタン
     hbox->setAlignment(deleteButton, Qt::AlignRight);
+    hbox->setAlignment(deleteButton, Qt::AlignLeft);
     hbox->setContentsMargins(0, 0, 10, 0);
     if (vbox) {
         vbox->insertWidget(0, table);  // 👈 一番上（index=0）に挿入
@@ -141,10 +147,16 @@ MainWindow::MainWindow(QWidget *parent)
                 // --- 元のテーブルの行を削除 ---
                 model->removeRow(idx.row());
             }
+
             table->getmodel()->submitAll(); // 元テーブルの変更確定
             table->loadTable(ckozanum);
 
 
+        });
+
+        connect(updateButton, &QPushButton::clicked, this, [this]() {
+
+               table->loadTable(ckozanum);
         });
     }
 
@@ -665,8 +677,8 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
                                    )
 {
 
-    QVector<bool> matchFlg(kRows.size(), false);  // size() 個の false を用意
-
+   // QVector<bool> matchFlg(kRows.size()+oricoRows.size()+1, false);  // size() 個の false を用意
+    tmpOkV.resize(kRows.size() + oricoRows.size() + 1);
     grid->clear(); // 既存ボタンを消すメソッドを追加しておくと安全
 
     for (int r = 0; r < oricoRows.size(); ++r)
@@ -688,13 +700,14 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 
         for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
             const auto& k = kRows[kIdx];
-            if (k.kingaku == o.kingaku&&!matchFlg[kIdx]) {
+            if (k.kingaku == o.kingaku&&!tmpOkV[kIdx].matchFlg) {
                 QString text = QString::number(k.kingaku)+"("+k.date.toString("MM/dd")+"):"+ k.biko.left(6);
                 auto btnKakeibo = new DraggableButton(text, grid);
                 grid->addButton(btnKakeibo, r, 2);
 
                 found = true;
-                matchFlg[kIdx] = true;  // ここで正しいインデックスにフラグを立てる
+                //matchFlg[kIdx] = true;  // ここで正しいインデックスにフラグを立てる
+                tmpOkV[kIdx].matchFlg=true;
                 break;  // 最初の1件だけ
             }
         }
@@ -713,7 +726,7 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
     // 一致しなかった kRows を下にまとめて表示
     int offset = oricoRows.size()+1;
     for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
-        if (!matchFlg[kIdx]) {
+        if (!tmpOkV[kIdx].matchFlg) {
             const auto& k = kRows[kIdx];
             QString text = QString::number(k.kingaku)+"("+k.date.toString("MM/dd")+"):"+ k.biko.left(6);
             auto btnKakeibo = new DraggableButton(text, grid);

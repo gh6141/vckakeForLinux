@@ -196,6 +196,10 @@ void KakeiboTable::recalculateBalances()
 {
     if (!model) return;
 
+    // 日付列（例: 1列目）で昇順ソート
+    model->setSort(1, Qt::AscendingOrder);
+    model->select(); // ソート反映
+
     double currentBalance = 0.0;
 
     // モデルの全行をループ

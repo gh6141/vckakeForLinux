@@ -49,9 +49,18 @@ inline QVector<OricoRowData> loadOricoCSV(const QString& filePath, int& total)
         return list;
 
     QByteArray data = file.readAll();  // バイナリとして読み込む
+    QString content ="";
 
-    // Shift-JIS から QString に変換
-    QString content = QString::fromLocal8Bit(data);
+    // まず UTF-8 で試す
+    {
+        QStringDecoder decoder(QStringDecoder::Utf8);
+        content = decoder.decode(data);
+    }
+
+    // UTF-8 が怪しい場合は Shift-JIS で再読み込み
+    if (content.isEmpty() || content.contains(QChar::ReplacementCharacter)) {
+        content = QString::fromLocal8Bit(data);
+    }
 
     QTextStream in(&content, QIODevice::ReadOnly);  // QTextStream の代わりに文字列を読む
     int rowCounter = 0;

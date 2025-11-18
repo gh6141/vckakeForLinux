@@ -17,6 +17,11 @@ namespace Ui {
 class MainWindow;
 }
 
+
+struct tmpOricoKake{
+    bool matchFlg = false;  // デフォルト値 false
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -34,6 +39,7 @@ public:
     Ui::MainWindow* getUi() { return ui; }
     QList<ThreeRelationShip> loadThreeRelationList();
     QList<ThreeRelationShip> ssnLtrs;
+    QVector<tmpOricoKake> tmpOkV;
 
 private slots:
     void on_actionkozaEdit_triggered();
@@ -99,6 +105,7 @@ private:
     KakeiboTable *table;  // メンバとして保持
     KakeiboTable *dst_table;
     QPushButton *deleteButton = nullptr;
+    QPushButton *updateButton=nullptr;
     ComboRegisterHelper *cbh1_payee,*cbh1_biko;
     ComboRegisterHelper *cbh2_payee,*cbh2_biko;
 
@@ -109,6 +116,7 @@ private:
     void populateOricoGrid(DraggableGridWidget* grid,
                                        const QVector<KakeiboRowData>& kRows,
                            const QVector<OricoRowData>& oricoRows,int& total);
+    tmpOricoKake *tmpOk;
 };
 
 #endif // MAINWINDOW_H
