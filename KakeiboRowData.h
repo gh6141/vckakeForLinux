@@ -4,7 +4,7 @@
 
 struct KakeiboRowData {
     QDate date;
-    int kingaku;
+    int kingaku=0;
     QString himoku;
     QString shiharaisaki;
     QString biko;

@@ -820,31 +820,25 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
 
         // 両方ある → マッチしている
         if (left && right)
-        {
-            auto odata = left->oricoData();
-            auto kdata = right->kakeiboData();
-
-            qDebug() << "MATCH row" << r
-                     << "金額" << odata.kingaku
-                     << "日付" << odata.date
-                     << "備考" << kdata.biko;
-
+        {           
             // ★ここでDB更新★
             // updateKakeibo(odata, kdata);
         }
         else if (left && !right)
         {
-            // Orico だけ → 未マッチ
-            auto odata = left->oricoData();
-            qDebug() << "Orico only row" << r << odata.kingaku;
+            int okingaku=left->oricoData().kingaku;
+            int kkingaku=left->kakeiboData().kingaku;
+            if(okingaku==0){
+                qDebug() << r<< ":Kakeibo only row(del)" << "od" << kkingaku;
+            }else{
+                qDebug() << r<<":ryoho " << "od" << okingaku<<"   kd "<<kkingaku;
+            }
 
-            // 必要に応じてDB処理
+
         }
         else if (!left && right)
         {
-            // Kakeibo だけ → 単独
-            auto kdata = right->kakeiboData();
-            qDebug() << "Kakeibo only row" << r << kdata.kingaku;
+            qDebug() << r<<":orico only row(add)" <<" od_ok"<<right->oricoData().kingaku;
         }
     }
 

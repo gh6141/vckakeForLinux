@@ -9,7 +9,7 @@
 
 struct OricoRowData {
     QDate date;         // 利用日
-    int kingaku;        // ご利用金額
+    int kingaku=0;        // ご利用金額
     QString usePlace;   // ご利用先
     QString payType;    // 支払区分（任意）
     int rowId;          // CSV行番号など
