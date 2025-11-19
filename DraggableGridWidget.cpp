@@ -158,12 +158,21 @@ bool DraggableGridWidget::moveButton(int fromRow, int fromCol,
         // cell 情報を更新
         fromBtn->setCell(toRow, toCol);
         toBtn->setCell(fromRow, fromCol);
+
+        btnMap.remove(qMakePair(fromRow, fromCol));
+        btnMap.remove(qMakePair(toRow,   toCol));
+
+         btnMap[qMakePair(toRow, toCol)] = fromBtn;
+         btnMap[qMakePair(fromRow, fromCol)] = toBtn;
     }
     // 空セルへの移動
     else {
         QPoint posTo = cellTopLeft(toRow, toCol);
         fromBtn->move(posTo);
         fromBtn->setCell(toRow, toCol);
+
+         btnMap.remove(qMakePair(fromRow, fromCol));
+         btnMap[qMakePair(toRow, toCol)] = fromBtn;
     }
 
     return true;

@@ -756,7 +756,7 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
                 updateTmpL(left->row(), left->col(), c, 1);
 
 
-                // 家計簿ボタンを右列に、Oricoを左列に
+                //Oricoを左列に 家計簿を上右に　left_row:r   right_row:c
                 grid->moveButton(right->row(), right->col(), c, 0);
                 grid->moveButton(left->row(), left->col(), c, 1);
 
@@ -865,6 +865,48 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
 
         }
     }
+
+
+    //button widgetでも確認*******************************************
+    qDebug()<<"by buttoWidget";
+
+    int rows = grid->rowCount();
+    int cols = grid->colCount();
+
+    // 例：格子上のボタン配置を走査して、対応を取得する
+    for (int r = 0; r < rows; ++r)
+    {
+        DraggableButton* left  = grid->buttonAt(r, 0); // Orico
+        DraggableButton* right = grid->buttonAt(r, 1); // Kakeibo
+
+        if (!left && !right) continue;
+
+        // 両方ある → マッチしている
+        if (left && right)
+        {
+            auto odata = left->oricoData();
+            auto kdata = right->kakeiboData();
+       qDebug() << "MATCH row" << r << "金額" << odata.kingaku  << "日付" << odata.date << "備考" << kdata.biko;
+
+            // ★ここでDB更新★
+            // updateKakeibo(odata, kdata);
+        }
+        else if (left && !right)
+        {
+            qDebug() << "kakeibo only row(dateUpdate for del)" << r << left->kakeiboData().kingaku;
+
+            // 必要に応じてDB処理
+        }
+        else if (!left && right)
+        {
+
+            qDebug() << "orico only row(add or dateUpdate)" << r << right->oricoData().kingaku;
+        }
+    }
+
+
+
+
 
 
     qDebug() << "onKosinClicked completed.";
