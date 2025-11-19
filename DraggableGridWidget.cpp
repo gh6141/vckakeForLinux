@@ -22,10 +22,13 @@ void DraggableGridWidget::addButton(DraggableButton *btn, int row, int col)
     btn->resize(width()/m_cols, cellH);
     btn->move(cellTopLeft(row, col));
     btn->show();
+
+    btnMap[qMakePair(row, col)] = btn;
+
 }
 
 void DraggableGridWidget::addButton(QString text, int row, int col)
-{
+{ //実際はボタンでなく固定のテキストのみ配置　位置は調整必要
     QLabel* lbl = new QLabel(text, this);
 
     // テキストが隠れないように
@@ -103,7 +106,8 @@ void DraggableGridWidget::dragMoveEvent(QDragMoveEvent *event)
 
 void DraggableGridWidget::dropEvent(QDropEvent *event)
 {
-    if (!event->mimeData()->hasFormat("application/x-griditem")) return;
+    if (!event->mimeData()->hasFormat("application/x-griditem"))
+        return;
 
     QByteArray data = event->mimeData()->data("application/x-griditem");
     QDataStream stream(&data, QIODevice::ReadOnly);
@@ -111,28 +115,71 @@ void DraggableGridWidget::dropEvent(QDropEvent *event)
     int fromRow, fromCol;
     stream >> fromRow >> fromCol;
 
-    int cellW = width()/m_cols;
+    int cellW = width()  / m_cols;
+    int cellH = height() / m_rows;
+
     int toCol = event->position().x() / cellW;
-    //int toCol=fromCol;
     int toRow = event->position().y() / cellH;
 
+    moveButton(fromRow, fromCol, toRow, toCol);
+
+    event->acceptProposedAction();
+
+
+
+}
+
+
+DraggableButton* DraggableGridWidget::buttonAt(int row, int col) const
+{
+    auto key = qMakePair(row, col);
+    if (btnMap.contains(key)) {
+        return btnMap[key];
+    }
+    return nullptr;
+}
+
+bool DraggableGridWidget::moveButton(int fromRow, int fromCol,
+                                     int toRow,   int toCol)
+{
     auto *fromBtn = buttonAtCell(fromRow, fromCol);
-    auto *toBtn   = buttonAtCell(toRow, toCol);
+    if (!fromBtn) return false;
 
-    if (!fromBtn) return;
+    auto *toBtn = buttonAtCell(toRow, toCol);
 
+    // スワップ
     if (toBtn) {
-        fromBtn->move(cellTopLeft(toRow, toCol));
-        toBtn->move(cellTopLeft(fromRow, fromCol));
+        QPoint posFrom = cellTopLeft(fromRow, fromCol);
+        QPoint posTo   = cellTopLeft(toRow,   toCol);
+
+        fromBtn->move(posTo);
+        toBtn->move(posFrom);
+
+        // cell 情報を更新
         fromBtn->setCell(toRow, toCol);
         toBtn->setCell(fromRow, fromCol);
-    } else {
-        fromBtn->move(cellTopLeft(toRow, toCol));
+    }
+    // 空セルへの移動
+    else {
+        QPoint posTo = cellTopLeft(toRow, toCol);
+        fromBtn->move(posTo);
         fromBtn->setCell(toRow, toCol);
     }
 
-    event->acceptProposedAction();
+    return true;
 }
+
+/*
+bool DraggableGridWidget::moveButton(int fromRow, int fromCol, int toRow, int toCol)
+{
+    auto* btn = buttonAtCell(fromRow, fromCol);
+    if (!btn) return false;
+
+    btn->setCell(toRow, toCol);
+    btn->move(cellTopLeft(toRow, toCol));
+    return true;
+}
+*/
 
 
 void DraggableGridWidget::clear()
@@ -144,14 +191,4 @@ void DraggableGridWidget::clear()
         btn->setParent(nullptr); // QWidget から切り離す
         delete btn;     // メモリ解放
     }
-}
-
-bool DraggableGridWidget::moveButton(int fromRow, int fromCol, int toRow, int toCol)
-{
-    auto* btn = buttonAtCell(fromRow, fromCol);
-    if (!btn) return false;
-
-    btn->setCell(toRow, toCol);
-    btn->move(cellTopLeft(toRow, toCol));
-    return true;
 }

@@ -105,8 +105,9 @@ private slots:
 
     void on_comboBox_6_currentTextChanged(const QString &arg1);
     void onKosinClicked(DraggableGridWidget* grid,
-                        const QVector<KakeiboRowData>& kRows,
-                        const QVector<OricoRowData>& oricoRows,int& total);
+                        const QList<KakeiboRowData>& kRows,
+                        const QList<OricoRowData>& oRows,
+                        int& mode);
 
 private:
        Ui::MainWindow *ui;

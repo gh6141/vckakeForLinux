@@ -14,7 +14,9 @@ public:
     DraggableButton* buttonAtCell(int row, int col) const;
     void clear();
     bool moveButton(int fromRow, int fromCol, int toRow, int toCol);
-
+    DraggableButton* buttonAt(int row, int col) const;
+    int rowCount() const { return m_rows; }
+    int colCount() const { return m_cols; }
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -30,5 +32,6 @@ private:
     int m_rows;
     int m_cols;
     const int cellH = 50; // 固定セル高さ
+    QMap<QPair<int,int>, DraggableButton*> btnMap;
 };
 

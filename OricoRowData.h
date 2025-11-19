@@ -5,6 +5,8 @@
 #include <QFile>
 #include <QTextStream>
 //#include <QTextCodec>
+#include <QRegularExpression>
+
 struct OricoRowData {
     QDate date;         // 利用日
     int kingaku;        // ご利用金額
