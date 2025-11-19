@@ -665,6 +665,13 @@ void MainWindow::on_actionimport_triggered()
     vbox->addWidget(kosinBtn);
 
     populateOricoGrid(grid, kRows, oricoRows,total);
+
+    connect(kosinBtn, &QPushButton::clicked,
+           this,
+           [this, grid, kRows, oricoRows, &total]() {
+               onKosinClicked(grid, kRows, oricoRows, total);
+           });
+
     dlg.exec();
 
 }
