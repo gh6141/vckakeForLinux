@@ -846,6 +846,7 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
 {
     qDebug() << "onKosinClicked called. mode=" << mode;
 
+    //cButtonLによるチェックは不要になる。下のButtonによる処理がOkなったため。
     for (auto& tmp : cButtonL) {
         if (tmp.dtKind == 0) { // Kakeibo
             // tmp.krdata や tmp.x, tmp.y を使った処理
@@ -886,21 +887,21 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
         {
             auto odata = left->oricoData();
             auto kdata = right->kakeiboData();
-       qDebug() << "MATCH row" << r << "金額" << odata.kingaku  << "日付" << odata.date << "備考" << kdata.biko;
+       qDebug() << "MATCH row" << r << "金額" << odata.kingaku  << "日付" << odata.date << "備考" << kdata.biko+"("+odata.usePlace+")";
 
             // ★ここでDB更新★
             // updateKakeibo(odata, kdata);
         }
         else if (left && !right)
         {
-            qDebug() << "kakeibo only row(dateUpdate for del)" << r << left->kakeiboData().kingaku;
+            qDebug() << "kakeibo only row(dateUpdate for del)" << r << left->kakeiboData().kingaku<< "del:"+left->kakeiboData().biko;
 
             // 必要に応じてDB処理
         }
         else if (!left && right)
         {
 
-            qDebug() << "orico only row(add or dateUpdate)" << r << right->oricoData().kingaku;
+            qDebug() << "orico only row(add or dateUpdate)" << r << right->oricoData().kingaku<<right->oricoData().usePlace;
         }
     }
 
