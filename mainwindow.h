@@ -18,13 +18,13 @@ class MainWindow;
 }
 
 
-struct tmpOricoKake{
+struct tmpDtForMap{
     bool matchFlg = false;  // デフォルト値 false
-    KakeiboRowData krdata;
-    OricoRowData ordata;
-    bool addFlg=true; //ディフォルトでOrico追加　falseは一致したとき追加でなく調整
-    int obtnX=1;//オリコボタン　右がディフォルト　追加状態
-    int kbtnX=0;//家計簿データ　左がディフォルト　追加しない状態
+    KakeiboRowData krdata; //OricoDataも最終的にDBに入れるのでこの形で統一
+    int x;//x座標
+    int y;//y座標
+    int dtKind;//kakeiboData:0  oricoData:1
+    int number;// original number 0~
 };
 
 class MainWindow : public QMainWindow
@@ -32,6 +32,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    QList<tmpDtForMap> cButtonL;
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     static QString getDatabasePath();
@@ -44,7 +45,7 @@ public:
     Ui::MainWindow* getUi() { return ui; }
     QList<ThreeRelationShip> loadThreeRelationList();
     QList<ThreeRelationShip> ssnLtrs;
-    QVector<tmpOricoKake> tmpOkV;
+
 
 private slots:
     void on_actionkozaEdit_triggered();
@@ -125,11 +126,13 @@ private:
     void populateOricoGrid(DraggableGridWidget* grid,
                                        const QVector<KakeiboRowData>& kRows,
                            const QVector<OricoRowData>& oricoRows,int& total);
-    tmpOricoKake *tmpOk;
+
     KakeiboRowData *krdata;
     OricoRowData *ordata;
     QDate fromDate;
     QDate toDate;
+    void updateTmpL(int fromRow, int fromCol, int toRow, int toCol);
+
 };
 
 #endif // MAINWINDOW_H

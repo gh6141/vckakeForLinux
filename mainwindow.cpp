@@ -262,6 +262,7 @@ MainWindow::MainWindow(QWidget *parent)
       pcbx2->setDataList(ssnLtrs);
       comboInitializing = false;
 
+
 }
 
 MainWindow::~MainWindow()
@@ -697,6 +698,15 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         btnOrico->obtnX=1;
         btnOrico->kbtnX=-1;
         grid->addButton(btnOrico, r, 1); // 右列
+
+        tmpDtForMap tmp;
+        tmp.dtKind=1;
+        //QDate date;int kingaku=0; QString himoku; QString shiharaisaki; QString biko;int idosaki; //koza number
+        tmp.krdata=KakeiboRowData{ o.date, o.kingaku, "","",o.usePlace,0};
+        tmp.number=r;
+        tmp.x=1;
+        tmp.y=r;
+        cButtonL.append(tmp);
     }
 
     // 下に未一致の家計簿ボタンを配置（左列）
@@ -712,6 +722,16 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         btnKakeibo->obtnX=-1;
         btnKakeibo->kbtnX=0;
         grid->addButton(btnKakeibo, offset + kIdx, 0); // 左列
+
+        tmpDtForMap tmp;
+        tmp.dtKind=0;
+        //QDate date;int kingaku=0; QString himoku; QString shiharaisaki; QString biko;int idosaki; //koza number
+        tmp.krdata=k;
+        tmp.number=kIdx;
+        tmp.x=0;
+        tmp.y=offset + kIdx;
+        cButtonL.append(tmp);
+
     }
 
     // 二重ループで一致判定
@@ -730,18 +750,25 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
                 left->setOricoDataKingaku(left->kakeiboData().kingaku);  //なくてもいいが冗長性もたせた
                 right->setKakeiboDataKingaku(right->oricoData().kingaku);  //〃
 
+
+
+                updateTmpL(right->row(), right->col(), c, 0);
+                updateTmpL(left->row(), left->col(), c, 1);
+
+
                 // 家計簿ボタンを右列に、Oricoを左列に
-                grid->moveButton(left->row(), left->col(), c, 1);
                 grid->moveButton(right->row(), right->col(), c, 0);
+                grid->moveButton(left->row(), left->col(), c, 1);
+
 
                 left->obtnX=-1 ; //oricoでないとき-1
                 left->kbtnX=1 ; //kakeibo なら 1か0
                 right->obtnX= 0 ;
                 right->kbtnX= -1 ;
 
-
                 left->matchFlg = true;
                 right->matchFlg = true;
+
 
                 break; // 一致したら右ボタンは次の家計簿には使わない
             }
@@ -750,9 +777,9 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 
     // 集計やDB反映も右列ボタン優先、左列ボタンは削除対象など
     int kei = 0;
-    QString sk = " 2日に変更:";
+
     QString del = " 削除必要：";
-//qDebug()<<grid->rowCount()<<"=gridRowCount";
+
     for (int r = 0; r < grid->rowCount(); ++r) {
         auto left = grid->buttonAt(r, 0);
         auto right = grid->buttonAt(r, 1);
@@ -784,7 +811,7 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
     // 最終的なメッセージ
     if (total == kei) {
         QMessageBox::information(this, "集計結果",
-                                 "結果: " + QString::number(kei) + " 一致しました！" + sk + del);
+                                 "結果: " + QString::number(kei) + " 一致しました！" + del);
     } else {
         QMessageBox::information(this, "集計結果",
                                  "結果: " + QString::number(kei) + " 不一致です。合計は " + QString::number(total));
@@ -800,6 +827,18 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 }
 
 
+void MainWindow::updateTmpL(int fromRow, int fromCol, int toRow, int toCol)
+{
+    for (auto& item : cButtonL) {   // ポインタなら * をつける
+        if (item.y == fromRow && item.x == fromCol) {  // x:行, y:列に合わせる
+            item.y = toRow;
+            item.x = toCol;
+            qDebug() << "updated to:" << item.x << item.y;
+            break;
+        }
+    }
+}
+
 void MainWindow::onKosinClicked(DraggableGridWidget* grid,
                                 const QList<KakeiboRowData>& kRows,
                                 const QList<OricoRowData>& oRows,
@@ -807,40 +846,26 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
 {
     qDebug() << "onKosinClicked called. mode=" << mode;
 
-    int rows = grid->rowCount();
-    int cols = grid->colCount();
+    for (auto& tmp : cButtonL) {
+        if (tmp.dtKind == 0) { // Kakeibo
+            // tmp.krdata や tmp.x, tmp.y を使った処理
 
-    // 例：格子上のボタン配置を走査して、対応を取得する
-    for (int r = 0; r < rows; ++r)
-    {
-        DraggableButton* left  = grid->buttonAt(r, 0); // Orico
-        DraggableButton* right = grid->buttonAt(r, 1); // Kakeibo
-
-        if (!left && !right) continue;
-
-        // 両方ある → マッチしている
-        if (left && right)
-        {           
-            // ★ここでDB更新★
-            // updateKakeibo(odata, kdata);
-        }
-        else if (left && !right)
-        {
-            int okingaku=left->oricoData().kingaku;
-            int kkingaku=left->kakeiboData().kingaku;
-            if(okingaku==0){
-                qDebug() << r<< ":Kakeibo only row(del)" << "od" << kkingaku;
-            }else{
-                qDebug() << r<<":ryoho " << "od" << okingaku<<"   kd "<<kkingaku;
+            if(tmp.x==0){ //del kake
+                qDebug()<<"kake del"<< tmp.y << "  \\" << tmp.krdata.kingaku<<" num:"<<tmp.number;
+            }else if(tmp.x==1){ //一致
+                 qDebug()<<"kake 一致"<< tmp.y << "  \\" << tmp.krdata.kingaku<<" num:"<<tmp.number;
+            }
+        } else if (tmp.dtKind == 1) { // Orico
+            // tmp.krdata や tmp.x, tmp.y を使った処理
+            if(tmp.x==0){  //一致
+                qDebug()<<"orico 一致"<< tmp.y << "  \"" << tmp.krdata.kingaku<<" num:"<<tmp.number;
+            }else if(tmp.x==1){ //add
+                qDebug()<<"ocrico add"<< tmp.y << "  \"" << tmp.krdata.kingaku<<" num:"<<tmp.number;
             }
 
-
-        }
-        else if (!left && right)
-        {
-            qDebug() << r<<":orico only row(add)" <<" od_ok"<<right->oricoData().kingaku;
         }
     }
+
 
     qDebug() << "onKosinClicked completed.";
 }
