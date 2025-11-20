@@ -1003,9 +1003,12 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
 
 void MainWindow::loadExpenses()
 {
+    QSettings settings("MyCompany", "QtKakeibo");
+    QString currentUrl =
+        settings.value("webapi/url", "https://my.address/api/items").toString();
     ExpenseLoader* loader = new ExpenseLoader(this);
-    loader->loadFromApi("https://rasp.cld9.work/api/items", [this](QVector<Expense> expenses){
-        qDebug() << "取得件数:" << expenses.size();
+    loader->loadFromApi(currentUrl, [this](QVector<Expense> expenses){
+       // qDebug() << "取得件数:" << expenses.size();
         // テーブルやビューに反映
 
         if (expenses.isEmpty()) {
@@ -1043,6 +1046,39 @@ void MainWindow::loadExpenses()
 }
 
 
+
+void MainWindow::netInFlg(std::function<void(bool)> callback) {
+    QSettings settings("MyCompany", "QtKakeibo");
+    QString currentUrl =
+        settings.value("webapi/url", "https://my.address/api/items").toString();
+
+    ExpenseLoader* loader = new ExpenseLoader(this);
+    loader->loadFromApi(currentUrl, [callback](QVector<Expense> expenses){
+        bool flag = (expenses.size() > 0);
+        callback(flag); // 非同期に結果を返す
+    });
+}
+
+// 例えばフォーム表示直後
+void MainWindow::showEvent(QShowEvent *event)
+{
+    QMainWindow::showEvent(event);
+
+    static bool first = true;
+    if (first) {
+        first = false;
+
+        netInFlg([this](bool available){
+            if(available) {
+                qDebug() << "データあり";
+            } else {
+                qDebug() << "データなし";
+            }
+        });
+    }
+}
+
+
 void MainWindow::on_comboBox_8_currentIndexChanged(int index)
 {
 
@@ -1076,5 +1112,30 @@ void MainWindow::on_comboBox_6_editTextChanged(const QString &arg1)
 void MainWindow::on_comboBox_6_currentTextChanged(const QString &arg1)
 {
 
+}
+
+
+void MainWindow::on_actionWebAPI_triggered()
+{
+
+    // ① 設定ロード
+    QSettings settings("MyCompany", "QtKakeibo");
+    QString currentUrl = settings.value("webapi/url",
+                                        "https://my.address/api/items").toString();
+
+    // ② ダイアログに現在値を渡して開く
+    WebApiDialog dlg(this);
+    dlg.setUrl(currentUrl);   // setUrl() はダイアログ側に実装しておく
+
+
+    // ③ OK を押したときだけ保存
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        QString url = dlg.getUrl();
+        settings.setValue("webapi/url", url);
+
+        QMessageBox::information(this, tr("設定完了"),
+                                 tr("URLを設定しました:\n%1").arg(url));
+    }
 }
 

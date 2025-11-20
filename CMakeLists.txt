@@ -73,6 +73,8 @@ qt_add_executable(vckake
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
     ${TS_FILES}
+    WebApiDialog.h
+    WebApiDialog.cpp
 )
 
 # 翻訳ファイル

@@ -13,6 +13,7 @@
 #include "DraggableGridWidget.h"
 #include "OricoRowData.h"
 #include "ExpenseLoader.h"
+#include "WebApiDialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -48,6 +49,8 @@ public:
     QList<ThreeRelationShip> ssnLtrs;
 
     void loadExpenses();
+    void netInFlg(std::function<void(bool)> callback) ;
+    void onFormShown();
 
 private slots:
     void on_actionkozaEdit_triggered();
@@ -111,6 +114,11 @@ private slots:
                         const QList<KakeiboRowData>& kRows,
                         const QList<OricoRowData>& oRows,
                         int& mode,QString rep);
+
+    void on_actionWebAPI_triggered();
+
+protected:
+    void showEvent(QShowEvent *event) override;
 
 private:
        Ui::MainWindow *ui;

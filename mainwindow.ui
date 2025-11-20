@@ -744,6 +744,7 @@
     <addaction name="actionaction3rsEdit"/>
     <addaction name="separator"/>
     <addaction name="actiondbSet"/>
+    <addaction name="actionWebAPI"/>
    </widget>
    <widget class="QMenu" name="menudisp">
     <property name="title">
@@ -833,6 +834,11 @@
   <action name="actionimport">
    <property name="text">
     <string>インポート（Orico）</string>
+   </property>
+  </action>
+  <action name="actionWebAPI">
+   <property name="text">
+    <string>WebAPIのURL</string>
    </property>
   </action>
  </widget>
