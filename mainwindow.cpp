@@ -654,9 +654,26 @@ void MainWindow::on_actionimport_triggered()
     dlg.resize(800, 400);
     int rows = oricoRows.length()+kRows.length()+1;
     int cols = 2;
+
     DraggableGridWidget *grid = new DraggableGridWidget(rows, cols);
     QScrollArea *scrollArea = new QScrollArea(&dlg);
-    scrollArea->setWidget(grid);
+    // 上部ラベル部分
+    auto *labelLayout = new QHBoxLayout;
+    QLabel *label1=new QLabel("削除（左列）");
+    label1->setAlignment(Qt::AlignCenter);
+    labelLayout->addWidget(label1);
+    QLabel *label2=new QLabel("適用（右列）");
+    label2->setAlignment(Qt::AlignCenter);
+    labelLayout->addWidget(label2);
+
+    // ラベル + grid をまとめるコンテナ
+    auto *container = new QWidget;
+    auto *containerLayout = new QVBoxLayout(container);
+    containerLayout->addLayout(labelLayout);
+    containerLayout->addWidget(grid);
+
+    // ScrollArea に container をセット
+    scrollArea->setWidget(container);
     scrollArea->setWidgetResizable(true);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -665,12 +682,15 @@ void MainWindow::on_actionimport_triggered()
     QPushButton* kosinBtn = new QPushButton("更新");
     vbox->addWidget(kosinBtn);
 
-    populateOricoGrid(grid, kRows, oricoRows,total);
+
+    QString rep=populateOricoGrid(grid, kRows, oricoRows,total);
+    kosinBtn->setToolTip(rep);
+
 
     connect(kosinBtn, &QPushButton::clicked,
            this,
-           [this, grid, kRows, oricoRows, &total]() {
-               onKosinClicked(grid, kRows, oricoRows, total);
+           [this, grid, kRows, oricoRows, &total,rep]() {
+               onKosinClicked(grid, kRows, oricoRows, total,rep);
            });
 
     dlg.exec();
@@ -679,7 +699,7 @@ void MainWindow::on_actionimport_triggered()
 
 
 
-void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
+QString MainWindow::populateOricoGrid(DraggableGridWidget* grid,
                                    const QVector<KakeiboRowData>& kRows,
                                    const QVector<OricoRowData>& oricoRows,
                                    int& total)
@@ -693,6 +713,15 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
             QString::number(o.kingaku) + "(" + o.date.toString("MM/dd") + "):" + o.usePlace.left(10),
             grid
             );
+
+        btnOrico->setToolTip(
+            QString("%1\n%2\n%3")
+                .arg("金額: " + QString::number(o.kingaku))
+                .arg("日付: " + o.date.toString("yyyy/MM/dd"))
+                .arg("店名: " + o.usePlace)
+            );
+
+
         btnOrico->setOricoData(o);
         btnOrico->matchFlg = false;
         btnOrico->obtnX=1;
@@ -717,6 +746,14 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
             QString::number(k.kingaku) + "(" + k.date.toString("MM/dd") + "):" + k.biko.left(6),
             grid
             );
+
+        btnKakeibo->setToolTip(
+            QString("%1\n%2\n%3")
+                .arg("金額: " + QString::number(k.kingaku))
+                .arg("日付: " + k.date.toString("yyyy/MM/dd"))
+                .arg("備考: " + k.biko)
+            );
+
         btnKakeibo->setKakeiboData(k);
         btnKakeibo->matchFlg = false;
         btnKakeibo->obtnX=-1;
@@ -778,7 +815,7 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
     // 集計やDB反映も右列ボタン優先、左列ボタンは削除対象など
     int kei = 0;
 
-    QString del = " 削除必要：";
+    QString del = "";
 
     for (int r = 0; r < grid->rowCount(); ++r) {
         auto left = grid->buttonAt(r, 0);
@@ -808,13 +845,12 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         }
     }
 
+    QString rep="";
     // 最終的なメッセージ
     if (total == kei) {
-        QMessageBox::information(this, "集計結果",
-                                 "結果: " + QString::number(kei) + " 一致しました！" + del);
+       rep="右データを追加・更新（Oricoデータは必要に応じて日付変更）し、"+del+"の日付を範囲外（後で削除必要）にすることで  合計"+ QString::number(kei) + " 一致します！　" + del;
     } else {
-        QMessageBox::information(this, "集計結果",
-                                 "結果: " + QString::number(kei) + " 不一致です。合計は " + QString::number(total));
+       rep= "注意！！ここでの集計は"+ QString::number(kei) + "で、Orico請求の" + QString::number(total)+"と一致しません。CSVデータが正しいかチェック必要です。";
     }
 
 /*
@@ -824,6 +860,7 @@ void MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         qDebug() << "Row" << r << "Left:" << (left?left->text():"null") << "Right:" << (right?right->text():"null");
     }
 */
+    return rep;
 }
 
 
@@ -842,8 +879,16 @@ void MainWindow::updateTmpL(int fromRow, int fromCol, int toRow, int toCol)
 void MainWindow::onKosinClicked(DraggableGridWidget* grid,
                                 const QList<KakeiboRowData>& kRows,
                                 const QList<OricoRowData>& oRows,
-                                int& mode)
+                                int& mode,
+                                QString rep)
 {
+
+    if (rep.left(2) == "注意") {
+        QMessageBox::information(this, "確認", "更新取り消します(" + rep + ")");
+        return;
+    }
+
+
     qDebug() << "onKosinClicked called. mode=" << mode;
 
     //cButtonLによるチェックは不要になる。下のButtonによる処理がOkなったため。
@@ -869,7 +914,7 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
 
 
     //button widgetでも確認*******************************************
-    qDebug()<<"by buttoWidget";
+    qDebug()<<"by buttonWidget";
 
     int rows = grid->rowCount();
     int cols = grid->colCount();

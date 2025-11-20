@@ -108,7 +108,7 @@ private slots:
     void onKosinClicked(DraggableGridWidget* grid,
                         const QList<KakeiboRowData>& kRows,
                         const QList<OricoRowData>& oRows,
-                        int& mode);
+                        int& mode,QString rep);
 
 private:
        Ui::MainWindow *ui;
@@ -123,7 +123,7 @@ private:
     PopularCbx *pcbx,*pcbx2;
     bool comboInitializing = true; // 初期化中は true
     QDialog *dlg;
-    void populateOricoGrid(DraggableGridWidget* grid,
+    QString populateOricoGrid(DraggableGridWidget* grid,
                                        const QVector<KakeiboRowData>& kRows,
                            const QVector<OricoRowData>& oricoRows,int& total);
 
