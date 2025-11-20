@@ -9,124 +9,95 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
+# Qt6 の必要モジュール
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network Sql Charts LinguistTools)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools Sql)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools Sql)
-
-find_package(Qt6 COMPONENTS Charts REQUIRED)
-
-
-
+# 翻訳ファイル
 set(TS_FILES vckake_ja_JP.ts)
 
+# プロジェクトのソース
 set(PROJECT_SOURCES
-        main.cpp
-
-
-
-        ${TS_FILES}
-        koza.cpp
-        koza.h
+    main.cpp
+    koza.cpp
+    koza.h
+    BaseTableWidget.cpp
+    BaseTableWidget.h
+    KozaWidget.cpp
+    KozaWidget.h
+    mainwindow.cpp
+    mainwindow.h
+    mainwindow.ui
+    HimokuWidget.cpp
+    HimokuWidget.h
+    BikoWidget.cpp
+    BikoWidget.h
+    ShiharaisakimotoWidget.cpp
+    ShiharaisakimotoWidget.h
+    ThreeRelationShipsWidget.cpp
+    ThreeRelationShipsWidget.h
+    kakeibotable.cpp
+    kakeibotable.h
+    KozaComboWidget.h
+    BaseComboWidget.h
+    HimokuComboWidget.h
+    SiharaiComboWidget.h
+    ShiharaisakiComboWidget.h
+    BikoComboWidget.h
+    KakeiboRowData.h
+    BalanceListWidget.cpp
+    BalanceListWidget.h
+    PeriodSelectDialog.cpp
+    PeriodSelectDialog.h
+    BalanceTrendWidget.cpp
+    BalanceTrendWidget.h
+    BikoSearchDialog.cpp
+    BikoSearchDialog.h
+    ComboRegisterHelper.cpp
+    ComboRegisterHelper.h
+    ClearOnClickLineEdit.cpp
+    ClearOnClickLineEdit.h
+    PopularCbx.cpp
+    PopularCbx.h
+    DraggableButton.h
+    DraggableGridWidget.cpp
+    DraggableGridWidget.h
+    OricoRowData.h
+    MyKakeiboModel.h
+    Expense.h
+    ExpenseLoader.cpp
+    ExpenseLoader.h
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(vckake
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-        koza
-        koza.cpp
-        koza.h
-        BaseTableWidget.cpp
-        BaseTableWidget.h
-        KozaWidget.cpp
-        KozaWidget.h
-        .gitignore
-        mainwindow.h mainwindow.cpp mainwindow.ui
-        HimokuWidget.h
-        HimokuWidget.cpp
-        BikoWidget.h
-        BikoWidget.cpp
-        ShiharaisakimotoWidget.h
-        ShiharaisakimotoWidget.cpp
-        ThreeRelationShipsWidget.h
-        ThreeRelationShipsWidget.cpp
-        kakeibotable.h
-        kakeibotable.cpp
-        KozaComboWidget.h
-        BaseComboWidget.h
-        HimokuComboWidget.h
-        SiharaiComboWidget.h
-        ShiharaisakiComboWidget.h
-        BikoComboWidget.h
-        KakeiboRowData.h
-        BalanceListWidget.h
-        BalanceListWidget.cpp
-        PeriodSelectDialog.h
-        PeriodSelectDialog.cpp
-        BalanceTrendWidget.h
-        BalanceTrendWidget.cpp
-        BikoSearchDialog.h
-        BikoSearchDialog.cpp
-        ComboRegisterHelper.h
-        ComboRegisterHelper.cpp
-        ClearOnClickLineEdit.cpp
-        ClearOnClickLineEdit.h
-        PopularCbx.cpp
-        PopularCbx.h
-        DraggableButton.h
+# Qt6 用の実行可能ファイル
+qt_add_executable(vckake
+    MANUAL_FINALIZATION
+    ${PROJECT_SOURCES}
+    ${TS_FILES}
+)
 
+# 翻訳ファイル
+qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 
-        DraggableGridWidget.cpp
-        DraggableGridWidget.h
-        OricoRowData.h
-        MyKakeiboModel.h
+# ライブラリリンク
+target_link_libraries(vckake PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Network
+    Qt6::Sql
+    Qt6::Charts
+)
 
-
-
+# Mac/iOS 用バンドル設定
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set_target_properties(vckake PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET vckake APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-
-    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
-else()
-    if(ANDROID)
-        add_library(vckake SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(vckake
-            ${PROJECT_SOURCES}
-        )
-    endif()
-
-    qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
-target_link_libraries(vckake PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-
-target_link_libraries(vckake PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Sql)
-target_link_libraries(vckake PRIVATE Qt6::Charts)
-
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
-if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.vckake)
-endif()
-set_target_properties(vckake PROPERTIES
-    ${BUNDLE_ID_OPTION}
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
-)
-
+# インストール設定
 include(GNUInstallDirs)
 install(TARGETS vckake
     BUNDLE DESTINATION .
@@ -134,6 +105,5 @@ install(TARGETS vckake
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(vckake)
-endif()
+# 完成
+qt_finalize_executable(vckake)
