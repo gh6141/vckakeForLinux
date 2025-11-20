@@ -32,3 +32,28 @@ QList<koza> koza::selectAll(const QString &dbPath)
     // removeDatabase() も呼ばない
     return list;
 }
+
+// koza.cpp に実装
+int koza::numFromName(const QString &dbPath, const QString &name)
+{
+    int result = -1; // 見つからなかった場合は -1
+
+    QSqlDatabase db;
+    if (QSqlDatabase::contains("koza_conn")) {
+        db = QSqlDatabase::database("koza_conn");
+    } else {
+        db = QSqlDatabase::addDatabase("QSQLITE", "koza_conn");
+        db.setDatabaseName(dbPath);
+        if (!db.open()) return result;
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT num FROM koza WHERE kozaName = :name LIMIT 1");
+    query.bindValue(":name", name);
+    if (query.exec() && query.next()) {
+        result = query.value("num").toInt();
+    }
+
+    return result;
+}
+

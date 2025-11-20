@@ -1001,6 +1001,48 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
 
 
 
+void MainWindow::loadExpenses()
+{
+    ExpenseLoader* loader = new ExpenseLoader(this);
+    loader->loadFromApi("https://rasp.cld9.work/api/items", [this](QVector<Expense> expenses){
+        qDebug() << "取得件数:" << expenses.size();
+        // テーブルやビューに反映
+
+        if (expenses.isEmpty()) {
+            qDebug() << "APIからのデータは空です";
+        } else {
+            for (const auto& e : expenses) {
+                qDebug() << "ID:" << e.id
+                         << "金額:" << e.amount
+                         << "メモ:" << e.memo;
+
+
+                KakeiboRowData data;
+
+                // QString method;  ->ckozanumへ変換
+                QString dbpath = MainWindow::getDatabasePath();
+                int knum = koza::numFromName(dbpath,e.method);
+                data.date =  QDate::fromString(e.date, "yyyy-MM-dd");
+                data.kingaku = (int)e.amount;
+                data.himoku = e.category;
+                data.shiharaisaki = e.payee;
+                data.biko = e.memo;
+                data.idosaki=0;
+
+                table->addRowForCurrentAccount(data,true,knum);//true=sishutu false=shunyu
+                table->loadTable(knum);
+
+            }
+
+
+            // 必要に応じてテーブルに追加など
+            // this->kakeiboTable->addExpenses(expenses);
+        }
+
+    });
+}
+
+
 void MainWindow::on_comboBox_8_currentIndexChanged(int index)
 {
 

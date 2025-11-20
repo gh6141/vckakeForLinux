@@ -12,6 +12,7 @@
 #include "PopularCbx.h"
 #include "DraggableGridWidget.h"
 #include "OricoRowData.h"
+#include "ExpenseLoader.h"
 
 namespace Ui {
 class MainWindow;
@@ -46,6 +47,7 @@ public:
     QList<ThreeRelationShip> loadThreeRelationList();
     QList<ThreeRelationShip> ssnLtrs;
 
+    void loadExpenses();
 
 private slots:
     void on_actionkozaEdit_triggered();

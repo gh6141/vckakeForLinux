@@ -9,4 +9,5 @@ public:
     QString tabColor;
 
     static QList<koza> selectAll(const QString &dbPath);
+    static int numFromName(const QString &dbPath, const QString &name);
 };
