@@ -30,6 +30,7 @@ public:
 
 
     bool add(const KakeiboRowData& data, bool sishutuFlg, int knum);
+    bool updateRow(const KakeiboRowData& data,bool sishutuFlg, int tbnum);
 
 public slots:
    // void addRowForCurrentAccount();

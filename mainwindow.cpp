@@ -731,7 +731,7 @@ QString MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         tmpDtForMap tmp;
         tmp.dtKind=1;
         //QDate date;int kingaku=0; QString himoku; QString shiharaisaki; QString biko;int idosaki; //koza number
-        tmp.krdata=KakeiboRowData{ o.date, o.kingaku, "","",o.usePlace,0};
+        tmp.krdata=KakeiboRowData{ 1,o.date, o.kingaku, "","",o.usePlace,0};//id=1だが、新規だけなので使わない
         tmp.number=r;
         tmp.x=1;
         tmp.y=r;
@@ -814,10 +814,14 @@ QString MainWindow::populateOricoGrid(DraggableGridWidget* grid,
 
     // 集計やDB反映も右列ボタン優先、左列ボタンは削除対象など
     int kei = 0;
+    int addCount=0;
+    int matchCount=0;
+    int allCount=0;
 
     QString del = "";
 
     for (int r = 0; r < grid->rowCount(); ++r) {
+
         auto left = grid->buttonAt(r, 0);
         auto right = grid->buttonAt(r, 1);
 
@@ -825,32 +829,48 @@ QString MainWindow::populateOricoGrid(DraggableGridWidget* grid,
             if(right->obtnX==1){
                 kei += right->oricoData().kingaku;
                 qDebug()<<"ro:"+QString::number(right->oricoData().kingaku);   //右にすでにあるOrico
+                addCount++;
+                     allCount++;
             }else if(right->kbtnX==1)   {
                 kei += right->kakeiboData().kingaku;
                 qDebug()<<"rk:"+QString::number(right->kakeiboData().kingaku);
+                 matchCount++;
+                     allCount++;
             }
 
         }else if(left){
             if(left->obtnX==1){
                 kei += left->oricoData().kingaku;
                 qDebug()<<"lo:"+QString::number(left->oricoData().kingaku);
+                     allCount++;
             } else if(left->kbtnX==1){
                 kei += left->kakeiboData().kingaku;
                 qDebug()<<"lk:"+QString::number(left->kakeiboData().kingaku); //左の家計簿が右にいった
+     allCount++;
             }
         }
 
         if (left && !left->matchFlg && left->kakeiboData().kingaku > 0) {
             del += " " + QString::number(left->kakeiboData().kingaku) + ":" + left->kakeiboData().biko;
+             allCount++;
         }
     }
 
     QString rep="";
     // 最終的なメッセージ
-    if (total == kei) {
-       rep="右データを追加・更新（Oricoデータは必要に応じて日付変更）し、"+del+"の日付を範囲外（後で削除必要）にすることで  合計"+ QString::number(kei) + " 一致します！　" + del;
-    } else {
-       rep= "注意！！ここでの集計は"+ QString::number(kei) + "で、Orico請求の" + QString::number(total)+"と一致しません。CSVデータが正しいかチェック必要です。";
+    if(!del.isEmpty()){
+            rep=rep+del+"の日付を範囲外（後で削除必要）にします。\n";
+    }
+
+    if (total == kei&&addCount>0) {
+       rep=rep+QString::number(matchCount)+"件が一致  右データの"+QString::number(addCount)+"件を追加（日付変更する場合あり）します。\nこの操作で 合計"+ QString::number(kei) + "に一致します！　" ;
+    }else if(total == kei&&addCount==0&&allCount!=matchCount){
+       rep=rep+QString::number(matchCount)+"件が一致　合計"+ QString::number(kei) + "に一致します！　";
+    }else if(total == kei&&addCount==0&&allCount==matchCount){
+        rep=rep+QString::number(matchCount)+"件がすべて一致(更新不要)　合計"+ QString::number(kei) + "に一致します！　";
+
+    }else    {
+       rep=rep+ "注意！！ここでの集計は"+ QString::number(kei) + "で、Orico請求の" + QString::number(total)+"と一致しません。CSVデータが正しいかチェック必要です。";
     }
 
 /*
@@ -935,24 +955,45 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
        qDebug() << "MATCH row" << r << "金額" << odata.kingaku  << "日付" << odata.date << "備考" << kdata.biko+"("+odata.usePlace+")";
 
             // ★ここでDB更新★
-            // updateKakeibo(odata, kdata);
-        }
+       if(!kdata.biko.contains("(Orico:")){
+           kdata.biko = kdata.biko+"(Orico:"+odata.usePlace+")";
+       }
+
+          table->updateRow(kdata,true,ckozanum);//true=sishutu false=shunyu
+         }
         else if (left && !right)
         {
-            qDebug() << "kakeibo only row(dateUpdate for del)" << r << left->kakeiboData().kingaku<< "del:"+left->kakeiboData().biko;
+            KakeiboRowData datak=left->kakeiboData();
+            datak.date= toDate.addDays(2);//よく月２日
+            datak.biko = datak.biko+"(削除要検討)";
+            table->updateRow(datak,true,ckozanum);//true=sishutu false=shunyu
+
+          //  qDebug() << "kakeibo only row(dateUpdate for del)" << r << left->kakeiboData().kingaku<< "del:"+left->kakeiboData().biko;
 
             // 必要に応じてDB処理
         }
         else if (!left && right)
         {
+            KakeiboRowData data;
+            QDate odate= right->oricoData().date; //check
+            if(odate<=toDate&&odate>=fromDate){
+                 data.date = odate;
+            }else{
+                 data.date = fromDate; //指定範囲でないときは2日に
+            }
+            data.kingaku = right->oricoData().kingaku;
+            data.himoku = "";
+            data.shiharaisaki = "";
+            data.biko = right->oricoData().usePlace+"(Orico)";
+            data.idosaki=0;
+            table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
+
 
             qDebug() << "orico only row(add or dateUpdate)" << r << right->oricoData().kingaku<<right->oricoData().usePlace;
         }
     }
 
-
-
-
+    table->loadTable(ckozanum);
 
 
     qDebug() << "onKosinClicked completed.";

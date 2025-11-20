@@ -3,6 +3,7 @@
 #include <QDate>
 
 struct KakeiboRowData {
+    int id;
     QDate date;
     int kingaku=0;
     QString himoku;

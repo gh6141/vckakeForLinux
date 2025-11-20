@@ -8,6 +8,7 @@
 #include "mainwindow.h"
 #include <QTimer>
 #include <QHeaderView>
+#include "MyKakeiboModel.h"
 
 
 
@@ -83,10 +84,13 @@ QSqlTableModel* KakeiboTable::loadModel(int accountNum)
 
     if (model) delete model;
 
-    model = new QSqlTableModel(this, db);
+   // model = new QSqlTableModel(this, db);
+    model = new MyKakeiboModel(this, db); // ← 継承型を使用
     model->setTable(tableName);
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->select();
+
+
 
     model->setHeaderData(0, Qt::Horizontal, "番号");
     model->setHeaderData(1, Qt::Horizontal, "日付");
@@ -95,6 +99,10 @@ QSqlTableModel* KakeiboTable::loadModel(int accountNum)
     model->setHeaderData(4, Qt::Horizontal, "残高");
     model->setHeaderData(5, Qt::Horizontal, "費目/移動ID");
     model->setHeaderData(6, Qt::Horizontal, "支払/備考");
+
+
+
+
     return model;
 }
 
@@ -232,6 +240,7 @@ QSqlTableModel* model = new QSqlTableModel(nullptr, QSqlDatabase::database());
         if (date < fromDate || date > toDate) continue;
 
         KakeiboRowData data;
+        data.id= model->data(model->index(r, 0)).toInt();
         data.date = date;
         data.kingaku = model->data(model->index(r, 2)).toInt(); // 支出 or 収入に応じて分ける場合あり
         data.himoku = model->data(model->index(r, 5)).toString();
@@ -287,4 +296,43 @@ bool KakeiboTable::add(const KakeiboRowData& data, bool sishutuFlg, int knum)
     }
 
     return true;
+}
+
+bool KakeiboTable::updateRow(const KakeiboRowData& data,bool sishutuFlg, int tbnum)
+{
+    QSqlTableModel model(nullptr, QSqlDatabase::database());
+    model.setTable("shishutunyu" + QString::number(tbnum));
+    model.select();
+    // 行番号 r を探すなら r に対応する index(r,0) が主キー
+    for (int r = 0; r < model.rowCount(); ++r) {
+       //  qDebug()<<"update4 modelIndex="<<model.data(model.index(r,0)).toInt()<<" dataId="<<data.id;
+        if (model.data(model.index(r,0)).toInt() == data.id) {
+
+            model.setData(model.index(r, 1), data.date.toString("yyyy-MM-dd"));
+
+            // ...他の列も更新
+            // 支出 or 収入
+            if (sishutuFlg) {
+                model.setData(model.index(r, 2), data.kingaku);
+                model.setData(model.index(r, 3), 0);
+            } else {
+                model.setData(model.index(r, 2), 0);
+                model.setData(model.index(r, 3), data.kingaku);
+            }
+
+            // 残高（あとで再計算する場合は 0）
+            model.setData(model.index(r, 4), 0);
+
+            // 費目・備考
+            model.setData(model.index(r, 5), data.himoku);
+            model.setData(model.index(r, 6), data.biko);
+
+            // 移動先（idosaki）
+            model.setData(model.index(r, 7), data.idosaki);
+
+
+            return model.submitAll();
+        }
+    }
+    return false;
 }

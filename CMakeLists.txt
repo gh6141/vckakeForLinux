@@ -81,6 +81,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         DraggableGridWidget.cpp
         DraggableGridWidget.h
         OricoRowData.h
+        MyKakeiboModel.h
 
 
 
