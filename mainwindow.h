@@ -51,6 +51,7 @@ public:
     void loadExpenses();
     void netInFlg(std::function<void(bool)> callback) ;
     void onFormShown();
+    void delCloud(const Expense& exp);
 
 private slots:
     void on_actionkozaEdit_triggered();
@@ -121,6 +122,7 @@ private slots:
 
 protected:
     void showEvent(QShowEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private:
        Ui::MainWindow *ui;
@@ -144,7 +146,8 @@ private:
     QDate fromDate;
     QDate toDate;
     void updateTmpL(int fromRow, int fromCol, int toRow, int toCol);
-
+    QNetworkAccessManager* manager;
+    void backupDatabase(const QString& dbPath);
 };
 
 #endif // MAINWINDOW_H

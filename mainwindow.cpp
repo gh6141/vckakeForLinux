@@ -27,7 +27,9 @@
 #include <QScrollArea>
 #include "DraggableButton.h"
 #include "OricoRowData.h"
-
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QCloseEvent>
 
 QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr) {
     QDialog dialog(parent);
@@ -262,7 +264,7 @@ MainWindow::MainWindow(QWidget *parent)
       pcbx2->setDataList(ssnLtrs);
       comboInitializing = false;
 
-
+        manager = new QNetworkAccessManager(this);
 }
 
 MainWindow::~MainWindow()
@@ -1030,6 +1032,7 @@ void MainWindow::loadExpenses()
                 data.idosaki = 0;
 
                 table->addRowForCurrentAccount(data, true, knum);
+                delCloud(e);  // ユーザーが Yes を選んだ場合に削除
             }
 
             // ✔ 全件追加後に 1 回だけ読み込み
@@ -1142,5 +1145,77 @@ void MainWindow::on_actionWebAPI_triggered()
 void MainWindow::on_pushButton_6_clicked()
 {
     loadExpenses();
+}
+
+void MainWindow::delCloud(const Expense& exp)
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "確認",
+                                  QString("クラウド上のID %1 を削除しますか？").arg(exp.id),
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    QSettings settings("MyCompany", "QtKakeibo");
+    QString currentUrl = settings.value("webapi/url",
+                                        "https://my.address/api/items").toString();
+
+
+    if (reply == QMessageBox::Yes) {
+        QNetworkRequest request(QUrl(QString("%1/%2").arg(currentUrl).arg(exp.id)));
+        QNetworkReply* networkReply = manager->deleteResource(request);
+
+        connect(networkReply, &QNetworkReply::finished, this, [networkReply, this]() {
+            if (networkReply->error() == QNetworkReply::NoError) {
+                QMessageBox::information(this, "情報", "削除しました。");
+            } else {
+                QMessageBox::critical(this, "エラー", networkReply->errorString());
+            }
+            networkReply->deleteLater();
+        });
+    }
+}
+
+
+
+void MainWindow::backupDatabase(const QString& dbPath)
+{
+    QDir dir(QDir::currentPath() + "/backups");
+    if (!dir.exists()) {
+        dir.mkpath(".");  // backups フォルダ作成
+    }
+
+    // バックアップファイル名
+    QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
+    QString backupFileName = QString("backup_%1.db").arg(timestamp);
+    QString backupFilePath = dir.filePath(backupFileName);
+
+    // DBファイルコピー
+    if (!QFile::copy(dbPath, backupFilePath)) {
+        qDebug() << "バックアップ作成失敗:" << backupFilePath;
+        return;
+    }
+
+    qDebug() << "バックアップ作成:" << backupFilePath;
+
+    // 既存バックアップファイルを取得して古いものから削除
+    QFileInfoList files = dir.entryInfoList(QStringList() << "backup_*.db", QDir::Files, QDir::Time);
+    while (files.size() > 5) {
+        QFileInfo oldest = files.last();
+        if (QFile::remove(oldest.absoluteFilePath())) {
+            qDebug() << "古いバックアップ削除:" << oldest.fileName();
+        }
+        files.removeLast();
+    }
+}
+
+
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    // 終了時にバックアップ
+    QString dbPath = MainWindow::getDatabasePath();
+    backupDatabase(dbPath);
+
+    // そのまま終了
+    event->accept();
 }
 
