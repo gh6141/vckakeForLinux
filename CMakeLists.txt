@@ -77,6 +77,13 @@ qt_add_executable(vckake
     WebApiDialog.cpp
 )
 
+
+# Windows の場合は GUI アプリとして指定
+if(WIN32)
+    set_target_properties(vckake PROPERTIES WIN32_EXECUTABLE TRUE)
+endif()
+
+
 # 翻訳ファイル
 qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 
@@ -109,3 +116,5 @@ install(TARGETS vckake
 
 # 完成
 qt_finalize_executable(vckake)
+
+

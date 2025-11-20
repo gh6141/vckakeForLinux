@@ -1071,10 +1071,10 @@ void MainWindow::showEvent(QShowEvent *event)
 
         netInFlg([this](bool available){
             if(available) {
-                qDebug() << "データあり";
+              //  qDebug() << "データあり";
                  ui->pushButton_6->setStyleSheet("background-color: red; color: white;");
             } else {
-                qDebug() << "データなしorアクセス不可";
+               // qDebug() << "データなしorアクセス不可";
             }
         });
     }

@@ -49,18 +49,29 @@ void BaseTableWidget::setTableName(const QString &name,const QString createSQL,c
 
 void BaseTableWidget::initDB(const QString createSQL)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "mainConnection");
-    db.setDatabaseName(MainWindow::getDatabasePath());
+   // QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "mainConnection");
+   // db.setDatabaseName(MainWindow::getDatabasePath());
+QString connectionName = "mainConnection";
+    QSqlDatabase db;
+    if (QSqlDatabase::contains(connectionName)) {
+        db = QSqlDatabase::database(connectionName);
+    } else {
+        db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+        db.setDatabaseName("mydatabase.db");
+    }
+
+
+
     if (!db.open()) {
-        qDebug() << "DB接続失敗";
+       // qDebug() << "DB接続失敗";
         return;
     }
         QSqlQuery query;
         if (!createSQL.isEmpty()) {
             if (!query.exec(createSQL))
                 qDebug() << "テーブル作成失敗:" << query.lastError().text();
-            else
-                qDebug() << "新規DBとテーブル作成完了";
+            //else
+             //   qDebug() << "新規DBとテーブル作成完了";
         }
 }
 
