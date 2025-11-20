@@ -117,6 +117,8 @@ private slots:
 
     void on_actionWebAPI_triggered();
 
+    void on_pushButton_6_clicked();
+
 protected:
     void showEvent(QShowEvent *event) override;
 

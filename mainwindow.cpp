@@ -1006,44 +1006,42 @@ void MainWindow::loadExpenses()
     QSettings settings("MyCompany", "QtKakeibo");
     QString currentUrl =
         settings.value("webapi/url", "https://my.address/api/items").toString();
+
     ExpenseLoader* loader = new ExpenseLoader(this);
-    loader->loadFromApi(currentUrl, [this](QVector<Expense> expenses){
-       // qDebug() << "取得件数:" << expenses.size();
-        // テーブルやビューに反映
+
+    loader->loadFromApi(currentUrl, [this, loader](QVector<Expense> expenses){
 
         if (expenses.isEmpty()) {
             qDebug() << "APIからのデータは空です";
         } else {
+            QString dbpath = MainWindow::getDatabasePath();
+
+            int knum = -1;
+
             for (const auto& e : expenses) {
-                qDebug() << "ID:" << e.id
-                         << "金額:" << e.amount
-                         << "メモ:" << e.memo;
-
-
                 KakeiboRowData data;
 
-                // QString method;  ->ckozanumへ変換
-                QString dbpath = MainWindow::getDatabasePath();
-                int knum = koza::numFromName(dbpath,e.method);
-                data.date =  QDate::fromString(e.date, "yyyy-MM-dd");
+                knum = koza::numFromName(dbpath, e.method);
+                data.date = QDate::fromString(e.date, "yyyy-MM-dd");
                 data.kingaku = (int)e.amount;
                 data.himoku = e.category;
                 data.shiharaisaki = e.payee;
                 data.biko = e.memo;
-                data.idosaki=0;
+                data.idosaki = 0;
 
-                table->addRowForCurrentAccount(data,true,knum);//true=sishutu false=shunyu
-                table->loadTable(knum);
-
+                table->addRowForCurrentAccount(data, true, knum);
             }
 
-
-            // 必要に応じてテーブルに追加など
-            // this->kakeiboTable->addExpenses(expenses);
+            // ✔ 全件追加後に 1 回だけ読み込み
+            if (knum != -1)
+                table->loadTable(knum);
         }
 
+        loader->deleteLater(); // ✔ メモリリーク防止
+        ui->pushButton_6->setStyleSheet("background-color: gray; color: white;");
     });
 }
+
 
 
 
@@ -1071,8 +1069,9 @@ void MainWindow::showEvent(QShowEvent *event)
         netInFlg([this](bool available){
             if(available) {
                 qDebug() << "データあり";
+                 ui->pushButton_6->setStyleSheet("background-color: red; color: white;");
             } else {
-                qDebug() << "データなし";
+                qDebug() << "データなしorアクセス不可";
             }
         });
     }
@@ -1137,5 +1136,11 @@ void MainWindow::on_actionWebAPI_triggered()
         QMessageBox::information(this, tr("設定完了"),
                                  tr("URLを設定しました:\n%1").arg(url));
     }
+}
+
+
+void MainWindow::on_pushButton_6_clicked()
+{
+    loadExpenses();
 }
 
