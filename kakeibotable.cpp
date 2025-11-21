@@ -186,7 +186,12 @@ void KakeiboTable::addRowForCurrentAccountModel(const KakeiboRowData& data,bool 
 
     model->setData(model->index(row, 4), 0);
     model->setData(model->index(row, 5), data.himoku);   // 費目名
-    model->setData(model->index(row, 6), data.shiharaisaki+"/"+data.biko);   // ID
+    if(data.shiharaisaki==""){
+          model->setData(model->index(row, 6), data.biko);   // ID
+    }else{
+          model->setData(model->index(row, 6), data.shiharaisaki+"/"+data.biko);   // ID
+    }
+
     model->setData(model->index(row, 7), data.idosaki);
 
     model->submitAll();

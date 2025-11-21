@@ -48,7 +48,7 @@ void ExpenseLoader::loadFromApi(const QString& apiUrl, std::function<void(QVecto
             e.memo = obj.value("memo").toString();
             e.date = obj.value("date").toString();
             e.category = obj.value("category").toString();
-            e.payee = obj.value("payee").toString();
+            e.payee = obj.value("").toString();
             e.method = obj.value("method").toString();
             expenses.append(e);
         }
