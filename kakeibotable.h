@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QFile>
 #include "KakeiboRowData.h"
+#include <QSortFilterProxyModel>
 
 class KakeiboTable : public QWidget
 {
@@ -31,6 +32,9 @@ public:
 
     bool add(const KakeiboRowData& data, bool sishutuFlg, int knum);
     bool updateRow(const KakeiboRowData& data,bool sishutuFlg, int tbnum);
+    QSqlTableModel* getModel() const { return model; }
+    QSortFilterProxyModel* getProxyModel() const { return proxy; }
+    QTableView* getView() const { return view; }
 
 public slots:
    // void addRowForCurrentAccount();
@@ -44,6 +48,7 @@ private:
     int currentAccountNum;
 
     bool ensureTableExists(const QString &tableName);
+    QSortFilterProxyModel* proxy;   // ★ これが必要
 
 };
 

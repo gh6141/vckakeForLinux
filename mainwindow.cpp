@@ -118,48 +118,60 @@ MainWindow::MainWindow(QWidget *parent)
         deleteButton->setVisible(true);
         vbox->insertLayout(1, hbox);  // table の下に配置
 
-        // 削除ボタンクリックで選択行削除
         connect(deleteButton, &QPushButton::clicked, this, [this]() {
+            QSortFilterProxyModel* proxy = table->getProxyModel();
+            QSqlTableModel* model = table->getmodel();
             QItemSelectionModel *sel = table->selectionModel();
+
             if (!sel->hasSelection()) return;
 
-            QModelIndexList selected = sel->selectedRows();
-            std::sort(selected.begin(), selected.end(),
+            QModelIndexList selectedProxy = sel->selectedRows();
+
+            // 行番号がずれないように降順で処理
+            std::sort(selectedProxy.begin(), selectedProxy.end(),
                       [](const QModelIndex &a, const QModelIndex &b) { return a.row() > b.row(); });
 
-            const int himokuColumn = 5;  // 例: 5列目が himoku
-            const int idosakiColumn = 7; // 例: 7列目が idosaki
+            const int himokuColumn = 5;
+            const int idosakiColumn = 7;
 
-            for (const QModelIndex &idx : selected) {
-                QSqlTableModel *model = table->getmodel();
+            for (const QModelIndex &proxyIndex : selectedProxy) {
+                // proxy -> source モデルの index に変換
+                QModelIndex idx = proxy->mapToSource(proxyIndex);
 
-                // --- himoku と idosaki を取得 ---
                 QString himoku = model->data(model->index(idx.row(), himokuColumn)).toString();
-                int idosaki = model->data(model->index(idx.row(), idosakiColumn)).toInt();
-
-                // --- idosaki 番の別テーブルを操作 ---
-                QSqlDatabase db = QSqlDatabase::database(); // デフォルト接続を取得
-                QSqlTableModel otherModel(nullptr, db);  // どこかで db を保持している前提
-                QString otherTableName = QString("shishutunyu%1").arg(idosaki); // 例: idosaki の番号でテーブル名
-                otherModel.setTable(otherTableName);
-                otherModel.select();
-
-                // himoku が一致する行を削除
-                for (int r = otherModel.rowCount() - 1; r >= 0; --r) {
-                    if (otherModel.data(otherModel.index(r, himokuColumn)).toString() == himoku) {
-                        otherModel.removeRow(r);
-                    }
+                qDebug()<<himoku<<"=himoku";
+                bool isNumber = true;
+                for (auto c : himoku) {
+                    if (!c.isDigit()) { isNumber = false; break; }
                 }
-                otherModel.submitAll();  // 変更を確定
-                // --- 元のテーブルの行を削除 ---
+
+                if (isNumber) {
+                    // 移動データの場合、idosaki を使って他テーブルも削除
+                    int idosaki = model->data(model->index(idx.row(), idosakiColumn)).toInt();
+                    QSqlDatabase db = QSqlDatabase::database();
+                    QSqlTableModel otherModel(nullptr, db);
+                    QString otherTableName = QString("shishutunyu%1").arg(idosaki);
+                    otherModel.setTable(otherTableName);
+                    otherModel.select();
+
+                    for (int r = otherModel.rowCount() - 1; r >= 0; --r) {
+                        if (otherModel.data(otherModel.index(r, himokuColumn)).toString() == himoku) {
+                            otherModel.removeRow(r);
+                        }
+                    }
+                    otherModel.submitAll();
+                }
+
+                // 元のテーブルの削除
                 model->removeRow(idx.row());
+                qDebug()<<idx.row();
             }
 
-            table->getmodel()->submitAll(); // 元テーブルの変更確定
+            model->submitAll(); // 元テーブルの変更確定
             table->loadTable(ckozanum);
-
-
         });
+
+
 
         connect(updateButton, &QPushButton::clicked, this, [this]() {
 
@@ -361,11 +373,31 @@ void MainWindow::on_pushButton_2_clicked()
     data.himoku = ui->comboBox_6->currentText();
     data.shiharaisaki = ui->comboBox_5->currentText();
     data.biko = ui->comboBox_7->currentText();
-    table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
-    table->loadTable(ckozanum);
 
-    bool flg= m_trw->checkExist(ui->comboBox_6->currentText(),ui->comboBox_5->currentText(),ui->comboBox_7->currentText());
-    // 存在しなければボタン有効、存在すれば無効
+    table->addRowForCurrentAccount(data, true, ckozanum);
+
+    table->loadTable(ckozanum);   // ここで model / proxy へ反映
+
+    //-----------------------------------------------------
+    // ★追加後、必ず proxy の最終行へスクロールさせる
+    //-----------------------------------------------------
+    QAbstractItemModel *baseModel = table->getModel();     // QSqlTableModel*
+    QSortFilterProxyModel *proxy  = table->getProxyModel(); // MultiSortProxy*
+
+    int lastRow = baseModel->rowCount() - 1;
+    if (lastRow >= 0) {
+        QModelIndex sourceIndex = baseModel->index(lastRow, 0);
+        QModelIndex proxyIndex  = proxy->mapFromSource(sourceIndex);
+       // ui->tableView->scrollTo(proxyIndex, QAbstractItemView::PositionAtBottom);
+       // QModelIndex proxyIndex = proxy->index(proxy->rowCount() - 1, 0);
+        table->getView()->scrollTo(proxyIndex, QAbstractItemView::PositionAtBottom);
+    }
+    //-----------------------------------------------------
+
+    bool flg= m_trw->checkExist(ui->comboBox_6->currentText(),
+                                 ui->comboBox_5->currentText(),
+                                 ui->comboBox_7->currentText());
+
     ui->pushButton_4->setEnabled(!flg);
 }
 

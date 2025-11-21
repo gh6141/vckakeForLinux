@@ -33,9 +33,13 @@ KakeiboTable::KakeiboTable(QWidget *parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(view);
+        view->setSortingEnabled(true);
+
+
 
     if (initDB()) {
         loadTable(currentAccountNum);
+
     }
 }
 
@@ -111,6 +115,9 @@ QSqlTableModel* KakeiboTable::loadModel(int accountNum)
 
 void KakeiboTable::loadTable(int accountNum)
 {
+
+
+
     view->setModel(loadModel(accountNum));
   //  view->verticalHeader()->setVisible(false); // 左端の行番号を非表示
     //
@@ -156,11 +163,30 @@ void KakeiboTable::loadTable(int accountNum)
     //view->resizeColumnsToContents();
 
 
+
+
+
+
+    view->setColumnHidden(7, true);       // idosaki列を非表示
+
+    if (!proxy) {
+        proxy = new MultiSortProxy(this);   // ← ここ重要
+    }
+
+    proxy->setSourceModel(model);   // これが必須
+    view->setModel(proxy);
+
+    proxy->setDynamicSortFilter(true);
+
+    view->setSortingEnabled(true);
+    int dateColumn=1;
+    view->sortByColumn(dateColumn, Qt::AscendingOrder);//sort
+
+
     QTimer::singleShot(0, view, [this]() {
         view->scrollToBottom();
     });
 
-    view->setColumnHidden(7, true);       // idosaki列を非表示
 }
 
 void KakeiboTable::addRowForCurrentAccountModel(const KakeiboRowData& data,bool sishutuFlg,int knum){
