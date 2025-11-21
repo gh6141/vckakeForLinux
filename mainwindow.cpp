@@ -139,7 +139,7 @@ MainWindow::MainWindow(QWidget *parent)
                 QModelIndex idx = proxy->mapToSource(proxyIndex);
 
                 QString himoku = model->data(model->index(idx.row(), himokuColumn)).toString();
-                qDebug()<<himoku<<"=himoku";
+
                 bool isNumber = true;
                 for (auto c : himoku) {
                     if (!c.isDigit()) { isNumber = false; break; }
@@ -151,15 +151,20 @@ MainWindow::MainWindow(QWidget *parent)
                     QSqlDatabase db = QSqlDatabase::database();
                     QSqlTableModel otherModel(nullptr, db);
                     QString otherTableName = QString("shishutunyu%1").arg(idosaki);
-                    otherModel.setTable(otherTableName);
-                    otherModel.select();
 
-                    for (int r = otherModel.rowCount() - 1; r >= 0; --r) {
-                        if (otherModel.data(otherModel.index(r, himokuColumn)).toString() == himoku) {
-                            otherModel.removeRow(r);
-                        }
+                    QSqlQuery query(db);
+
+                    // SQLで直接削除
+                    query.prepare(QString("DELETE FROM %1 WHERE himoku = :himoku").arg(otherTableName));
+                    query.bindValue(":himoku", himoku);
+
+                    if (!query.exec()) {
+                        qDebug() << "Failed to delete from" << otherTableName << query.lastError().text();
+                    } else {
+                        qDebug() << "Deleted matching rows from" << otherTableName;
                     }
-                    otherModel.submitAll();
+
+
                 }
 
                 // 元のテーブルの削除
@@ -858,12 +863,12 @@ QString MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         if (right ) {
             if(right->obtnX==1){
                 kei += right->oricoData().kingaku;
-                qDebug()<<"ro:"+QString::number(right->oricoData().kingaku);   //右にすでにあるOrico
+
                 addCount++;
                      allCount++;
             }else if(right->kbtnX==1)   {
                 kei += right->kakeiboData().kingaku;
-                qDebug()<<"rk:"+QString::number(right->kakeiboData().kingaku);
+
                  matchCount++;
                      allCount++;
             }
@@ -871,11 +876,11 @@ QString MainWindow::populateOricoGrid(DraggableGridWidget* grid,
         }else if(left){
             if(left->obtnX==1){
                 kei += left->oricoData().kingaku;
-                qDebug()<<"lo:"+QString::number(left->oricoData().kingaku);
+
                      allCount++;
             } else if(left->kbtnX==1){
                 kei += left->kakeiboData().kingaku;
-                qDebug()<<"lk:"+QString::number(left->kakeiboData().kingaku); //左の家計簿が右にいった
+
      allCount++;
             }
         }
@@ -920,7 +925,7 @@ void MainWindow::updateTmpL(int fromRow, int fromCol, int toRow, int toCol)
         if (item.y == fromRow && item.x == fromCol) {  // x:行, y:列に合わせる
             item.y = toRow;
             item.x = toCol;
-            qDebug() << "updated to:" << item.x << item.y;
+
             break;
         }
     }
@@ -939,7 +944,6 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
     }
 
 
-    qDebug() << "onKosinClicked called. mode=" << mode;
 
     //cButtonLによるチェックは不要になる。下のButtonによる処理がOkなったため。
     for (auto& tmp : cButtonL) {
