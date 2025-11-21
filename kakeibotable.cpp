@@ -224,7 +224,7 @@ void KakeiboTable::recalculateBalances(int kznum)
         if (!update.exec())
             qDebug() << "UPDATE failed:" << update.lastError().text();
     }
-    qDebug() << "Total rows processed:" << totalRows<<"SELECT num, sishutsu, shunyu FROM shishutunyu"+QString::number(kznum)+" ORDER BY date ASC";
+  //  qDebug() << "Total rows processed:" << totalRows<<"SELECT num, sishutsu, shunyu FROM shishutunyu"+QString::number(kznum)+" ORDER BY date ASC";
   //  model->select();
     QSqlTableModel *sqlModel = new QSqlTableModel(this);
     sqlModel->setTable("shishutunyu" + QString::number(kznum));
