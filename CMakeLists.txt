@@ -75,6 +75,8 @@ qt_add_executable(vckake
     ${TS_FILES}
     WebApiDialog.h
     WebApiDialog.cpp
+    MultiSortProxy.cpp
+    MultiSortProxy.h
 )
 
 

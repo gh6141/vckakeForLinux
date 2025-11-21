@@ -39,7 +39,7 @@ void BaseTableWidget::setTableName(const QString &name,const QString createSQL,c
     model->select();
     view->setModel(model);
     // num 列を非表示にする
-    view->hideColumn(0); // 0 は num がモデルの最初の列の場合
+  //  view->hideColumn(0); // 0 は num がモデルの最初の列の場合
 
 
     for (int i = 0; i < headers.size(); ++i) {

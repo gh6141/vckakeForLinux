@@ -17,7 +17,7 @@ public:
     explicit KakeiboTable(QWidget *parent = nullptr);
     bool initDB();
     void loadTable(int accountNum);  // 口座番号でテーブル切替
-    void recalculateBalances();//残高更新
+    void recalculateBalances(int kznum);//残高更新
     QSqlTableModel* loadModel(int accountNUm);
     void addRowForCurrentAccountModel(const KakeiboRowData& data,bool sishutuFlg,int cnum);
     QItemSelectionModel* selectionModel() const {
@@ -44,6 +44,7 @@ private:
     int currentAccountNum;
 
     bool ensureTableExists(const QString &tableName);
+
 };
 
 

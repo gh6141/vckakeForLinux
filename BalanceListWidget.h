@@ -10,7 +10,7 @@ public:
     BalanceListWidget(QWidget *parent = nullptr);
 
     void setData(const QList<QPair<QString,double>> &balances, const QStringList &headers,double total);
-    static double calculateBalance(int accountNum, const QDate& date);
+    static int calculateBalance(int accountNum, const QDate& date);
 private:
     QTableView *view;
     QStandardItemModel *model;

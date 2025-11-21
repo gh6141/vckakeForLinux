@@ -40,7 +40,7 @@ public:
     static QString getDatabasePath();
     int ckozanum;
     int dst_ckozanum;
-    double calculateBalance(int accountNum, const QDate& date);
+    int calculateBalance(int accountNum, const QDate& date);
     QList<int> getAccountList();
 
     void comboTwoUpdate();
@@ -119,6 +119,8 @@ private slots:
     void on_actionWebAPI_triggered();
 
     void on_pushButton_6_clicked();
+
+    void on_actionimportKake_triggered();
 
 protected:
     void showEvent(QShowEvent *event) override;

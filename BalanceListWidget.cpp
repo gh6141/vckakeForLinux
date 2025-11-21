@@ -88,23 +88,27 @@ void BalanceListWidget::setData(const QList<QPair<QString,double>> &balances, co
 
 
 
-double BalanceListWidget::calculateBalance(int accountNum, const QDate& date)
+int BalanceListWidget::calculateBalance(int accountNum, const QDate& date)
 {
-    // テーブル名を口座番号から生成
-    QString tableName = QString("shishutunyu%1").arg(accountNum);
 
-    QSqlTableModel model(nullptr, QSqlDatabase::database());
-    model.setTable(tableName);
-    model.setFilter(QString("date <= '%1'").arg(date.toString("yyyy-MM-dd"))); // 日付まで
-    model.select();
 
-    double balance = 0.0;
-    int rows = model.rowCount();
-    for (int r = 0; r < rows; ++r) {
-        double income  = model.data(model.index(r, 3)).toDouble(); // 収入列
-        double expense = model.data(model.index(r, 2)).toDouble(); // 支出列
+    QSqlQuery query;
+    query.exec("SELECT sishutu, shunyu FROM shishutunyu" + QString::number(accountNum) +
+               (date == QDate::currentDate() ? "" : " WHERE date <= '" + date.toString("yyyy/MM/dd") + "'"));
+
+    int balance = 0;
+    int incomet = 0;
+    int outcomet = 0;
+
+    while(query.next()) {
+        int expense = query.value(0).toInt();
+        int income  = query.value(1).toInt();
         balance += (income - expense);
+        incomet += income;
+        outcomet += expense;
     }
 
+    qDebug() << "in out=" << incomet << outcomet;
+    return balance;
     return balance;
 }

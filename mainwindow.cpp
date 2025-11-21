@@ -789,16 +789,12 @@ QString MainWindow::populateOricoGrid(DraggableGridWidget* grid,
                 left->setOricoDataKingaku(left->kakeiboData().kingaku);  //なくてもいいが冗長性もたせた
                 right->setKakeiboDataKingaku(right->oricoData().kingaku);  //〃
 
-
-
                 updateTmpL(right->row(), right->col(), c, 0);
                 updateTmpL(left->row(), left->col(), c, 1);
-
 
                 //Oricoを左列に 家計簿を上右に　left_row:r   right_row:c
                 grid->moveButton(right->row(), right->col(), c, 0);
                 grid->moveButton(left->row(), left->col(), c, 1);
-
 
                 left->obtnX=-1 ; //oricoでないとき-1
                 left->kbtnX=1 ; //kakeibo なら 1か0
@@ -1217,5 +1213,27 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     // そのまま終了
     event->accept();
+}
+
+
+void MainWindow::on_actionimportKake_triggered()
+{
+
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        "VcKake CSV を選択",
+        "",                 // 初期フォルダ
+        "CSV ファイル (*.csv);;すべてのファイル (*)"
+        );
+
+    if (filePath.isEmpty()) {
+        return;
+    }
+    int total;
+
+    QVector<KakeiboRowData> kRows = table->getAllRows(fromDate, toDate,ckozanum);
+
+
+
 }
 

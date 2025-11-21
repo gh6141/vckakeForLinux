@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QHeaderView>
 #include "MyKakeiboModel.h"
+#include "MultiSortProxy.h"
 
 
 
@@ -111,7 +112,7 @@ QSqlTableModel* KakeiboTable::loadModel(int accountNum)
 void KakeiboTable::loadTable(int accountNum)
 {
     view->setModel(loadModel(accountNum));
-    view->verticalHeader()->setVisible(false); // 左端の行番号を非表示
+  //  view->verticalHeader()->setVisible(false); // 左端の行番号を非表示
     //
     // ▼ ここから外観設定
     //
@@ -151,7 +152,7 @@ void KakeiboTable::loadTable(int accountNum)
 
 
 
-    KakeiboTable::recalculateBalances();
+    KakeiboTable::recalculateBalances(accountNum);
     //view->resizeColumnsToContents();
 
 
@@ -173,7 +174,7 @@ void KakeiboTable::addRowForCurrentAccountModel(const KakeiboRowData& data,bool 
 
     int row = model->rowCount();
     model->insertRow(row);
-    model->setData(model->index(row, 1), data.date.toString("yyyy-MM-dd"));
+    model->setData(model->index(row, 1), data.date.toString("yyyy/MM/dd"));
     if(sishutuFlg){
         model->setData(model->index(row, 2), data.kingaku);
         model->setData(model->index(row, 3), 0);
@@ -196,32 +197,46 @@ void KakeiboTable::addRowForCurrentAccount(const KakeiboRowData& data,bool sishu
 {
     addRowForCurrentAccountModel(data,sishutuFlg,knum);
 
-     KakeiboTable::recalculateBalances();
+    KakeiboTable::recalculateBalances(knum);
 }
 
 
-void KakeiboTable::recalculateBalances()
+void KakeiboTable::recalculateBalances(int kznum)
 {
     if (!model) return;
-
-    // 日付列（例: 1列目）で昇順ソート
-    model->setSort(1, Qt::AscendingOrder);
-    model->select(); // ソート反映
-
-    double currentBalance = 0.0;
-
-    // モデルの全行をループ
-    for (int row = 0; row < model->rowCount(); ++row)
+    if (!db.isOpen())    qDebug() << "Database not open!";
+    int currentBalance = 0;
+    // DB を日付順に取得
+    QSqlQuery query("SELECT num, sishutu, shunyu FROM shishutunyu"+QString::number(kznum)+" ORDER BY date ASC, num ASC");
+    int totalRows = 0;
+    while (query.next())
     {
-        double shishutsu = model->data(model->index(row, 2)).toDouble();
-        double shuunyuu  = model->data(model->index(row, 3)).toDouble();
-
+        ++totalRows;
+        int num = query.value("num").toInt();
+        int shishutsu = query.value("sishutu").toInt();
+        int shuunyuu  = query.value("shunyu").toInt();
         currentBalance += (shuunyuu - shishutsu);
-
-        model->setData(model->index(row, 4), currentBalance);
+     //   qDebug() << "num=" << num << "in=" << shuunyuu << "out=" << shishutsu << "currentBalance=" << currentBalance;
+        QSqlQuery update;
+        update.prepare("UPDATE shishutunyu"+QString::number(kznum)+" SET zandaka=? WHERE num=?");
+        update.addBindValue(currentBalance);
+        update.addBindValue(num);
+        if (!update.exec())
+            qDebug() << "UPDATE failed:" << update.lastError().text();
     }
+    qDebug() << "Total rows processed:" << totalRows<<"SELECT num, sishutsu, shunyu FROM shishutunyu"+QString::number(kznum)+" ORDER BY date ASC";
+  //  model->select();
+    QSqlTableModel *sqlModel = new QSqlTableModel(this);
+    sqlModel->setTable("shishutunyu" + QString::number(kznum));
+    sqlModel->select();
 
-   // model->submitAll();  // DBに反映
+    MultiSortProxy *proxy = new MultiSortProxy(this);
+    proxy->setSourceModel(sqlModel);
+    proxy->setDynamicSortFilter(true);     // ← これがないと動かない
+    view->setModel(proxy);
+    view->setSortingEnabled(true);
+    view->sortByColumn(1, Qt::AscendingOrder);  // 日付列を昇順
+
 }
 
 
@@ -268,7 +283,7 @@ bool KakeiboTable::add(const KakeiboRowData& data, bool sishutuFlg, int knum)
     if (!model->insertRow(row)) return false;
 
     // 日付
-    model->setData(model->index(row, 1), data.date.toString("yyyy-MM-dd"));
+    model->setData(model->index(row, 1), data.date.toString("yyyy/MM/dd"));
 
     // 支出 or 収入
     if (sishutuFlg) {
@@ -308,7 +323,7 @@ bool KakeiboTable::updateRow(const KakeiboRowData& data,bool sishutuFlg, int tbn
        //  qDebug()<<"update4 modelIndex="<<model.data(model.index(r,0)).toInt()<<" dataId="<<data.id;
         if (model.data(model.index(r,0)).toInt() == data.id) {
 
-            model.setData(model.index(r, 1), data.date.toString("yyyy-MM-dd"));
+            model.setData(model.index(r, 1), data.date.toString("yyyy/MM/dd"));
 
             // ...他の列も更新
             // 支出 or 収入
