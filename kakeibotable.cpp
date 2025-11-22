@@ -183,6 +183,7 @@ void KakeiboTable::loadTable(int accountNum)
     view->sortByColumn(dateColumn, Qt::AscendingOrder);//sort
 
 
+
     QTimer::singleShot(0, view, [this]() {
         view->scrollToBottom();
     });
