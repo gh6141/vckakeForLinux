@@ -94,6 +94,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 {
     ui->setupUi(this);
+
+    // MainWindow コンストラクタなど
+    balanceLabel = new QLabel("残高 0円", this);
+    statusBar()->addPermanentWidget(balanceLabel);
+
     table = new KakeiboTable(); // 親は addWidget() で設定されるので不要
     //ui->centralwidget->layout()->addWidget(table);
     QVBoxLayout *vbox = qobject_cast<QVBoxLayout*>(ui->centralwidget->layout());
@@ -182,6 +187,10 @@ MainWindow::MainWindow(QWidget *parent)
 
                table->loadTable(ckozanum);
         });
+
+
+        connect(table, &KakeiboTable::balanceChanged,
+                this, &MainWindow::updateBalance);
     }
 
 
@@ -283,6 +292,8 @@ MainWindow::MainWindow(QWidget *parent)
 
         manager = new QNetworkAccessManager(this);
 }
+
+
 
 MainWindow::~MainWindow()
 {
@@ -404,6 +415,8 @@ void MainWindow::on_pushButton_2_clicked()
                                  ui->comboBox_7->currentText());
 
     ui->pushButton_4->setEnabled(!flg);
+
+
 }
 
 
@@ -471,6 +484,13 @@ void MainWindow::on_pushButton_3_clicked()
 
 }
 
+
+void MainWindow::updateBalance()
+{
+    QDate today = QDate::currentDate();
+    int balance = static_cast<int>(BalanceListWidget::calculateBalance(ckozanum, today));
+    balanceLabel->setText(QString("残高 %1円").arg(balance));
+}
 
 void MainWindow::on_actionzandakaList_triggered()
 {
@@ -1271,5 +1291,11 @@ void MainWindow::on_actionimportKake_triggered()
 
 
 
+}
+
+
+void MainWindow::on_pushButton_7_clicked()
+{
+    updateBalance();
 }
 

@@ -52,7 +52,8 @@ public:
     void netInFlg(std::function<void(bool)> callback) ;
     void onFormShown();
     void delCloud(const Expense& exp);
-
+    void updateBalance();
+    QLabel* balanceLabel ;
 private slots:
     void on_actionkozaEdit_triggered();
 
@@ -122,6 +123,8 @@ private slots:
 
     void on_actionimportKake_triggered();
 
+    void on_pushButton_7_clicked();
+
 protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
@@ -150,6 +153,7 @@ private:
     void updateTmpL(int fromRow, int fromCol, int toRow, int toCol);
     QNetworkAccessManager* manager;
     void backupDatabase(const QString& dbPath);
+
 };
 
 #endif // MAINWINDOW_H

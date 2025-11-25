@@ -108,6 +108,7 @@ QSqlTableModel* KakeiboTable::loadModel(int accountNum)
 
 
 
+
     return model;
 }
 
@@ -186,7 +187,10 @@ void KakeiboTable::loadTable(int accountNum)
 
     QTimer::singleShot(0, view, [this]() {
         view->scrollToBottom();
+
+        emit balanceChanged(); // ← ここ1箇所で通知
     });
+
 
 }
 

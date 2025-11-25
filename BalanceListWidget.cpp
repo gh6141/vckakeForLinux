@@ -110,5 +110,5 @@ int BalanceListWidget::calculateBalance(int accountNum, const QDate& date)
 
     //qDebug() << "in out=" << incomet << outcomet;
     return balance;
-    return balance;
+
 }

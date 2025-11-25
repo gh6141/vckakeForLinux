@@ -40,7 +40,8 @@ public:
 public slots:
    // void addRowForCurrentAccount();
     void addRowForCurrentAccount(const KakeiboRowData& data,bool flg,int knum);
-
+signals:
+       void balanceChanged();  // signal を宣言
 
 private:
     QSqlDatabase db;
