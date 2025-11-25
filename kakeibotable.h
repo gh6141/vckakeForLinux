@@ -9,6 +9,7 @@
 #include <QFile>
 #include "KakeiboRowData.h"
 #include <QSortFilterProxyModel>
+#include "MultiSortProxy.h"
 
 class KakeiboTable : public QWidget
 {
@@ -48,7 +49,8 @@ private:
     int currentAccountNum;
 
     bool ensureTableExists(const QString &tableName);
-    QSortFilterProxyModel* proxy;   // ★ これが必要
+    //QSortFilterProxyModel* proxy;   // ★ これが必要
+    MultiSortProxy* proxy;
 
 };
 
