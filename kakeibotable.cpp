@@ -262,7 +262,7 @@ void KakeiboTable::recalculateBalances(int kznum)
     sqlModel->setTable("shishutunyu" + QString::number(kznum));
     sqlModel->select();
 
-    MultiSortProxy *proxy = new MultiSortProxy(this);
+    proxy = new MultiSortProxy(this);
     proxy->setSourceModel(sqlModel);
     proxy->setDynamicSortFilter(true);     // ← これがないと動かない
     view->setModel(proxy);
