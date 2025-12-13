@@ -278,29 +278,45 @@ void KakeiboTable::recalculateBalances(int kznum)
 
 QVector<KakeiboRowData> KakeiboTable::getAllRows(const QDate& fromDate, const QDate& toDate,const int& tbnum) const
 {
-    //model = new QSqlTableModel(this, QSqlDatabase::database());
-QSqlTableModel* model = new QSqlTableModel(nullptr, QSqlDatabase::database());
-    model->setTable("shishutunyu"+QString::number(tbnum));
-    model->select();
-
     QVector<KakeiboRowData> rows;
-    if (!model) return rows;
 
-    for (int r = 0; r < model->rowCount(); ++r) {
-        QDate date = model->data(model->index(r, 1)).toDate();
-        if (date < fromDate || date > toDate) continue;
+    QString table = "shishutunyu" + QString::number(tbnum);
 
+    QSqlQuery query(QSqlDatabase::database());
+    query.prepare(QString(
+                      "SELECT num, date, sishutu,shunyu,zandaka, himoku, biko "
+                      "FROM %1 "
+                      "WHERE date BETWEEN :from AND :to "
+                      "ORDER BY date"
+                      ).arg(table));
+
+    query.bindValue(":from", fromDate.toString("yyyy/MM/dd"));
+    query.bindValue(":to",   toDate.toString("yyyy/MM/dd"));
+
+    if (!query.exec()) {
+        qDebug() << query.lastError();
+        return rows;
+    }
+
+    int kingaku=0;
+
+
+    while (query.next()) {
         KakeiboRowData data;
-        data.id= model->data(model->index(r, 0)).toInt();
-        data.date = date;
-        data.kingaku = model->data(model->index(r, 2)).toInt(); // 支出 or 収入に応じて分ける場合あり
-        data.himoku = model->data(model->index(r, 5)).toString();
-        data.shiharaisaki = model->data(model->index(r, 6)).toString();
-        data.biko = model->data(model->index(r, 6)).toString();
-        data.idosaki = model->data(model->index(r, 7)).toInt();
+        data.id            = query.value(0).toInt();
+        data.date          = QDate::fromString(query.value(1).toString(), "yyyy/MM/dd");
+        if(query.value(2).toInt()>0){
+           data.kingaku       = query.value(2).toInt();
+        }else{
+            data.kingaku       = -query.value(3).toInt();
+        }
+
+        data.himoku        = query.value(5).toString();
+        data.biko          = query.value(6).toString();
 
         rows.append(data);
     }
+
     return rows;
 }
 
