@@ -32,7 +32,7 @@ ComboRegisterHelper::ComboRegisterHelper(QComboBox* combo,
 void ComboRegisterHelper::createUi()
 {
 
-   // m_labelFurigana = new QLabel("フリガナ", m_parent);
+    m_labelFurigana = new QLabel("フリガナ", m_parent);
     m_editFurigana = new ClearOnClickLineEdit(m_parent);
     m_editFurigana->setPlaceholderText("ふりがなを入力");
     connect(m_combo->lineEdit(), &QLineEdit::textEdited,
@@ -43,20 +43,21 @@ void ComboRegisterHelper::createUi()
 
     m_buttonRegister = new QPushButton("登録", m_parent);
     m_buttonCancel = new QPushButton("キャンセル", m_parent);
-
+    m_labelFurigana->setVisible(false);
     m_editFurigana->setVisible(false);
     m_buttonRegister->setVisible(false);
+     m_buttonCancel->setVisible(false);
 
   //  m_buttonCancel->setFixedWidth(120); // 幅を揃えると見た目がきれい
 
     connect(m_buttonCancel, &QPushButton::clicked, this, [this]() {
         m_editFurigana->clear();
+        m_labelFurigana->setVisible(false);
         m_editFurigana->setVisible(false);
         m_buttonRegister->setVisible(false);
         m_buttonCancel->setVisible(false);
     });
 
-    m_buttonCancel->setVisible(false);
 
     QVBoxLayout* vLayout = qobject_cast<QVBoxLayout*>(m_parent->layout());
     if (!vLayout) {
@@ -64,7 +65,7 @@ void ComboRegisterHelper::createUi()
         m_parent->setLayout(vLayout);
     }
 
-   // vLayout->addWidget(m_labelFurigana);
+    vLayout->addWidget(m_labelFurigana);
     vLayout->addWidget(m_editFurigana);
 
     QHBoxLayout* hLayout = new QHBoxLayout();
@@ -107,7 +108,7 @@ void ComboRegisterHelper::onComboTextChanged(const QString &text)
 
 
 void ComboRegisterHelper::disp(bool noExists){
-    //m_labelFurigana->setVisible(!exists);
+    m_labelFurigana->setVisible(noExists);
     m_editFurigana->setVisible(noExists);
     m_buttonRegister->setVisible(noExists);
     m_buttonCancel->setVisible(noExists);
@@ -142,12 +143,9 @@ void ComboRegisterHelper::onRegisterClicked()
     }
 
     m_combo->addItem(name); // コンボに追加
-    //m_labelFurigana->setVisible(false);
 
     disp(false);
-   // m_editFurigana->setVisible(false);
-   // m_buttonRegister->setVisible(false);
-   // m_buttonCancel->setVisible(false);
+
 
 
     MainWindow* mainWin = qobject_cast<MainWindow*>(this->parent());

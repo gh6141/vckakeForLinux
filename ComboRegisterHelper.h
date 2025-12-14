@@ -34,7 +34,7 @@ private:
     QLineEdit* m_editFurigana;
     QPushButton* m_buttonRegister;
     QPushButton* m_buttonCancel;
-   // QLabel* m_labelFurigana;
+    QLabel* m_labelFurigana;
     QWidget* m_parent;
     QString m_tableName;
     QSqlDatabase m_db;
