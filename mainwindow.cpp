@@ -1294,8 +1294,8 @@ void MainWindow::on_actionimportKake_triggered()
 }
 
 
-void MainWindow::on_pushButton_7_clicked()
-{
-    updateBalance();
-}
+//void MainWindow::on_pushButton_7_clicked()
+//{
+//    updateBalance();
+//}
 
