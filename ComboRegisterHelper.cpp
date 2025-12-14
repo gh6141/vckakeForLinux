@@ -102,15 +102,21 @@ void ComboRegisterHelper::onComboTextChanged(const QString &text)
     query.next();
     bool exists = query.value(0).toInt() > 0;
 
-    //m_labelFurigana->setVisible(!exists);
-    m_editFurigana->setVisible(!exists);
-    m_buttonRegister->setVisible(!exists);
-    m_buttonCancel->setVisible(!exists);
+    disp(!exists);
+}
 
-    if(!exists){
+
+void ComboRegisterHelper::disp(bool noExists){
+    //m_labelFurigana->setVisible(!exists);
+    m_editFurigana->setVisible(noExists);
+    m_buttonRegister->setVisible(noExists);
+    m_buttonCancel->setVisible(noExists);
+
+    if(noExists){
         m_editFurigana->setText(cFurigana);
     }
 }
+
 
 void ComboRegisterHelper::onRegisterClicked()
 {
@@ -137,9 +143,11 @@ void ComboRegisterHelper::onRegisterClicked()
 
     m_combo->addItem(name); // コンボに追加
     //m_labelFurigana->setVisible(false);
-    m_editFurigana->setVisible(false);
-    m_buttonRegister->setVisible(false);
-    m_buttonCancel->setVisible(false);
+
+    disp(false);
+   // m_editFurigana->setVisible(false);
+   // m_buttonRegister->setVisible(false);
+   // m_buttonCancel->setVisible(false);
 
 
     MainWindow* mainWin = qobject_cast<MainWindow*>(this->parent());

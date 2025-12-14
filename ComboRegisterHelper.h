@@ -21,6 +21,8 @@ public:
 
     void setPrevent(bool val) { comboPreventFlg = val; }
 
+    void disp(bool noExists);
+
 
 private slots:
     void onComboTextChanged(const QString &text);
