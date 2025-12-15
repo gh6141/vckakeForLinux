@@ -10,6 +10,7 @@
 #include <QHeaderView>
 #include "MyKakeiboModel.h"
 #include "MultiSortProxy.h"
+#include <QScrollBar>
 
 
 
@@ -117,8 +118,6 @@ QSqlTableModel* KakeiboTable::loadModel(int accountNum)
 void KakeiboTable::loadTable(int accountNum)
 {
 
-
-
     view->setModel(loadModel(accountNum));
   //  view->verticalHeader()->setVisible(false); // 左端の行番号を非表示
     //
@@ -158,15 +157,8 @@ void KakeiboTable::loadTable(int accountNum)
     view->setAlternatingRowColors(true); // 交互色
     view->setSelectionBehavior(QAbstractItemView::SelectRows); // 行単位選択
 
-
-
     KakeiboTable::recalculateBalances(accountNum);
     //view->resizeColumnsToContents();
-
-
-
-
-
 
     view->setColumnHidden(7, true);       // idosaki列を非表示
 
@@ -187,11 +179,33 @@ void KakeiboTable::loadTable(int accountNum)
 
     QTimer::singleShot(0, view, [this]() {
         view->scrollToBottom();
-
+        scrollDown();
         emit balanceChanged(); // ← ここ1箇所で通知
     });
 
 
+}
+
+void KakeiboTable::scrollDown(){
+
+    QScrollBar* bar = view->verticalScrollBar();
+    if (!bar) return;
+
+    int lastMax = -1;
+
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [=]() mutable {
+        int curMax = bar->maximum();
+        bar->setValue(curMax);
+
+        if (curMax == lastMax) {
+            timer->stop();
+            timer->deleteLater();
+
+        }
+        lastMax = curMax;
+    });
+    timer->start(0);
 }
 
 void KakeiboTable::addRowForCurrentAccountModel(const KakeiboRowData& data,bool sishutuFlg,int knum){

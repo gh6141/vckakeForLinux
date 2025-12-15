@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->centralwidget->layout()->addWidget(table);
     QVBoxLayout *vbox = qobject_cast<QVBoxLayout*>(ui->centralwidget->layout());
 
-    updateButton = new QPushButton("再表示", this);
+    updateButton = new QPushButton("最下行へ", this);
     updateButton->setFixedWidth(100);
 
     // 削除ボタン作成
@@ -184,8 +184,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 
         connect(updateButton, &QPushButton::clicked, this, [this]() {
+              // table->loadTable(ckozanum);
 
-               table->loadTable(ckozanum);
+            table->scrollDown();
+
         });
 
 
