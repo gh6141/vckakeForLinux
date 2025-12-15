@@ -35,7 +35,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <property name="styleSheet">
@@ -296,6 +296,48 @@
          <string>ネットipt</string>
         </property>
        </widget>
+       <widget class="QWidget" name="cb5Area" native="true">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>110</y>
+          <width>271</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <widget class="QWidget" name="horizontalLayoutWidget_3">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>271</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="hLayoutCb5"/>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="cb7Area" native="true">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>160</y>
+          <width>271</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <widget class="QWidget" name="horizontalLayoutWidget_4">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>271</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="hLayoutCb7"/>
+        </widget>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab">
        <property name="autoFillBackground">
@@ -546,6 +588,48 @@
          <bool>true</bool>
         </property>
        </widget>
+       <widget class="QWidget" name="cb3Area" native="true">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>110</y>
+          <width>301</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <widget class="QWidget" name="horizontalLayoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>-1</x>
+           <y>0</y>
+           <width>301</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="hLayoutCb3"/>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="cb4Area" native="true">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>160</y>
+          <width>301</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <widget class="QWidget" name="horizontalLayoutWidget_2">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>301</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="hLayoutCb4"/>
+        </widget>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_2">
        <property name="autoFillBackground">
@@ -724,6 +808,27 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+       </widget>
+       <widget class="QWidget" name="cb11Area" native="true">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>120</y>
+          <width>301</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <widget class="QWidget" name="horizontalLayoutWidget_5">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>301</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="hLayoutCb11"/>
+        </widget>
        </widget>
       </widget>
      </widget>

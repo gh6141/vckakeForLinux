@@ -12,13 +12,15 @@
 
 
 ComboRegisterHelper::ComboRegisterHelper(QComboBox* combo,
-                                         QWidget* parentContainer,
+                                         QWidget* cbArea,
+                                         QHBoxLayout* layout,
                                          const QString& tableName,
                                          QSqlDatabase db,
                                          QObject* parent)
     : QObject(parent),
     m_combo(combo),
-    m_parent(parentContainer),
+    m_cbarea(cbArea),
+    m_layout(layout),
     m_tableName(tableName),
     m_db(db)
 {
@@ -32,18 +34,18 @@ ComboRegisterHelper::ComboRegisterHelper(QComboBox* combo,
 void ComboRegisterHelper::createUi()
 {
 
-    m_labelFurigana = new QLabel("フリガナ", m_parent);
-    m_editFurigana = new ClearOnClickLineEdit(m_parent);
+   // m_labelFurigana = new QLabel("フリガナ", m_cbarea);
+    m_editFurigana = new ClearOnClickLineEdit(m_cbarea);
     m_editFurigana->setPlaceholderText("ふりがなを入力");
-    connect(m_combo->lineEdit(), &QLineEdit::textEdited,
+   /* connect(m_combo->lineEdit(), &QLineEdit::textEdited,
             this, [this](const QString &text){
                  cFurigana=text;
-            });
+            }); */
 
 
-    m_buttonRegister = new QPushButton("登録", m_parent);
-    m_buttonCancel = new QPushButton("キャンセル", m_parent);
-    m_labelFurigana->setVisible(false);
+    m_buttonRegister = new QPushButton("登録", m_cbarea);
+    m_buttonCancel = new QPushButton("取消", m_cbarea);
+   // m_labelFurigana->setVisible(false);
     m_editFurigana->setVisible(false);
     m_buttonRegister->setVisible(false);
      m_buttonCancel->setVisible(false);
@@ -52,27 +54,28 @@ void ComboRegisterHelper::createUi()
 
     connect(m_buttonCancel, &QPushButton::clicked, this, [this]() {
         m_editFurigana->clear();
-        m_labelFurigana->setVisible(false);
+      //  m_labelFurigana->setVisible(false);
         m_editFurigana->setVisible(false);
         m_buttonRegister->setVisible(false);
         m_buttonCancel->setVisible(false);
     });
 
 
-    QVBoxLayout* vLayout = qobject_cast<QVBoxLayout*>(m_parent->layout());
-    if (!vLayout) {
-        vLayout = new QVBoxLayout(m_parent);
-        m_parent->setLayout(vLayout);
+
+   // auto layout = qobject_cast<QHBoxLayout*>(m_cbarea->layout());
+    auto layout = m_layout;
+    if (!layout) {
+        qWarning() << "cbArea has no layout!";
+        return;
     }
+        //layout->addWidget(m_labelFurigana);
+        layout->addWidget(m_editFurigana);
+        layout->addWidget(m_buttonRegister);
+        layout->addWidget(m_buttonCancel);
 
-    vLayout->addWidget(m_labelFurigana);
-    vLayout->addWidget(m_editFurigana);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
-    hLayout->addWidget(m_buttonRegister);
-    hLayout->addWidget(m_buttonCancel);
-    hLayout->addStretch();
-    vLayout->addLayout(hLayout);
+
+
 
 }
 
@@ -108,7 +111,7 @@ void ComboRegisterHelper::onComboTextChanged(const QString &text)
 
 
 void ComboRegisterHelper::disp(bool noExists){
-    m_labelFurigana->setVisible(noExists);
+   // m_labelFurigana->setVisible(noExists);
     m_editFurigana->setVisible(noExists);
     m_buttonRegister->setVisible(noExists);
     m_buttonCancel->setVisible(noExists);

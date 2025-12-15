@@ -8,12 +8,14 @@
 #include <QLabel>
 #include <QSqlDatabase>
 #include <QMap>
+#include <QHBoxLayout>
 
 class ComboRegisterHelper : public QObject {
     Q_OBJECT
 public:
     ComboRegisterHelper(QComboBox* combo,
-                        QWidget* parentContainer,
+                        QWidget* cbArea,
+                        QHBoxLayout* layout,
                         const QString& tableName,
                         QSqlDatabase db,
                         QObject* parent = nullptr);
@@ -35,7 +37,9 @@ private:
     QPushButton* m_buttonRegister;
     QPushButton* m_buttonCancel;
     QLabel* m_labelFurigana;
-    QWidget* m_parent;
+    QWidget* m_cbarea;
+    QLayout* m_layout;
+    QWidget* m_parent;    
     QString m_tableName;
     QSqlDatabase m_db;
 

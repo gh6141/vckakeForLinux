@@ -215,12 +215,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    cbh1_payee=new ComboRegisterHelper(ui->comboBox_5, ui->tab_3, "shiharaisakimoto",  QSqlDatabase::database(),this);
-    cbh2_payee=new ComboRegisterHelper(ui->comboBox_3, ui->tab, "shiharaisakimoto",  QSqlDatabase::database(),this);
+    cbh1_payee=new ComboRegisterHelper(ui->comboBox_5,ui->cb5Area,ui->hLayoutCb5, "shiharaisakimoto",  QSqlDatabase::database(),this);
+    cbh2_payee=new ComboRegisterHelper(ui->comboBox_3,ui->cb3Area,  ui->hLayoutCb3, "shiharaisakimoto",  QSqlDatabase::database(),this);
 
-    cbh1_biko=new ComboRegisterHelper(ui->comboBox_7, ui->tab_3, "Biko",  QSqlDatabase::database(),this);
-    cbh2_biko=new ComboRegisterHelper(ui->comboBox_4, ui->tab, "Biko",  QSqlDatabase::database(),this);
-    new ComboRegisterHelper(ui->comboBox_11, ui->tab_2, "Biko",  QSqlDatabase::database(),this);
+    cbh1_biko=new ComboRegisterHelper(ui->comboBox_7,ui->cb7Area,ui->hLayoutCb7, "Biko",  QSqlDatabase::database(),this);
+    cbh2_biko=new ComboRegisterHelper(ui->comboBox_4,ui->cb4Area,ui->hLayoutCb4, "Biko",  QSqlDatabase::database(),this);
+    new ComboRegisterHelper(ui->comboBox_11, ui->cb11Area,ui->hLayoutCb11, "Biko",  QSqlDatabase::database(),this);
 
     ckozanum=1;
     dst_ckozanum=1;
