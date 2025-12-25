@@ -154,6 +154,7 @@ private:
     QNetworkAccessManager* manager;
     void backupDatabase(const QString& dbPath);
 
+
 };
 
 #endif // MAINWINDOW_H

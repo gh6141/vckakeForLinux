@@ -34,6 +34,7 @@ public:
 
     void fillComboBox(QComboBox* combo, const QString& yomiColumn = QString())
     {
+        QString orgText=combo->currentText();
         combo->clear();
 
         QString sql;
@@ -77,6 +78,7 @@ public:
                 combo->addItem(name, id);
             }
         }
+        combo->setCurrentText(orgText);
     }
 
 

@@ -292,7 +292,9 @@ MainWindow::MainWindow(QWidget *parent)
       pcbx2->setDataList(ssnLtrs);
       comboInitializing = false;
 
-        manager = new QNetworkAccessManager(this);
+     manager = new QNetworkAccessManager(this);
+
+
 }
 
 
@@ -417,6 +419,7 @@ void MainWindow::on_pushButton_2_clicked()
                                  ui->comboBox_7->currentText());
 
     ui->pushButton_4->setEnabled(!flg);
+    ui->pushButton_4->setStyleSheet("background-color: red;");
 
 
 }
@@ -436,6 +439,7 @@ void MainWindow::on_pushButton_clicked()
     bool flg= m_trw->checkExist(ui->comboBox_2->currentText(),ui->comboBox_3->currentText(),ui->comboBox_4->currentText());
     // 存在しなければボタン有効、存在すれば無効
     ui->pushButton_5->setEnabled(!flg);
+    ui->pushButton_5->setStyleSheet("background-color: red;");
 
 }
 
@@ -579,7 +583,9 @@ void MainWindow::on_pushButton_5_clicked()
     //ThreeRelationShipsWidget* trw=new ThreeRelationShipsWidget();
     m_trw->addRow(ui->comboBox_4->currentText(),ui->comboBox_2->currentText(),ui->comboBox_3->currentText());
 
+    ui->pushButton_5->setStyleSheet("background-color: white;");
     ui->pushButton_5->setEnabled(false);
+
 }
 
 
@@ -588,7 +594,10 @@ void MainWindow::on_pushButton_4_clicked()
     //関連保存　支出
     //ThreeRelationShipsWidget* trw=new ThreeRelationShipsWidget();
     m_trw->addRow(ui->comboBox_7->currentText(),ui->comboBox_6->currentText(),ui->comboBox_5->currentText());
+
+    ui->pushButton_4->setStyleSheet("background-color: white;");
     ui->pushButton_4->setEnabled(false);
+
 
 }
 
