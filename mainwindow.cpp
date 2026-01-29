@@ -30,23 +30,19 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QCloseEvent>
+#include "csvimporter.h"
 
-QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr) {
+QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr,QDate fromDate=QDate(),QDate toDate=QDate()) {
     QDialog dialog(parent);
     dialog.setWindowTitle("日付範囲を選択");
 
     QVBoxLayout* mainLayout = new QVBoxLayout(&dialog);
 
-    // 前月1日を計算
-    QDate today = QDate::currentDate();
-    QDate firstOfLastMonth = QDate(today.year(), today.month(), 1).addMonths(-1);
-
-    // From
+    //QDateEdit* fromEdit = new QDateEdit(sndOfLastMonth);
+    QDateEdit* fromEdit = new QDateEdit(fromDate);
+    fromEdit->setCalendarPopup(true);
     QHBoxLayout* fromLayout = new QHBoxLayout;
     fromLayout->addWidget(new QLabel("開始日:"));
-    QDate sndOfLastMonth= QDate(today.year(), today.month(), 2).addMonths(-1);
-    QDateEdit* fromEdit = new QDateEdit(sndOfLastMonth);
-    fromEdit->setCalendarPopup(true);
     fromLayout->addWidget(fromEdit);
     mainLayout->addLayout(fromLayout);
 
@@ -54,10 +50,10 @@ QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr) {
     QHBoxLayout* toLayout = new QHBoxLayout;
     toLayout->addWidget(new QLabel("終了日:"));
 
-    // 前月末日
-    QDate lastOfLastMonth = firstOfLastMonth.addMonths(1).addDays(-1);
 
-    QDateEdit* toEdit = new QDateEdit(lastOfLastMonth);
+
+    //QDateEdit* toEdit = new QDateEdit(lastOfLastMonth);
+    QDateEdit* toEdit = new QDateEdit(toDate);
     toEdit->setCalendarPopup(true);
     toLayout->addWidget(toEdit);
     mainLayout->addLayout(toLayout);
@@ -690,7 +686,18 @@ void MainWindow::on_checkBox_2_checkStateChanged(const Qt::CheckState &arg1)
 
 void MainWindow::on_actionimport_triggered()
 {
-    auto dates = getDateRangeFromUser(this);
+    // 前月1日を計算
+    QDate today = QDate::currentDate();
+    QDate firstOfLastMonth = QDate(today.year(), today.month(), 1).addMonths(-1);
+    // From
+
+    QDate sndOfLastMonth= QDate(today.year(), today.month(), 2).addMonths(-1);
+
+    // 前月末日
+    QDate lastOfLastMonth = firstOfLastMonth.addMonths(1).addDays(-1);
+
+
+    auto dates = getDateRangeFromUser(this,sndOfLastMonth,lastOfLastMonth);
 
     if (!dates.first.isValid() || !dates.second.isValid()) {
          return;
@@ -1309,4 +1316,114 @@ void MainWindow::on_actionimportKake_triggered()
 //{
 //    updateBalance();
 //}
+
+
+void MainWindow::on_actionimport_2_triggered()
+{
+
+    QDate today = QDate::currentDate();
+    auto dates = getDateRangeFromUser(this,today,today);
+    //auto dates = getDateRangeFromUser(this);
+    if (!dates.first.isValid() || !dates.second.isValid()) {
+        return;
+    }
+    fromDate = dates.first;
+    toDate   = dates.second;
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        "労金CSV を選択",
+        "",                 // 初期フォルダ
+        "CSV ファイル (ny*.csv);;すべてのファイル (*)"
+        );
+
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+
+    CsvMapping mapping {
+        2,  // 日付
+        4,  // 支払
+        5,  // 預かり
+        8,  // 残高
+        7,  // 取引区分
+        9   // 摘要
+    };
+
+    CsvImporter CsvImporter(mapping);
+    QVector<importRecord> records;
+
+    if (!filePath.isEmpty()) {
+      //  CsvImporter CsvImporter(map);
+      records = CsvImporter.importFile(filePath);
+    }
+
+     if (records.isEmpty()) {
+         QMessageBox::warning(this, "CSV Error", filePath+": CSV ファイルが存在しないか読み込めません");
+        return;
+     }
+
+     qDebug() << records;
+
+
+
+    int total;
+   // QVector<OricoRowData> oricoRows = loadOricoCSV(filePath,total);
+
+   // if (oricoRows.isEmpty()) {
+   //     QMessageBox::warning(this, "CSV Error", filePath+":Orico CSV ファイルが存在しないか読み込めません");
+    //    return;
+   // }
+
+    /*
+
+    QVector<KakeiboRowData> kRows = table->getAllRows(fromDate, toDate,ckozanum);
+
+    QDialog dlg(this);
+    dlg.setWindowTitle("Draggable Grid");
+    dlg.resize(800, 400);
+    int rows = oricoRows.length()+kRows.length()+1;
+    int cols = 2;
+
+    DraggableGridWidget *grid = new DraggableGridWidget(rows, cols);
+    QScrollArea *scrollArea = new QScrollArea(&dlg);
+    // 上部ラベル部分
+    auto *labelLayout = new QHBoxLayout;
+    QLabel *label1=new QLabel("削除（左列）");
+    label1->setAlignment(Qt::AlignCenter);
+    labelLayout->addWidget(label1);
+    QLabel *label2=new QLabel("適用（右列）");
+    label2->setAlignment(Qt::AlignCenter);
+    labelLayout->addWidget(label2);
+
+    // ラベル + grid をまとめるコンテナ
+    auto *container = new QWidget;
+    auto *containerLayout = new QVBoxLayout(container);
+    containerLayout->addLayout(labelLayout);
+    containerLayout->addWidget(grid);
+
+    // ScrollArea に container をセット
+    scrollArea->setWidget(container);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    QVBoxLayout *vbox = new QVBoxLayout(&dlg); // ✅ dlg にレイアウトを設定
+    vbox->addWidget(scrollArea);
+    QPushButton* kosinBtn = new QPushButton("更新");
+    vbox->addWidget(kosinBtn);
+
+
+    QString rep=populateOricoGrid(grid, kRows, oricoRows,total);
+    kosinBtn->setToolTip(rep);
+
+
+    connect(kosinBtn, &QPushButton::clicked,
+            this,
+            [this, grid, kRows, oricoRows, &total,rep]() {
+                onKosinClicked(grid, kRows, oricoRows, total,rep);
+            });
+
+    dlg.exec();
+*/
+}
 

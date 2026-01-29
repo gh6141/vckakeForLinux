@@ -849,6 +849,7 @@
      <string>ファイル</string>
     </property>
     <addaction name="actionimport"/>
+    <addaction name="actionimport_2"/>
     <addaction name="actionimportKake"/>
     <addaction name="actionexit"/>
    </widget>
@@ -963,6 +964,11 @@
   <action name="actionimportKake">
    <property name="text">
     <string>インポート(vckake)</string>
+   </property>
+  </action>
+  <action name="actionimport_2">
+   <property name="text">
+    <string>インポート(労金)</string>
    </property>
   </action>
  </widget>

@@ -77,6 +77,8 @@ qt_add_executable(vckake
     WebApiDialog.cpp
     MultiSortProxy.cpp
     MultiSortProxy.h
+    importRecord.h
+    csvimporter.h csvimporter.cpp
 )
 
 

@@ -125,6 +125,8 @@ private slots:
 
    // void on_pushButton_7_clicked();
 
+    void on_actionimport_2_triggered();
+
 protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
@@ -156,5 +158,8 @@ private:
 
 
 };
+
+
+
 
 #endif // MAINWINDOW_H
