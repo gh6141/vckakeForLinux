@@ -1267,8 +1267,8 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
 {
 
     if (rep.left(2) == "注意") {
-        QMessageBox::information(this, "確認", "更新取り消します(" + rep + ")");
-        return;
+     //   QMessageBox::information(this, "確認", "更新取り消します(" + rep + ")");
+     //   return;
     }
 
     //cButtonLによるチェックは不要になる。下のButtonによる処理がOkなったため。
@@ -1318,15 +1318,26 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
             if(!kdata.biko.contains("(Bank:")){
                 kdata.biko = kdata.biko+"(Bank:"+odata.summary+")";
             }
+            if(odata.payment>0){
+                table->updateRow(kdata,true,ckozanum);//true=sishutu false=shunyu
+            }else{
+                kdata.kingaku=odata.deposit;
+                table->updateRow(kdata,false,ckozanum);//true=sishutu false=shunyu
+            }
 
-            table->updateRow(kdata,true,ckozanum);//true=sishutu false=shunyu
         }
         else if (left && !right)
         {
             KakeiboRowData datak=left->kakeiboData();
             datak.date= toDate.addDays(2);//よく月２日
             datak.biko = datak.biko+"(削除要検討)";
-            table->updateRow(datak,true,ckozanum);//true=sishutu false=shunyu
+            if(datak.kingaku>0){
+                table->updateRow(datak,true,ckozanum);//true=sishutu false=shunyu
+            }else{
+                datak.kingaku=-datak.kingaku;
+                table->updateRow(datak,false,ckozanum);//true=sishutu false=shunyu
+            }
+
 
 
         }
@@ -1344,7 +1355,14 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
             data.shiharaisaki = "";
             data.biko = right->bankData().summary+"(Bank)";
             data.idosaki=0;
-            table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
+            if(right->bankData().payment>0){
+                table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
+
+            }else{
+                data.kingaku=right->bankData().deposit;
+                table->addRowForCurrentAccount(data,false,ckozanum);//true=sishutu false=shunyu
+
+            }
 
 
             qDebug() << "orico only row(add or dateUpdate)" << r << right->oricoData().kingaku<<right->oricoData().usePlace;
@@ -1637,15 +1655,14 @@ void MainWindow::on_actionimport_2_triggered()
         9   // 摘要
     };  以下のようにこれをDBから取得
 */
-    //QSettings settings("MyCompany", "QtKakeibo");
-    //QString dbPath = settings.value("Database/Path").toString();
+
     CsvMapping mapping=koza::kozaImportMapFromNum(dbPath,ckozanum);
 
     CsvImporter CsvImporter(mapping);
     QVector<importRecord> records;
 
     if (!filePath.isEmpty()) {
-      //  CsvImporter CsvImporter(map);
+
       records = CsvImporter.importFile(filePath);
     }
 
