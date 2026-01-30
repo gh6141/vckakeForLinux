@@ -1052,10 +1052,10 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
 
             // 両方まだ未一致かつ金額が一致
             if (!left->matchFlg && !right->matchFlg &&
-                left->kakeiboData().kingaku == right->oricoData().kingaku)
+                left->kakeiboData().kingaku == right->bankData().payment-right->bankData().deposit)
             {
                 left->setOricoDataKingaku(left->kakeiboData().kingaku);  //なくてもいいが冗長性もたせた
-                right->setKakeiboDataKingaku(right->oricoData().kingaku);  //〃
+                right->setKakeiboDataKingaku(right->bankData().payment-right->bankData().deposit);  //〃
 
                 updateTmpL(right->row(), right->col(), c, 0);
                 updateTmpL(left->row(), left->col(), c, 1);
@@ -1064,7 +1064,7 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
                 grid->moveButton(right->row(), right->col(), c, 0);
                 grid->moveButton(left->row(), left->col(), c, 1);
 
-                left->obtnX=-1 ; //oricoでないとき-1
+                left->obtnX=-1 ; //bankでないとき-1
                 left->kbtnX=1 ; //kakeibo なら 1か0
                 right->obtnX= 0 ;
                 right->kbtnX= -1 ;
@@ -1093,7 +1093,7 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
 
         if (right ) {
             if(right->obtnX==1){
-                kei += right->oricoData().kingaku;
+                kei += right->bankData().payment - right->bankData().deposit;
 
                 addCount++;
                 allCount++;
@@ -1106,7 +1106,7 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
 
         }else if(left){
             if(left->obtnX==1){
-                kei += left->oricoData().kingaku;
+                kei += left->bankData().payment - left->bankData().deposit;
 
                 allCount++;
             } else if(left->kbtnX==1){
@@ -1136,7 +1136,7 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
         rep=rep+QString::number(matchCount)+"件がすべて一致(更新不要)　合計"+ QString::number(kei) + "に一致します！　";
 
     }else    {
-        rep=rep+ "注意！！ここでの集計は"+ QString::number(kei) + "で、Orico請求の" + QString::number(total)+"と一致しません。CSVデータが正しいかチェック必要です。";
+        rep=rep+ "注意！！ここでの集計は"+ QString::number(kei) + "で、最終残高" + QString::number(total)+"と一致しません。CSVデータが正しいかチェック必要です。";
     }
 
 
@@ -1635,7 +1635,7 @@ void MainWindow::on_actionimport_2_triggered()
         8,  // 残高
         7,  // 取引区分
         9   // 摘要
-    };
+    };  以下のようにこれをDBから取得
 */
     //QSettings settings("MyCompany", "QtKakeibo");
     //QString dbPath = settings.value("Database/Path").toString();
