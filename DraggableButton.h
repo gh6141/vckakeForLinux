@@ -6,6 +6,7 @@
 #include <QDataStream>
 #include "OricoRowData.h"
 #include "KakeiboRowData.h"
+#include "importRecord.h"
 
 class DraggableButton : public QPushButton
 {
@@ -25,6 +26,12 @@ public:
     void setOricoData(const OricoRowData &data) { m_oricoData = data; }
     void setOricoDataKingaku(const int &data) { m_oricoData.kingaku = data; }
     OricoRowData oricoData() const { return m_oricoData; }
+
+    // Bank
+    void setBankData(const importRecord &data) { m_bankData = data; }
+    void setBankDataPayment(const int &data) { m_bankData.payment = data; }
+    void setBankDataDeposit(const int &data) { m_bankData.deposit = data; }
+    importRecord bankData() const { return m_bankData; }
 
     // Kakeibo
     void setKakeiboData(const KakeiboRowData &data) { m_kakeiboData = data; }
@@ -66,5 +73,6 @@ private:
     int m_col;
     OricoRowData m_oricoData;
     KakeiboRowData m_kakeiboData;
+    importRecord m_bankData;
 };
 

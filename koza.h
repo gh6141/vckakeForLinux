@@ -10,4 +10,8 @@ public:
 
     static QList<koza> selectAll(const QString &dbPath);
     static int numFromName(const QString &dbPath, const QString &name);
+    static QString kozaNameFromNum(
+        const QString &dbPath,
+        int num
+        );
 };

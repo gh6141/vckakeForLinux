@@ -21,6 +21,11 @@ public:
 private:
     CsvMapping map;
 
-    int   parseMoney(const QString& s) const;
-    QDate parseJapaneseDate(const QString& s) const;
+    int   parseMoney(QString& s) ;
+    QDate parseJapaneseDate(QString& s) ;
+
+    int lastMonth;
+    int yearCrossCount;
+    QDate firstDate;
+    QDate firstDate_before1yr;
 };

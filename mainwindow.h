@@ -14,6 +14,7 @@
 #include "OricoRowData.h"
 #include "ExpenseLoader.h"
 #include "WebApiDialog.h"
+#include "importRecord.h"
 
 namespace Ui {
 class MainWindow;
@@ -116,6 +117,10 @@ private slots:
                         const QList<KakeiboRowData>& kRows,
                         const QList<OricoRowData>& oRows,
                         int& mode,QString rep);
+    void onKosinClicked_Bank(DraggableGridWidget* grid,
+                        const QList<KakeiboRowData>& kRows,
+                        const QList<importRecord>& oRows,
+                        int& mode,QString rep);
 
     void on_actionWebAPI_triggered();
 
@@ -147,6 +152,9 @@ private:
     QString populateOricoGrid(DraggableGridWidget* grid,
                                        const QVector<KakeiboRowData>& kRows,
                            const QVector<OricoRowData>& oricoRows,int& total);
+    QString populateBankGrid(DraggableGridWidget* grid,
+                              const QVector<KakeiboRowData>& kRows,
+                              const QVector<importRecord>& records,int& total);
 
     KakeiboRowData *krdata;
     OricoRowData *ordata;

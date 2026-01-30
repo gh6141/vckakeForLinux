@@ -12,7 +12,7 @@ KozaWidget::KozaWidget(QWidget* parent)
                   "tabColor TEXT)";
     initDB(sql);  // テーブル作成は派生クラスが決める
 
-    QStringList headers = {"ID", "口座名", "タブ色"};
+    QStringList headers = {"ID", "口座名", "インポート設定"};
     setTableName("koza",sql,headers);
 
 }
@@ -25,6 +25,6 @@ void KozaWidget::addRow()
     if (row >= 0) {
        // model->setData(model->index(row, 0), "");
         model->setData(model->index(row, 1), "○銀行");
-        model->setData(model->index(row, 2), "red");
+        model->setData(model->index(row, 2), "");
     }
 }
