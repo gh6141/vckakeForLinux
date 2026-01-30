@@ -15,6 +15,7 @@
 #include "ExpenseLoader.h"
 #include "WebApiDialog.h"
 #include "importRecord.h"
+#include "csvimporter.h"
 
 namespace Ui {
 class MainWindow;

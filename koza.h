@@ -1,6 +1,7 @@
 #pragma once
 #include <QString>
 #include <QList>
+#include "csvimporter.h"
 
 class koza {
 public:
@@ -14,4 +15,5 @@ public:
         const QString &dbPath,
         int num
         );
+    static CsvMapping kozaImportMapFromNum(const QString &dbPath, int num);
 };

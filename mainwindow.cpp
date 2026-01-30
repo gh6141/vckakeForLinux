@@ -30,7 +30,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QCloseEvent>
-#include "csvimporter.h"
+
 
 QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr,QDate fromDate=QDate(),QDate toDate=QDate()) {
     QDialog dialog(parent);
@@ -1627,7 +1627,7 @@ void MainWindow::on_actionimport_2_triggered()
         return;
     }
 
-
+/*
     CsvMapping mapping {
         2,  // 日付
         4,  // 支払
@@ -1636,6 +1636,10 @@ void MainWindow::on_actionimport_2_triggered()
         7,  // 取引区分
         9   // 摘要
     };
+*/
+    //QSettings settings("MyCompany", "QtKakeibo");
+    //QString dbPath = settings.value("Database/Path").toString();
+    CsvMapping mapping=koza::kozaImportMapFromNum(dbPath,ckozanum);
 
     CsvImporter CsvImporter(mapping);
     QVector<importRecord> records;

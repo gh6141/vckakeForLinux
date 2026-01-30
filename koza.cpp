@@ -85,3 +85,55 @@ QString koza::kozaNameFromNum(const QString &dbPath, int num)
 
     return QString(); // 見つからない場合
 }
+
+
+//CsvMapping mapping {2,  // 日付 4,// 支払  5, // 預かり  8, // 残高  7,  // 取引区分  9   // 摘要};
+
+CsvMapping koza::kozaImportMapFromNum(const QString &dbPath, int num)
+{
+    CsvMapping cmp;
+    QSqlDatabase db;
+    if (QSqlDatabase::contains("koza_conn3")) {
+        db = QSqlDatabase::database("koza_conn3");
+    } else {
+        db = QSqlDatabase::addDatabase("QSQLITE", "koza_conn3");
+        db.setDatabaseName(dbPath);
+        if (!db.open()) return cmp;
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT tabColor FROM koza WHERE num = :num");
+    query.bindValue(":num", num);
+
+    if (!query.exec()) {
+        qDebug() << "SQL error:" << query.lastError();
+        return cmp;
+    }
+
+    if (query.next()) {
+        QString s = query.value(0).toString();  // "2,4, , , , "
+        QStringList list = s.split(',', Qt::KeepEmptyParts);
+
+        if (list.size() < 6){
+            qDebug() << "csvmapping error:koza db colortab check" ;
+            return cmp;  // データ不正
+        }
+
+        CsvMapping m;
+        m.date    = list[0].trimmed().toInt();
+        m.payment = list[1].trimmed().toInt();
+        m.deposit = list[2].trimmed().toInt();
+        m.balance = list[3].trimmed().toInt();
+        m.type    = list[4].trimmed().toInt();
+        m.summary = list[5].trimmed().toInt();
+
+        return m;
+    }
+
+
+
+
+    //return QString(); // 見つからない場合
+    return cmp;
+}
+
