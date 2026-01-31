@@ -1142,12 +1142,12 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
         rep=rep+QString::number(matchCount)+"件がすべて一致(更新不要)　最終残高"+ QString::number(-kei+balBeforeFromDate) + "に一致します！　";
 
     }else    {
-        rep=rep+ "注意！！ここでの集計は"+ QString::number(balBeforeFromDate-kei)
+        rep=rep+ "！！ここでの集計は"+ QString::number(balBeforeFromDate-kei)
               + "{"+QString::number(balBeforeFromDate)
               +"(処理前の残高)   "+QString::number(-kei)
               +"(増減)}"+"で、インポートデータの最終残高"
               + QString::number(total)+"と一致しません。CSVデータが正しいかチェック必要です。今の家計簿データは、"
-              +QString::number(balBeforeFromDate)+"が処理範囲前日までの残高ですが、これが"+QString::number(records[0].balance+records[0].payment-records[0].deposit)+"になるように家計簿データの修正必要です。";
+              +QString::number(balBeforeFromDate)+"が処理範囲前日("+fromDate.addDays(-1).toString("yyyy/MM/dd")+")までの残高ですが、これが"+QString::number(records[0].balance+records[0].payment-records[0].deposit)+"になるように家計簿データの修正必要です。（引落日のずれ等が原因の場合もあり）";
     }
 
 
