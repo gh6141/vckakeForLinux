@@ -976,11 +976,17 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
 {
     grid->clear(); // 既存ボタンを消す
 
-    // まず右列にBankボタンを配置
+    int balBeforeFromDate = 0;
+    QDate dateBeforeFromDate = fromDate.addDays(-1);
+     balBeforeFromDate =
+        BalanceListWidget::calculateBalance(ckozanum, dateBeforeFromDate);
+
+
+    // まず右列にImportボタンを配置
     for (int r = 0; r < records.size(); ++r) {
         const auto& o = records[r];
         auto btnBank = new DraggableButton(
-            "金額:"+QString::number(o.payment-o.deposit) + "(" + o.date.toString("MM/dd") + "):" + o.summary.left(10),
+            "金額:"+QString::number(o.payment-o.deposit) + "(" + o.date.toString("yy/MM/dd") + "):" + o.summary.left(10),
             grid
             );
 
@@ -1013,7 +1019,7 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
     for (int kIdx = 0; kIdx < kRows.size(); ++kIdx) {
         const auto& k = kRows[kIdx];
         auto btnKakeibo = new DraggableButton(
-            QString::number(k.kingaku) + "(" + k.date.toString("MM/dd") + "):" + k.biko.left(6),
+            QString::number(k.kingaku) + "(" + k.date.toString("yy/MM/dd") + "):" + k.biko.left(6),
             grid
             );
 
@@ -1060,7 +1066,7 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
                 updateTmpL(right->row(), right->col(), c, 0);
                 updateTmpL(left->row(), left->col(), c, 1);
 
-                //Oricoを左列に 家計簿を上右に　left_row:r   right_row:c
+                //Importを左列に 家計簿を上右に　left_row:r   right_row:c
                 grid->moveButton(right->row(), right->col(), c, 0);
                 grid->moveButton(left->row(), left->col(), c, 1);
 
@@ -1128,15 +1134,20 @@ QString MainWindow::populateBankGrid(DraggableGridWidget* grid,
         rep=rep+del+"の日付を範囲外（後で削除必要）にします。\n";
     }
 
-    if (total == kei&&addCount>0) {
-        rep=rep+QString::number(matchCount)+"件が一致  右データの"+QString::number(addCount)+"件を追加（日付変更する場合あり）します。\nこの操作で 合計"+ QString::number(kei) + "に一致します！　" ;
-    }else if(total == kei&&addCount==0&&allCount!=matchCount){
-        rep=rep+QString::number(matchCount)+"件が一致　合計"+ QString::number(kei) + "に一致します！　";
-    }else if(total == kei&&addCount==0&&allCount==matchCount){
-        rep=rep+QString::number(matchCount)+"件がすべて一致(更新不要)　合計"+ QString::number(kei) + "に一致します！　";
+    if (total == -kei+balBeforeFromDate&&addCount>0) {
+        rep=rep+QString::number(matchCount)+"件が一致  右データの"+QString::number(addCount)+"件を追加（日付変更する場合あり）します。\nこの操作で 最終残高"+ QString::number(-kei+balBeforeFromDate) + "に一致します！　" ;
+    }else if(total == -kei+balBeforeFromDate&&addCount==0&&allCount!=matchCount){
+        rep=rep+QString::number(matchCount)+"件が一致　最終残高"+ QString::number(-kei+balBeforeFromDate) + "に一致します！　";
+    }else if(total == -kei+balBeforeFromDate&&addCount==0&&allCount==matchCount){
+        rep=rep+QString::number(matchCount)+"件がすべて一致(更新不要)　最終残高"+ QString::number(-kei+balBeforeFromDate) + "に一致します！　";
 
     }else    {
-        rep=rep+ "注意！！ここでの集計は"+ QString::number(kei) + "で、最終残高" + QString::number(total)+"と一致しません。CSVデータが正しいかチェック必要です。";
+        rep=rep+ "注意！！ここでの集計は"+ QString::number(balBeforeFromDate-kei)
+              + "{"+QString::number(balBeforeFromDate)
+              +"(処理前の残高)   "+QString::number(-kei)
+              +"(増減)}"+"で、インポートデータの最終残高"
+              + QString::number(total)+"と一致しません。CSVデータが正しいかチェック必要です。今の家計簿データは、"
+              +QString::number(balBeforeFromDate)+"が処理範囲前日までの残高ですが、これが"+QString::number(records[0].balance+records[0].payment-records[0].deposit)+"になるように家計簿データの修正必要です。";
     }
 
 
@@ -1267,15 +1278,14 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
 {
 
     if (rep.left(2) == "注意") {
-     //   QMessageBox::information(this, "確認", "更新取り消します(" + rep + ")");
-     //   return;
+        QMessageBox::information(this, "確認", "更新取り消します(" + rep + ")");
+        return;
     }
 
     //cButtonLによるチェックは不要になる。下のButtonによる処理がOkなったため。
     for (auto& tmp : cButtonL) {
         if (tmp.dtKind == 0) { // Kakeibo
             // tmp.krdata や tmp.x, tmp.y を使った処理
-
             if(tmp.x==0){ //del kake
                 qDebug()<<"kake del"<< tmp.y << "  \\" << tmp.krdata.kingaku<<" num:"<<tmp.number;
             }else if(tmp.x==1){ //一致
@@ -1288,7 +1298,6 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
             }else if(tmp.x==1){ //add
                 qDebug()<<"bank add"<< tmp.y << "  \"" << tmp.krdata.kingaku<<" num:"<<tmp.number;
             }
-
         }
     }
 
@@ -1302,9 +1311,8 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
     // 例：格子上のボタン配置を走査して、対応を取得する
     for (int r = 0; r < rows; ++r)
     {
-        DraggableButton* left  = grid->buttonAt(r, 0); // Bank
-        DraggableButton* right = grid->buttonAt(r, 1); // Kakeibo
-
+        DraggableButton* left  = grid->buttonAt(r, 0); // Import?
+        DraggableButton* right = grid->buttonAt(r, 1); // Kakeibo?
         if (!left && !right) continue;
 
         // 両方ある → マッチしている
@@ -1313,10 +1321,9 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
             auto odata = left->bankData();
             auto kdata = right->kakeiboData();
             qDebug() << "MATCH row" << r << "金額" << odata.payment-odata.deposit  << "日付" << odata.date << "備考" << kdata.biko+"("+odata.summary+")";
-
             // ★ここでDB更新★
-            if(!kdata.biko.contains("(Bank:")){
-                kdata.biko = kdata.biko+"(Bank:"+odata.summary+")";
+            if(!kdata.biko.contains("<imp")){
+                kdata.biko = kdata.biko+"<imp"+odata.summary; //家計簿に参考までインポート情報追加
             }
             if(odata.payment>0){
                 table->updateRow(kdata,true,ckozanum);//true=sishutu false=shunyu
@@ -1324,54 +1331,47 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
                 kdata.kingaku=odata.deposit;
                 table->updateRow(kdata,false,ckozanum);//true=sishutu false=shunyu
             }
-
         }
-        else if (left && !right)
+        else if (left && !right) //家計簿のみにある
         {
             KakeiboRowData datak=left->kakeiboData();
-            datak.date= toDate.addDays(2);//よく月２日
-            datak.biko = datak.biko+"(削除要検討)";
+            datak.date= toDate.addDays(2);//わかりやすく２日後に移動
+            datak.biko = datak.biko+"(インポートデータにないため削除検討)";
             if(datak.kingaku>0){
                 table->updateRow(datak,true,ckozanum);//true=sishutu false=shunyu
             }else{
                 datak.kingaku=-datak.kingaku;
                 table->updateRow(datak,false,ckozanum);//true=sishutu false=shunyu
             }
-
-
-
         }
-        else if (!left && right)
+        else if (!left && right) //インポートのみにある
         {
-            KakeiboRowData data;
-            QDate odate= right->bankData().date; //check
-            if(odate<=toDate&&odate>=fromDate){
+            KakeiboRowData data; //新規データのために作成
+            QDate odate= right->bankData().date; //インポートデータの日付
+
+           // if(odate<=toDate&&odate>=fromDate){ //指定範囲内ならそのまま、通常はこちら
                 data.date = odate;
-            }else{
-                data.date = fromDate; //指定範囲でないときは2日に
-            }
+          //  }else{
+          //      data.date = fromDate; //指定範囲でないときは2日に..通常ありえないが
+          //  }
+
             data.kingaku = right->bankData().payment - right->bankData().deposit;
             data.himoku = "";
             data.shiharaisaki = "";
-            data.biko = right->bankData().summary+"(Bank)";
+            if(!data.biko.contains("<imp")){
+             data.biko = right->bankData().summary+"<imp";
+             }
             data.idosaki=0;
             if(right->bankData().payment>0){
                 table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
-
             }else{
                 data.kingaku=right->bankData().deposit;
                 table->addRowForCurrentAccount(data,false,ckozanum);//true=sishutu false=shunyu
-
             }
-
-
             qDebug() << "orico only row(add or dateUpdate)" << r << right->oricoData().kingaku<<right->oricoData().usePlace;
         }
     }
-
     table->loadTable(ckozanum);
-
-
     qDebug() << "onKosinClicked_bank completed.";
 }
 
@@ -1626,19 +1626,36 @@ void MainWindow::on_actionimport_2_triggered()
     QSettings settings("MyCompany", "QtKakeibo");
     QString dbPath = settings.value("Database/Path").toString();
     QString kname=koza::kozaNameFromNum(dbPath,ckozanum);
-    if(kname!="労金"){
-    QMessageBox::warning(
+
+    auto ret = QMessageBox::question(
         this,
-        "口座選択の確認","注意！！間違って"+
-        QString::number(ckozanum)+":"+kname+" が選択されています！！！再度、口座選択を確認してください。"
+        tr("口座選択の確認"),
+        QString("%1:%2 の口座のインポートを実行します。\n"
+                "よろしければ OK ボタンをクリックしてください。")
+            .arg(ckozanum)
+            .arg(kname),
+        QMessageBox::Ok | QMessageBox::Cancel
         );
+
+    QString wildCard="*.csv";
+    if (ret != QMessageBox::Ok) {
+        return;
     }
+
+    if(kname.contains("労働")|kname.contains("労金")){
+        wildCard="ny*.csv";
+    }else if(kname.contains("SBI")||kname.contains("ＳＢＩ")){
+         wildCard="nyushukinmeisai*.csv";
+    }else if(kname.contains("荘内")||kname.contains("荘銀")){
+        wildCard="ny*.csv";
+    }
+
 
     QString filePath = QFileDialog::getOpenFileName(
         this,
-        "労金CSV を選択",
+        kname+"CSV を選択",
         "",                 // 初期フォルダ
-        "CSV ファイル (ny*.csv);;すべてのファイル (*)"
+        "CSV ファイル ("+wildCard+");;すべてのファイル (*)"
         );
 
     if (filePath.isEmpty()) {
@@ -1657,19 +1674,22 @@ void MainWindow::on_actionimport_2_triggered()
 */
 
     CsvMapping mapping=koza::kozaImportMapFromNum(dbPath,ckozanum);
-
     CsvImporter CsvImporter(mapping);
     QVector<importRecord> records;
-
     if (!filePath.isEmpty()) {
+        records = CsvImporter.importFile(filePath);
 
-      records = CsvImporter.importFile(filePath);
     }
 
      if (records.isEmpty()) {
          QMessageBox::warning(this, "CSV Error", filePath+": CSV ファイルが存在しないか読み込めません");
         return;
      }
+
+     //total（インポートデータの最終行の残高）取得  あとで合計額or残高照合で利用
+     importRecord lastObj = records.last();  // 最後のオブジェクトを取得
+     int total= lastObj.balance; //
+
 
     // qDebug() << records;
      QDate startDay=records[0].date;
@@ -1681,7 +1701,7 @@ void MainWindow::on_actionimport_2_triggered()
      fromDate = dates.first;
      toDate   = dates.second;
 
-    int total=0;//あとで合計額or残高照合で利用
+
 
     QVector<KakeiboRowData> kRows = table->getAllRows(fromDate, toDate,ckozanum);
 

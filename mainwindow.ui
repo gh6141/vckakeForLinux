@@ -968,7 +968,7 @@
   </action>
   <action name="actionimport_2">
    <property name="text">
-    <string>インポート(労金)</string>
+    <string>インポート(銀行等)</string>
    </property>
   </action>
  </widget>

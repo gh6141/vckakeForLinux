@@ -31,4 +31,9 @@ protected:
 
     void initUI();
     void initDB(QString createSQL="");
+
+
+
+
+
 };

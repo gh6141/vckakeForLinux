@@ -17,12 +17,21 @@ public:
     explicit CsvImporter(const CsvMapping& m);
 
     QVector<importRecord> importFile(const QString& fileName);
+    static QStringList parseCsvLine(const QString& line);
 
 private:
     CsvMapping map;
 
     int   parseMoney(QString& s) ;
     QDate parseJapaneseDate(QString& s) ;
+    bool isSkippableLine(const QString& line);
+
+    bool parseRecordLine(
+        const QString& line,
+        const CsvMapping& map,
+        importRecord& out
+        );
+
 
     int lastMonth;
     int yearCrossCount;

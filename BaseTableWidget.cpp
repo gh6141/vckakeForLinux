@@ -1,6 +1,31 @@
 // BaseTableWidget.cpp
 #include "BaseTableWidget.h"
 #include "mainwindow.h"
+#include <QStyledItemDelegate>
+#include <QHeaderView>
+
+// BaseTableWidget.cpp の中に
+class ToolTipDelegate : public QStyledItemDelegate
+{
+public:
+    ToolTipDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem &option,
+                          const QModelIndex &index) const override
+    {
+        QLineEdit* editor = new QLineEdit(parent);
+
+        switch (index.column()) {
+        case 1: editor->setPlaceholderText("〇銀行、オリコ等"); break;
+        case 2: editor->setPlaceholderText("インポート設定 例. 2(日),4(払),5(預),8(残),7(区分), 9(摘要）"); break;
+
+        }
+        return editor;
+    }
+};
+
+
+
 
 BaseTableWidget::BaseTableWidget(QWidget *parent,QString createSQL)
     : QMainWindow(parent),
@@ -8,6 +33,8 @@ BaseTableWidget::BaseTableWidget(QWidget *parent,QString createSQL)
     view(new QTableView(this))
 {
     initUI();
+
+
 }
 
 void BaseTableWidget::initUI()
@@ -41,10 +68,17 @@ void BaseTableWidget::setTableName(const QString &name,const QString createSQL,c
     // num 列を非表示にする
   //  view->hideColumn(0); // 0 は num がモデルの最初の列の場合
 
+    view->setMinimumWidth(600); // 表の最小幅
+    view->setColumnWidth(1, 200); // 1列目の幅
+    view->setColumnWidth(2, 400); // 2列目の幅
+  //  view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);//表全体の幅に合わせて列が均等に伸びる
+
 
     for (int i = 0; i < headers.size(); ++i) {
        model->setHeaderData(i, Qt::Horizontal, headers[i]);
     }
+
+    view->setItemDelegate(new ToolTipDelegate(view)); //ツールチップ追加
 }
 
 void BaseTableWidget::initDB(const QString createSQL)
@@ -92,3 +126,4 @@ void BaseTableWidget::deleteRow()
         }
     }
 }
+

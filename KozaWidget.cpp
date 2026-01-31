@@ -3,9 +3,6 @@
 KozaWidget::KozaWidget(QWidget* parent)
     : BaseTableWidget(parent)
 {
-
-
-
     QString sql = "CREATE TABLE IF NOT EXISTS koza ("
                   "num INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "kozaName TEXT, "
@@ -24,7 +21,7 @@ void KozaWidget::addRow()
     int row = model->rowCount() - 1;
     if (row >= 0) {
        // model->setData(model->index(row, 0), "");
-        model->setData(model->index(row, 1), "○銀行");
+        model->setData(model->index(row, 1), "");
         model->setData(model->index(row, 2), "");
     }
 }
