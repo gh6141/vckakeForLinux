@@ -691,12 +691,13 @@ void MainWindow::on_actionimport_triggered()
     QSettings settings("MyCompany", "QtKakeibo");
     QString dbPath = settings.value("Database/Path").toString();
     QString kname=koza::kozaNameFromNum(dbPath,ckozanum);
-    if(kname!="オリコ"){
+    if(!kname.contains("オリコ")){
             QMessageBox::warning(
                 this,
                 "口座選択の確認","注意！！口座選択が"+
-                    QString::number(ckozanum)+":"+kname+" になっています！！口座選択を確認してください。"
+                    QString::number(ckozanum)+":"+kname+" になっています！！オリコを選択してください。"
                 );
+        return;
         }
 
     // 前月1日を計算
@@ -1615,10 +1616,6 @@ void MainWindow::on_actionimportKake_triggered()
 }
 
 
-//void MainWindow::on_pushButton_7_clicked()
-//{
-//    updateBalance();
-//}
 
 
 void MainWindow::on_actionimport_2_triggered()
@@ -1626,6 +1623,17 @@ void MainWindow::on_actionimport_2_triggered()
     QSettings settings("MyCompany", "QtKakeibo");
     QString dbPath = settings.value("Database/Path").toString();
     QString kname=koza::kozaNameFromNum(dbPath,ckozanum);
+
+    if(kname.contains("オリコ")){
+        QMessageBox::warning(this,"口座選択について","オリコが選択されています。銀行口座を選択してください。");
+        return;
+    }
+
+    CsvMapping mapping=koza::kozaImportMapFromNum(dbPath,ckozanum);
+    if(mapping.date<0){
+        QMessageBox::warning(this,"インポート設定について","口座登録で、インポート設定（日付,支払,預かり,残高,取引区分, 摘要の順に列番号を並べる）必要です。");
+        return;
+    }
 
     auto ret = QMessageBox::question(
         this,
@@ -1663,22 +1671,14 @@ void MainWindow::on_actionimport_2_triggered()
     }
 
 /*
-    CsvMapping mapping {
-        2,  // 日付
-        4,  // 支払
-        5,  // 預かり
-        8,  // 残高
-        7,  // 取引区分
-        9   // 摘要
-    };  以下のようにこれをDBから取得
+    CsvMapping mapping { 2,  // 日付   4,  // 支払 5,  // 預かり   8,  // 残高 7,  // 取引区分 9   // 摘要 };  以下のようにこれをDBから取得
 */
 
-    CsvMapping mapping=koza::kozaImportMapFromNum(dbPath,ckozanum);
+
     CsvImporter CsvImporter(mapping);
     QVector<importRecord> records;
     if (!filePath.isEmpty()) {
         records = CsvImporter.importFile(filePath);
-
     }
 
      if (records.isEmpty()) {

@@ -91,7 +91,7 @@ QString koza::kozaNameFromNum(const QString &dbPath, int num)
 
 CsvMapping koza::kozaImportMapFromNum(const QString &dbPath, int num)
 {
-    CsvMapping cmp;
+    CsvMapping cmp{ -1, -1, -1, -1, -1, -1 }; // ← 無効の合図
     QSqlDatabase db;
     if (QSqlDatabase::contains("koza_conn3")) {
         db = QSqlDatabase::database("koza_conn3");
