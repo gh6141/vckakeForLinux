@@ -1322,15 +1322,15 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
             auto odata = left->bankData();
             auto kdata = right->kakeiboData();
             qDebug() << "MATCH row" << r << "金額" << odata.payment-odata.deposit  << "日付" << odata.date << "備考" << kdata.biko+"("+odata.summary+")";
-            // ★ここでDB更新★
+            // ★ここでDB更新★ 更新すると口座間移動データなどが消えて不具合起こしやすいので、なしにする。基本そのまま残す。
             if(!kdata.biko.contains("<imp")){
-                kdata.biko = kdata.biko+"<imp"+odata.summary; //家計簿に参考までインポート情報追加
+               // kdata.biko = kdata.biko+"<imp"+odata.summary; //家計簿に参考までインポート情報追加
             }
             if(odata.payment>0){
-                table->updateRow(kdata,true,ckozanum);//true=sishutu false=shunyu
+             //   table->updateRow(kdata,true,ckozanum);//true=sishutu false=shunyu
             }else{
-                kdata.kingaku=odata.deposit;
-                table->updateRow(kdata,false,ckozanum);//true=sishutu false=shunyu
+              //  kdata.kingaku=odata.deposit;
+             //   table->updateRow(kdata,false,ckozanum);//true=sishutu false=shunyu
             }
         }
         else if (left && !right) //家計簿のみにある
@@ -1338,11 +1338,12 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
             KakeiboRowData datak=left->kakeiboData();
             datak.date= toDate.addDays(2);//わかりやすく２日後に移動
             datak.biko = datak.biko+"(インポートデータにないため削除検討)";
+            //ここも、変更せずに、様子をみる。手動で不要なものさがして、手作業で削除
             if(datak.kingaku>0){
-                table->updateRow(datak,true,ckozanum);//true=sishutu false=shunyu
+               // table->updateRow(datak,true,ckozanum);//true=sishutu false=shunyu
             }else{
-                datak.kingaku=-datak.kingaku;
-                table->updateRow(datak,false,ckozanum);//true=sishutu false=shunyu
+               // datak.kingaku=-datak.kingaku;
+             //   table->updateRow(datak,false,ckozanum);//true=sishutu false=shunyu
             }
         }
         else if (!left && right) //インポートのみにある
