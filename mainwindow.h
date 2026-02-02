@@ -165,7 +165,7 @@ private:
     QNetworkAccessManager* manager;
     void backupDatabase(const QString& dbPath);
     void gotoLast();
-
+    void recalcAndGoLastSafe();
 
 };
 

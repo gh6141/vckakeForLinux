@@ -30,6 +30,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QCloseEvent>
+#include <QTimer>
 
 
 QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr,QDate fromDate=QDate(),QDate toDate=QDate()) {
@@ -90,7 +91,7 @@ MainWindow::MainWindow(QWidget *parent)
     table = new KakeiboTable(); // 親は addWidget() で設定されるので不要
     QVBoxLayout *vbox = qobject_cast<QVBoxLayout*>(ui->centralwidget->layout());
 
-    updateButton = new QPushButton("最下行へ", this);
+    updateButton = new QPushButton("再計算", this);
     updateButton->setFixedWidth(100);
 
     // 削除ボタン作成
@@ -159,15 +160,38 @@ MainWindow::MainWindow(QWidget *parent)
             }
             model->submitAll(); // 元テーブルの変更確定
             table->loadTable(ckozanum);
+
+            gotoLast();
         });
 
-      //  connect(updateButton, &QPushButton::clicked, this, [this]() {
-      //      table->scrollDown();
+
         connect(updateButton, &QPushButton::clicked, this, [this]() {
             gotoLast();
         });
         connect(table, &KakeiboTable::balanceChanged,
                 this, &MainWindow::updateBalance);
+
+
+        //編集後、残高再計算スクロール
+        connect(table->getModel(), &QAbstractItemModel::dataChanged,
+                this, [this](const QModelIndex&, const QModelIndex&, const QVector<int>&){
+                    // 少し遅らせるのがコツ（編集中の確定待ち）
+                    QTimer::singleShot(200, this, [this](){
+                        gotoLast();
+                       // recalcAndGoLastSafe();
+                    });
+                });
+        //追加後（インポートなど）、残高再計算スクロール
+        connect(table->getModel(), &QAbstractItemModel::rowsInserted,
+                this, [this](const QModelIndex&, int, int){
+                    QTimer::singleShot(200, this, [this](){
+                        gotoLast();
+              //  recalcAndGoLastSafe();
+                    });
+                });
+
+
+
     }
 
     KozaComboWidget kozaWidget;
@@ -362,34 +386,47 @@ void MainWindow::on_pushButton_2_clicked()
 }
 
 
-void MainWindow::gotoLast(){
-    //-----------------------------------------------------
-    // ★追加後、必ず proxy の最終行へスクロールさせる
-    //-----------------------------------------------------
-    QAbstractItemModel *baseModel = table->getModel();     // QSqlTableModel*
-    QSortFilterProxyModel *proxy  = table->getProxyModel(); // MultiSortProxy*
+void MainWindow::gotoLast()
+{
+            table->loadTable(ckozanum);
+    QSqlTableModel *baseModel = table->getModel();
+    QSortFilterProxyModel *proxy = table->getProxyModel();
+
+    if (!baseModel || !proxy) {
+        return;
+    }
+    // ★★★ ここが重要：常に「現在の sourceModel」を使う ★★★
+    if (proxy->sourceModel() != baseModel) {
+
+        return;   // 安全側に倒す
+    }
+
+    // ---- ここから下は今までどおり ----
+    if (baseModel) {
+        baseModel->submitAll();
+
+        table->recalculateBalances(ckozanum);
+        baseModel->select();
+    }
+
     int lastRow = baseModel->rowCount() - 1;
     if (lastRow >= 0) {
+
         QModelIndex sourceIndex = baseModel->index(lastRow, 0);
-        QModelIndex proxyIndex  = proxy->mapFromSource(sourceIndex);
-        table->getView()->scrollTo(proxyIndex, QAbstractItemView::PositionAtBottom);
+
+        // ★★★ 追加チェック（超重要）★★★
+        if (!sourceIndex.isValid())
+            return;
+
+        QModelIndex proxyIndex = proxy->mapFromSource(sourceIndex);
+        if (proxyIndex.isValid()) {
+            table->getView()->scrollTo(proxyIndex,
+                                       QAbstractItemView::PositionAtBottom);
+        }
     }
-    //-----------------------------------------------------
-
-    // ★★★ ここに追加 ★★★
-
-    // ① まず編集内容を確定（超重要）
-    if (table->getModel()) {
-        table->getModel()->submitAll();
-    }
-
-    // ② 残高を再計算して保存
-    table->recalculateBalances(ckozanum);
-
-    // ③ 必要なら再読み込み
-    table->getModel()->select();
 
 }
+
 
 void MainWindow::on_pushButton_clicked()
 {
@@ -401,6 +438,8 @@ void MainWindow::on_pushButton_clicked()
     data.biko = ui->comboBox_4->currentText();
     table->addRowForCurrentAccount(data,false,ckozanum);//true=sishutu false=shunyu
     table->loadTable(ckozanum);
+
+    gotoLast();
 
     bool flg= m_trw->checkExist(ui->comboBox_2->currentText(),ui->comboBox_3->currentText(),ui->comboBox_4->currentText());
     // 存在しなければボタン有効、存在すれば無効
@@ -447,7 +486,7 @@ void MainWindow::on_pushButton_3_clicked()
     data2.idosaki=ckozanum;
    table->addRowForCurrentAccount(data2,false,dst_ckozanum);//true=sishutu false=shunyu
    table->loadTable(ckozanum);
-
+   gotoLast();
 }
 
 
@@ -1716,5 +1755,49 @@ void MainWindow::on_actionimport_2_triggered()
 
     dlg.exec();
 
+}
+
+
+void MainWindow::recalcAndGoLastSafe()
+{
+     //QApplication::processEvents();
+
+    auto m = table->getModel();
+    if (!m) return;
+
+    static bool inProgress = false;
+    if (inProgress) return;
+    inProgress = true;
+
+    // ★ まず編集中のセルを確定
+    if (QWidget *w = QApplication::focusWidget()) {
+        w->clearFocus();
+    }
+
+    QTimer::singleShot(80, this, [this, m]() {
+
+        if (!m->submitAll()) {
+            qWarning() << "submitAll failed:" << m->lastError();
+            inProgress = false;
+            return;
+        }
+
+        table->recalculateBalances(ckozanum);
+
+        // ★★★ ここが重要：select() の「完了後」にスクロールする ★★★
+        connect(m, &QAbstractItemModel::modelReset,
+                this, [this]() {
+
+                    // さらに一拍だけ待つ（念のため）
+                    QTimer::singleShot(10, this, [this]() {
+                        table->getView()->scrollToBottom();
+                    });
+                },
+                Qt::SingleShotConnection); // ← 1回だけ実行
+
+        m->select();   // ← ここでモデルが作り直される
+
+        inProgress = false;
+    });
 }
 
