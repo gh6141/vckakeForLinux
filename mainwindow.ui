@@ -293,7 +293,7 @@
          </rect>
         </property>
         <property name="text">
-         <string>ネットipt</string>
+         <string>データ取込</string>
         </property>
        </widget>
        <widget class="QWidget" name="cb5Area" native="true">

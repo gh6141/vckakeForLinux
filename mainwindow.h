@@ -164,6 +164,7 @@ private:
     void updateTmpL(int fromRow, int fromCol, int toRow, int toCol);
     QNetworkAccessManager* manager;
     void backupDatabase(const QString& dbPath);
+    void gotoLast();
 
 
 };

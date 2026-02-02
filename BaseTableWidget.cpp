@@ -1,28 +1,6 @@
 // BaseTableWidget.cpp
 #include "BaseTableWidget.h"
 #include "mainwindow.h"
-#include <QStyledItemDelegate>
-#include <QHeaderView>
-
-// BaseTableWidget.cpp の中に
-class ToolTipDelegate : public QStyledItemDelegate
-{
-public:
-    ToolTipDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
-
-    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem &option,
-                          const QModelIndex &index) const override
-    {
-        QLineEdit* editor = new QLineEdit(parent);
-
-        switch (index.column()) {
-        case 1: editor->setPlaceholderText("〇銀行、オリコ等"); break;
-        case 2: editor->setPlaceholderText("インポート設定 例. 2(日),4(払),5(預),8(残),7(区分), 9(摘要）"); break;
-
-        }
-        return editor;
-    }
-};
 
 
 
@@ -78,7 +56,7 @@ void BaseTableWidget::setTableName(const QString &name,const QString createSQL,c
        model->setHeaderData(i, Qt::Horizontal, headers[i]);
     }
 
-    view->setItemDelegate(new ToolTipDelegate(view)); //ツールチップ追加
+  //  view->setItemDelegate(new ToolTipDelegate(view)); //ツールチップ追加
 }
 
 void BaseTableWidget::initDB(const QString createSQL)

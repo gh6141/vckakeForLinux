@@ -35,24 +35,16 @@
 QPair<QDate,QDate> getDateRangeFromUser(QWidget* parent = nullptr,QDate fromDate=QDate(),QDate toDate=QDate()) {
     QDialog dialog(parent);
     dialog.setWindowTitle("日付範囲を選択");
-
     QVBoxLayout* mainLayout = new QVBoxLayout(&dialog);
-
-    //QDateEdit* fromEdit = new QDateEdit(sndOfLastMonth);
     QDateEdit* fromEdit = new QDateEdit(fromDate);
     fromEdit->setCalendarPopup(true);
     QHBoxLayout* fromLayout = new QHBoxLayout;
     fromLayout->addWidget(new QLabel("開始日:"));
     fromLayout->addWidget(fromEdit);
     mainLayout->addLayout(fromLayout);
-
-    // To
     QHBoxLayout* toLayout = new QHBoxLayout;
     toLayout->addWidget(new QLabel("終了日:"));
 
-
-
-    //QDateEdit* toEdit = new QDateEdit(lastOfLastMonth);
     QDateEdit* toEdit = new QDateEdit(toDate);
     toEdit->setCalendarPopup(true);
     toLayout->addWidget(toEdit);
@@ -96,7 +88,6 @@ MainWindow::MainWindow(QWidget *parent)
     statusBar()->addPermanentWidget(balanceLabel);
 
     table = new KakeiboTable(); // 親は addWidget() で設定されるので不要
-    //ui->centralwidget->layout()->addWidget(table);
     QVBoxLayout *vbox = qobject_cast<QVBoxLayout*>(ui->centralwidget->layout());
 
     updateButton = new QPushButton("最下行へ", this);
@@ -123,11 +114,8 @@ MainWindow::MainWindow(QWidget *parent)
             QSortFilterProxyModel* proxy = table->getProxyModel();
             QSqlTableModel* model = table->getmodel();
             QItemSelectionModel *sel = table->selectionModel();
-
             if (!sel->hasSelection()) return;
-
             QModelIndexList selectedProxy = sel->selectedRows();
-
             // 行番号がずれないように降順で処理
             std::sort(selectedProxy.begin(), selectedProxy.end(),
                       [](const QModelIndex &a, const QModelIndex &b) { return a.row() > b.row(); });
@@ -164,33 +152,23 @@ MainWindow::MainWindow(QWidget *parent)
                     } else {
                         qDebug() << "Deleted matching rows from" << otherTableName;
                     }
-
-
                 }
-
                 // 元のテーブルの削除
                 model->removeRow(idx.row());
                 qDebug()<<idx.row();
             }
-
             model->submitAll(); // 元テーブルの変更確定
             table->loadTable(ckozanum);
         });
 
-
-
+      //  connect(updateButton, &QPushButton::clicked, this, [this]() {
+      //      table->scrollDown();
         connect(updateButton, &QPushButton::clicked, this, [this]() {
-              // table->loadTable(ckozanum);
-
-            table->scrollDown();
-
+            gotoLast();
         });
-
-
         connect(table, &KakeiboTable::balanceChanged,
                 this, &MainWindow::updateBalance);
     }
-
 
     KozaComboWidget kozaWidget;
     kozaWidget.fillComboBox(ui->comboBox_8);
@@ -202,16 +180,11 @@ MainWindow::MainWindow(QWidget *parent)
     himokuWidget.fillComboBox(ui->comboBox_6,"yomi");
     himokuWidget.fillComboBox(ui->comboBox_2,"yomi");
 
-
     comboTwoUpdate();
-
-   // MainWindow::();
 
     ui->dateEdit->setDate(QDate::currentDate());
     ui->dateEdit_2->setDate(QDate::currentDate());
     ui->dateEdit_3->setDate(QDate::currentDate());
-
-
 
     cbh1_payee=new ComboRegisterHelper(ui->comboBox_5,ui->cb5Area,ui->hLayoutCb5, "shiharaisakimoto",  QSqlDatabase::database(),this);
     cbh2_payee=new ComboRegisterHelper(ui->comboBox_3,ui->cb3Area,  ui->hLayoutCb3, "shiharaisakimoto",  QSqlDatabase::database(),this);
@@ -241,7 +214,6 @@ MainWindow::MainWindow(QWidget *parent)
                 combo->setCurrentIndex(index);
             }
         }
-
         table->loadTable(ckozanum);
     };
 
@@ -251,34 +223,21 @@ MainWindow::MainWindow(QWidget *parent)
                 this, [=](int index){ syncComboBoxes(index, combo); });
     }
 
-
     connect(ui->comboBox_13, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, [=](int index){
        dst_ckozanum=ui->comboBox_13->itemData(index).toInt();
-
       });
 
-
-
-
     // 「追加」ボタンを押したら行追加
-
     connect(ui->pushButton_2, &QPushButton::clicked, this, [=](){
 
-
     });
-
-
      m_trw = new ThreeRelationShipsWidget(this);
-
      ssnLtrs = loadThreeRelationList();
-
      ui->comboBox_6->setProperty("popularField", "himoku");
      ui->comboBox_2->setProperty("popularField", "himoku");
-
      ui->comboBox_5->setProperty("popularField", "payee");
      ui->comboBox_3->setProperty("popularField", "payee");
-
      ui->comboBox_7->setProperty("popularField", "biko");
      ui->comboBox_4->setProperty("popularField", "biko");
 
@@ -391,35 +350,46 @@ void MainWindow::on_pushButton_2_clicked()
     data.biko = ui->comboBox_7->currentText();
 
     table->addRowForCurrentAccount(data, true, ckozanum);
-
     table->loadTable(ckozanum);   // ここで model / proxy へ反映
 
+    gotoLast();
+
+    bool flg= m_trw->checkExist(ui->comboBox_6->currentText(),
+                                 ui->comboBox_5->currentText(),
+                                 ui->comboBox_7->currentText());
+    ui->pushButton_4->setEnabled(!flg);
+    ui->pushButton_4->setStyleSheet("background-color: red;");
+}
+
+
+void MainWindow::gotoLast(){
     //-----------------------------------------------------
     // ★追加後、必ず proxy の最終行へスクロールさせる
     //-----------------------------------------------------
     QAbstractItemModel *baseModel = table->getModel();     // QSqlTableModel*
     QSortFilterProxyModel *proxy  = table->getProxyModel(); // MultiSortProxy*
-
     int lastRow = baseModel->rowCount() - 1;
     if (lastRow >= 0) {
         QModelIndex sourceIndex = baseModel->index(lastRow, 0);
         QModelIndex proxyIndex  = proxy->mapFromSource(sourceIndex);
-       // ui->tableView->scrollTo(proxyIndex, QAbstractItemView::PositionAtBottom);
-       // QModelIndex proxyIndex = proxy->index(proxy->rowCount() - 1, 0);
         table->getView()->scrollTo(proxyIndex, QAbstractItemView::PositionAtBottom);
     }
     //-----------------------------------------------------
 
-    bool flg= m_trw->checkExist(ui->comboBox_6->currentText(),
-                                 ui->comboBox_5->currentText(),
-                                 ui->comboBox_7->currentText());
+    // ★★★ ここに追加 ★★★
 
-    ui->pushButton_4->setEnabled(!flg);
-    ui->pushButton_4->setStyleSheet("background-color: red;");
+    // ① まず編集内容を確定（超重要）
+    if (table->getModel()) {
+        table->getModel()->submitAll();
+    }
 
+    // ② 残高を再計算して保存
+    table->recalculateBalances(ckozanum);
+
+    // ③ 必要なら再読み込み
+    table->getModel()->select();
 
 }
-
 
 void MainWindow::on_pushButton_clicked()
 {
@@ -466,11 +436,8 @@ void MainWindow::on_pushButton_3_clicked()
     data.biko = ui->comboBox_11->currentText();
     data.idosaki=dst_ckozanum;
     table->addRowForCurrentAccount(data,true,ckozanum);//true=sishutu false=shunyu
-  //  table->loadTable(ckozanum);
-
- // QMessageBox::warning(this, "次の処理", "送り先の処理をします");
     table->loadTable(dst_ckozanum);
-   //QMessageBox::warning(this, "次の処理", "送り先の処理をします2");
+
     KakeiboRowData data2;
     data2.date = ui->dateEdit_3->date();
     data2.kingaku = kg;
@@ -478,11 +445,8 @@ void MainWindow::on_pushButton_3_clicked()
     data2.shiharaisaki = "移動元:"+ui->comboBox_12->currentText();
     data2.biko = ui->comboBox_11->currentText();
     data2.idosaki=ckozanum;
-
-
    table->addRowForCurrentAccount(data2,false,dst_ckozanum);//true=sishutu false=shunyu
-  //  QMessageBox::warning(this, "次の処理", "送り先の処理をします3");
-    table->loadTable(ckozanum);
+   table->loadTable(ckozanum);
 
 }
 
