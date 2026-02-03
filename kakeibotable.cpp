@@ -221,8 +221,14 @@ void KakeiboTable::addRowForCurrentAccountModel(const KakeiboRowData& data,bool 
     model->insertRow(row);
     model->setData(model->index(row, 1), data.date.toString("yyyy/MM/dd"));
     if(sishutuFlg){
-        model->setData(model->index(row, 2), data.kingaku);
-        model->setData(model->index(row, 3), 0);
+        if(data.kingaku>0){
+            model->setData(model->index(row, 2), data.kingaku);
+            model->setData(model->index(row, 3), 0);
+        }else{ //スマホからマイナスで来た場合
+            model->setData(model->index(row, 2), 0);
+            model->setData(model->index(row, 3), -data.kingaku);
+        }
+
     }else{
         model->setData(model->index(row, 2), 0);
         model->setData(model->index(row, 3), data.kingaku);

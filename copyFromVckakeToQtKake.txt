@@ -1,0 +1,8 @@
+//sqlite3 "C:\Users\sakat\Documents\vckakeForLinux-main\build\Desktop_Qt_6_9_3_MinGW_64_bit-Release\fromVckake.db" <<EOF
+//ATTACH DATABASE '\\192.168.1.200\disk\vckake.db' AS src;
+INSERT INTO shishutunyu2 (date, sishutu, shunyu,zandaka,himoku,biko)
+SELECT date, sishutu, shunyu,zandaka,himoku,biko
+FROM src.shishutunyu1
+WHERE date BETWEEN '2025-01-01' AND '2026-02-03';
+DETACH DATABASE src;
+EOF
