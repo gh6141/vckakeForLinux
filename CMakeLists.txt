@@ -79,6 +79,7 @@ qt_add_executable(vckake
     MultiSortProxy.h
     importRecord.h
     csvimporter.h csvimporter.cpp
+    backupmanager.h backupmanager.cpp
 )
 
 

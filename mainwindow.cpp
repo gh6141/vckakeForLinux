@@ -273,7 +273,7 @@ MainWindow::MainWindow(QWidget *parent)
 
      manager = new QNetworkAccessManager(this);
 
-
+      m_backupManager = new BackupManager("backups", 10, this);
 }
 
 
@@ -1589,9 +1589,10 @@ void MainWindow::backupDatabase(const QString& dbPath)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    // 終了時にバックアップ
+    // 終了時にバックアップ（BackupManager を使用）
     QString dbPath = MainWindow::getDatabasePath();
-    backupDatabase(dbPath);
+    if (m_backupManager)
+        m_backupManager->backupDatabase(dbPath);
 
     // そのまま終了
     event->accept();
@@ -1624,8 +1625,32 @@ void MainWindow::on_actionimportKake_triggered()
 
 void MainWindow::on_actionimport_2_triggered()
 {
+
+
     QSettings settings("MyCompany", "QtKakeibo");
     QString dbPath = settings.value("Database/Path").toString();
+
+    if (!m_backupManager) {
+        qCritical() << "★ m_backupManager が nullptr";
+        return;
+    }
+
+    if (dbPath.isEmpty()) {
+        qCritical() << "★ DBパスが空";
+        return;
+    }
+
+    if (!QFile::exists(dbPath)) {
+        qCritical() << "★ DBファイルが存在しない:" << dbPath;
+        return;
+    }
+
+    bool ok = m_backupManager->createUndoBackup(dbPath);
+    qDebug() << "createUndoBackup 結果 =" << ok;
+
+
+
+
     QString kname=koza::kozaNameFromNum(dbPath,ckozanum);
 
     if(kname.contains("オリコ")){
@@ -1799,5 +1824,39 @@ void MainWindow::recalcAndGoLastSafe()
 
         inProgress = false;
     });
+}
+
+
+void MainWindow::on_actioninportBefore_triggered()
+{
+    auto ret = QMessageBox::question(
+        this,
+        tr("Undo（復元）"),
+        tr("注意！！この操作で、インポート直前のデータに戻します。\n\n"
+           "※ 復元はアプリ再起動後に行ってください。\n"
+           "続行しますか？"),
+        QMessageBox::Yes | QMessageBox::No,
+        QMessageBox::No   // ← デフォルトは No（安全側）
+        );
+
+    if (ret != QMessageBox::Yes)
+        return;   // ★ キャンセル
+
+    // ★ 1) いったんDBを閉じる
+    QSqlDatabase::database().close();   // ← まずはこれ
+
+    // ★ 2) Undo 復元
+    bool ok = m_backupManager->restoreLatestUndo(getDatabasePath());
+
+    if (ok) {
+        // ★ 3) DBを開き直す
+        QSqlDatabase::database().open();
+
+        // ★ 4) モデルを再読み込み
+        gotoLast();
+    }
+
+
+
 }
 

@@ -16,6 +16,7 @@
 #include "WebApiDialog.h"
 #include "importRecord.h"
 #include "csvimporter.h"
+#include "backupmanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -133,6 +134,8 @@ private slots:
 
     void on_actionimport_2_triggered();
 
+    void on_actioninportBefore_triggered();
+
 protected:
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
@@ -166,6 +169,8 @@ private:
     void backupDatabase(const QString& dbPath);
     void gotoLast();
     void recalcAndGoLastSafe();
+
+    BackupManager *m_backupManager;
 
 };
 

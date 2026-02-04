@@ -850,7 +850,7 @@
     </property>
     <addaction name="actionimport"/>
     <addaction name="actionimport_2"/>
-    <addaction name="actionimportKake"/>
+    <addaction name="actioninportBefore"/>
     <addaction name="actionexit"/>
    </widget>
    <widget class="QMenu" name="menu_2">
@@ -968,7 +968,12 @@
   </action>
   <action name="actionimport_2">
    <property name="text">
-    <string>インポート(銀行等)</string>
+    <string>インポート（銀行）</string>
+   </property>
+  </action>
+  <action name="actioninportBefore">
+   <property name="text">
+    <string>インポート直前にUndo(DB復元)</string>
    </property>
   </action>
  </widget>
