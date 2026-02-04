@@ -56,7 +56,24 @@ void BikoSearchDialog::searchKeyword(const QString &keyword)
         QString tableName = QString("shishutunyu%1").arg(k.num);
         QSqlTableModel tModel(nullptr, QSqlDatabase::database());
         tModel.setTable(tableName);
-        tModel.setFilter(QString("biko LIKE '%%1%'").arg(keyword));
+
+        bool ok = false;
+        int keywordNum = keyword.toInt(&ok);
+
+        QString filter;
+        if (ok) {
+            filter = QString(
+                         "biko LIKE '%%1%' OR "
+                         "sishutu = %2 OR "
+                         "shunyu = %2"
+                         ).arg(keyword).arg(keywordNum);
+        } else {
+            filter = QString("biko LIKE '%%1%'").arg(keyword);
+        }
+
+
+        tModel.setFilter(filter);
+        //tModel.setFilter(QString("biko LIKE '%%1%'").arg(keyword));
         tModel.select();
 
         for (int r = 0; r < tModel.rowCount(); ++r) {

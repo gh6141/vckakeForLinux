@@ -948,7 +948,7 @@
   </action>
   <action name="actionsearch">
    <property name="text">
-    <string>備考検索</string>
+    <string>支出・収入・備考検索</string>
    </property>
   </action>
   <action name="actionimport">
