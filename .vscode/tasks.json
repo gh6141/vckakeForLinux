@@ -1,0 +1,83 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: build vckake (Qt 6.11.2 MinGW)",
+            "type": "process",
+            "command": "C:\\Qt\\Tools\\CMake_64\\bin\\cmake.exe",
+            "args": [
+                "--build",
+                "${workspaceFolder}\\build\\Desktop_Qt_6_11_2_MinGW_64_bit_Debug",
+                "--target",
+                "vckake"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PATH": "C:\\Qt\\Tools\\mingw1310_64\\bin;C:\\Qt\\6.11.2\\mingw_64\\bin;${env:PATH}"
+                }
+            },
+            "problemMatcher": "$gcc",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "CMake: configure vckake Release (Qt 6.11.2 MinGW)",
+            "type": "process",
+            "command": "C:\\Qt\\Tools\\CMake_64\\bin\\cmake.exe",
+            "args": [
+                "-S",
+                "${workspaceFolder}",
+                "-B",
+                "${workspaceFolder}\\build\\Desktop_Qt_6_11_2_MinGW_64_bit_Release",
+                "-G",
+                "MinGW Makefiles",
+                "-DCMAKE_CXX_COMPILER=C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe",
+                "-DCMAKE_PREFIX_PATH=C:\\Qt\\6.11.2\\mingw_64",
+                "-DCMAKE_BUILD_TYPE=Release"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PATH": "C:\\Qt\\Tools\\mingw1310_64\\bin;C:\\Qt\\6.11.2\\mingw_64\\bin;${env:PATH}"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: build vckake Release (Qt 6.11.2 MinGW)",
+            "type": "process",
+            "command": "C:\\Qt\\Tools\\CMake_64\\bin\\cmake.exe",
+            "args": [
+                "--build",
+                "${workspaceFolder}\\build\\Desktop_Qt_6_11_2_MinGW_64_bit_Release",
+                "--target",
+                "vckake"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PATH": "C:\\Qt\\Tools\\mingw1310_64\\bin;C:\\Qt\\6.11.2\\mingw_64\\bin;${env:PATH}"
+                }
+            },
+            "problemMatcher": "$gcc",
+            "dependsOn": "CMake: configure vckake Release (Qt 6.11.2 MinGW)",
+            "dependsOrder": "sequence",
+            "group": "build"
+        },
+        {
+            "label": "Qt Designer: open current .ui",
+            "type": "process",
+            "command": "C:\\Qt\\6.11.2\\mingw_64\\bin\\designer.exe",
+            "args": [
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

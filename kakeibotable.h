@@ -34,6 +34,7 @@ public:
 
     bool add(const KakeiboRowData& data, bool sishutuFlg, int knum);
     bool updateRow(const KakeiboRowData& data,bool sishutuFlg, int tbnum);
+    bool appendMemoToRow(int rowId, const QString& marker, const QString& annotation, int tbnum);
     QSqlTableModel* getModel() const { return model; }
     QSortFilterProxyModel* getProxyModel() const { return proxy; }
     QTableView* getView() const { return view; }
@@ -60,4 +61,3 @@ private:
 
 
 #endif // KAKEIBOTABLE_H
-

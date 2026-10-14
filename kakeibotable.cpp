@@ -282,16 +282,11 @@ void KakeiboTable::recalculateBalances(int kznum)
     }
   //  qDebug() << "Total rows processed:" << totalRows<<"SELECT num, sishutsu, shunyu FROM shishutunyu"+QString::number(kznum)+" ORDER BY date ASC";
   //  model->select();
-    QSqlTableModel *sqlModel = new QSqlTableModel(this);
-    sqlModel->setTable("shishutunyu" + QString::number(kznum));
-    sqlModel->select();
-
-    proxy = new MultiSortProxy(this);
-    proxy->setSourceModel(sqlModel);
-    proxy->setDynamicSortFilter(true);     // ← これがないと動かない
-    view->setModel(proxy);
-    view->setSortingEnabled(true);
-    view->sortByColumn(1, Qt::AscendingOrder);  // 日付列を昇順
+    const QString tableName = "shishutunyu" + QString::number(kznum);
+    if (model && model->tableName() == tableName && !model->select()) {
+        qWarning() << "Failed to refresh account model after balance recalculation:"
+                   << model->lastError().text();
+    }
 
 }
 
@@ -389,7 +384,11 @@ bool KakeiboTable::updateRow(const KakeiboRowData& data,bool sishutuFlg, int tbn
 {
     QSqlTableModel model(nullptr, QSqlDatabase::database());
     model.setTable("shishutunyu" + QString::number(tbnum));
-    model.select();
+    if (!model.select()) {
+        qWarning() << "Failed to select row for update:" << model.lastError().text();
+        return false;
+    }
+
     // 行番号 r を探すなら r に対応する index(r,0) が主キー
     for (int r = 0; r < model.rowCount(); ++r) {
        //  qDebug()<<"update4 modelIndex="<<model.data(model.index(r,0)).toInt()<<" dataId="<<data.id;
@@ -400,11 +399,11 @@ bool KakeiboTable::updateRow(const KakeiboRowData& data,bool sishutuFlg, int tbn
             // ...他の列も更新
             // 支出 or 収入
             if (sishutuFlg) {
-                model.setData(model.index(r, 2), data.kingaku);
+                model.setData(model.index(r, 2), qAbs(data.kingaku));
                 model.setData(model.index(r, 3), 0);
             } else {
                 model.setData(model.index(r, 2), 0);
-                model.setData(model.index(r, 3), data.kingaku);
+                model.setData(model.index(r, 3), qAbs(data.kingaku));
             }
 
             // 残高（あとで再計算する場合は 0）
@@ -418,8 +417,45 @@ bool KakeiboTable::updateRow(const KakeiboRowData& data,bool sishutuFlg, int tbn
             model.setData(model.index(r, 7), data.idosaki);
 
 
-            return model.submitAll();
+            if (!model.submitAll()) {
+                qWarning() << "Failed to update row" << data.id << ":" << model.lastError().text();
+                return false;
+            }
+            return true;
         }
     }
+    qWarning() << "Could not find row to update:" << data.id;
     return false;
+}
+
+bool KakeiboTable::appendMemoToRow(int rowId, const QString& marker,
+                                   const QString& annotation, int tbnum)
+{
+    const QString tableName = QString("shishutunyu%1").arg(tbnum);
+    QSqlQuery query(db);
+    query.prepare(QString("SELECT biko FROM %1 WHERE num = :num").arg(tableName));
+    query.bindValue(":num", rowId);
+    if (!query.exec()) {
+        qWarning() << "Failed to read memo for row" << rowId << ":" << query.lastError().text();
+        return false;
+    }
+    if (!query.next()) {
+        qWarning() << "Could not find row to annotate:" << rowId;
+        return false;
+    }
+
+    QString memo = query.value(0).toString();
+    if (memo.contains(marker))
+        return true;
+
+    memo += annotation;
+    query.prepare(QString("UPDATE %1 SET biko = :biko WHERE num = :num").arg(tableName));
+    query.bindValue(":biko", memo);
+    query.bindValue(":num", rowId);
+    if (!query.exec() || query.numRowsAffected() != 1) {
+        qWarning() << "Failed to annotate row" << rowId << ":" << query.lastError().text();
+        return false;
+    }
+
+    return true;
 }

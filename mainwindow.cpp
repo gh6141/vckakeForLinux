@@ -27,6 +27,10 @@
 #include <QScrollArea>
 #include "DraggableButton.h"
 #include "OricoRowData.h"
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QVector>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QCloseEvent>
@@ -115,32 +119,69 @@ MainWindow::MainWindow(QWidget *parent)
             QSortFilterProxyModel* proxy = table->getProxyModel();
             QSqlTableModel* model = table->getmodel();
             QItemSelectionModel *sel = table->selectionModel();
-            if (!sel->hasSelection()) return;
+            if (!proxy || !model || !sel->hasSelection()) return;
+            if (proxy->sourceModel() != model) {
+                QMessageBox::warning(this, "削除エラー",
+                                     "表示中のデータと削除対象が一致しません。再表示してからお試しください。");
+                return;
+            }
+
             QModelIndexList selectedProxy = sel->selectedRows();
-            // 行番号がずれないように降順で処理
-            std::sort(selectedProxy.begin(), selectedProxy.end(),
-                      [](const QModelIndex &a, const QModelIndex &b) { return a.row() > b.row(); });
 
-            const int himokuColumn = 5;
-            const int idosakiColumn = 7;
-
+            struct SelectedRecord {
+                int num;
+                QString himoku;
+                int idosaki;
+            };
+            QVector<SelectedRecord> selectedRecords;
+            selectedRecords.reserve(selectedProxy.size());
             for (const QModelIndex &proxyIndex : selectedProxy) {
-                // proxy -> source モデルの index に変換
-                QModelIndex idx = proxy->mapToSource(proxyIndex);
+                const QModelIndex sourceIndex = proxy->mapToSource(proxyIndex);
+                if (!sourceIndex.isValid()) continue;
+                SelectedRecord record;
+                record.num = model->data(model->index(sourceIndex.row(), 0)).toInt();
+                record.himoku = model->data(model->index(sourceIndex.row(), 5)).toString();
+                record.idosaki = model->data(model->index(sourceIndex.row(), 7)).toInt();
+                selectedRecords.append(record);
+            }
+            if (selectedRecords.isEmpty()) return;
 
-                QString himoku = model->data(model->index(idx.row(), himokuColumn)).toString();
+            QSqlDatabase db = model->database();
+            if (!db.transaction()) {
+                QMessageBox::warning(this, "削除エラー",
+                                     "削除を開始できませんでした: " + db.lastError().text());
+                return;
+            }
 
-                bool isNumber = true;
+            const auto rollbackAndRefresh = [&]() {
+                db.rollback();
+                if (!model->select())
+                    qWarning() << "Failed to refresh model after delete rollback:"
+                               << model->lastError().text();
+            };
+
+            const QString currentTable = model->tableName();
+            QSqlQuery deleteCurrentQuery(db);
+            if (!deleteCurrentQuery.prepare(
+                    QString("DELETE FROM %1 WHERE num = :num").arg(currentTable))) {
+                const QString error = deleteCurrentQuery.lastError().text();
+                rollbackAndRefresh();
+                QMessageBox::warning(this, "削除エラー",
+                                     "削除クエリを準備できませんでした: " + error);
+                return;
+            }
+
+            for (const SelectedRecord &record : selectedRecords) {
+                const QString &himoku = record.himoku;
+                bool isNumber = !himoku.isEmpty() && record.idosaki > 0;
                 for (auto c : himoku) {
                     if (!c.isDigit()) { isNumber = false; break; }
                 }
-
                 if (isNumber) {
                     // 移動データの場合、idosaki を使って他テーブルも削除
-                    int idosaki = model->data(model->index(idx.row(), idosakiColumn)).toInt();
-                    QSqlDatabase db = QSqlDatabase::database();
-                    QSqlTableModel otherModel(nullptr, db);
-                    QString otherTableName = QString("shishutunyu%1").arg(idosaki);
+                    // 移動データの場合、idosaki を使って他テーブルも削除
+                    const QString otherTableName =
+                        QString("shishutunyu%1").arg(record.idosaki);
 
                     QSqlQuery query(db);
 
@@ -149,17 +190,37 @@ MainWindow::MainWindow(QWidget *parent)
                     query.bindValue(":himoku", himoku);
 
                     if (!query.exec()) {
-                        qDebug() << "Failed to delete from" << otherTableName << query.lastError().text();
-                    } else {
-                        qDebug() << "Deleted matching rows from" << otherTableName;
+                        const QString error = query.lastError().text();
+                        rollbackAndRefresh();
+                        QMessageBox::warning(
+                            this, "削除エラー",
+                            QString("%1 の関連データを削除できませんでした: %2")
+                                .arg(otherTableName, error));
+                        return;
                     }
                 }
-                // 元のテーブルの削除
-                model->removeRow(idx.row());
-                qDebug()<<idx.row();
+
+                deleteCurrentQuery.bindValue(":num", record.num);
+                if (!deleteCurrentQuery.exec() ||
+                    deleteCurrentQuery.numRowsAffected() != 1) {
+                    const QString error = deleteCurrentQuery.lastError().text().isEmpty()
+                                              ? QString("番号 %1 のデータが見つかりません")
+                                                    .arg(record.num)
+                                              : deleteCurrentQuery.lastError().text();
+                    rollbackAndRefresh();
+                    QMessageBox::warning(this, "削除エラー",
+                                         "選択したデータを削除できませんでした: " + error);
+                    return;
+                }
             }
-            model->submitAll(); // 元テーブルの変更確定
-            table->loadTable(ckozanum);
+
+            if (!db.commit()) {
+                const QString error = db.lastError().text();
+                rollbackAndRefresh();
+                QMessageBox::warning(this, "削除エラー",
+                                     "削除を確定できませんでした: " + error);
+                return;
+            }
 
             gotoLast();
         });
@@ -1228,19 +1289,27 @@ void MainWindow::onKosinClicked(DraggableGridWidget* grid,
             auto kdata = right->kakeiboData();
        qDebug() << "MATCH row" << r << "金額" << odata.kingaku  << "日付" << odata.date << "備考" << kdata.biko+"("+odata.usePlace+")";
 
-            // ★ここでDB更新★
-       if(!kdata.biko.contains("(Orico:")){
-           kdata.biko = kdata.biko+"(Orico:"+odata.usePlace+")";
-       }
-
-          table->updateRow(kdata,true,ckozanum);//true=sishutu false=shunyu
+            if (!table->appendMemoToRow(kdata.id, "(Orico:",
+                                        "(Orico:" + odata.usePlace + ")", ckozanum)) {
+                QMessageBox::warning(
+                    this, "照合結果の更新エラー",
+                    QString("家計簿の明細（番号 %1）にオリコ情報を記録できませんでした。")
+                        .arg(kdata.id));
+                return;
+            }
          }
         else if (left && !right)
         {
             KakeiboRowData datak=left->kakeiboData();
-            datak.date= toDate.addDays(2);//よく月２日
-            datak.biko = datak.biko+"(削除要検討)";
-            table->updateRow(datak,true,ckozanum);//true=sishutu false=shunyu
+            datak.date = QDate(toDate.year(), toDate.month(), 1).addMonths(1).addDays(1);
+            if (!datak.biko.contains("(削除の可能性あり)"))
+                datak.biko += "(削除の可能性あり)";
+            if (!table->updateRow(datak, datak.kingaku > 0, ckozanum)) {
+                QMessageBox::warning(this, "照合結果の更新エラー",
+                                     QString("家計簿の明細（番号 %1）を更新できませんでした。")
+                                         .arg(datak.id));
+                return;
+            }
 
           //  qDebug() << "kakeibo only row(dateUpdate for del)" << r << left->kakeiboData().kingaku<< "del:"+left->kakeiboData().biko;
 
@@ -1325,28 +1394,26 @@ void MainWindow::onKosinClicked_Bank(DraggableGridWidget* grid,
             auto odata = left->bankData();
             auto kdata = right->kakeiboData();
             qDebug() << "MATCH row" << r << "金額" << odata.payment-odata.deposit  << "日付" << odata.date << "備考" << kdata.biko+"("+odata.summary+")";
-            // ★ここでDB更新★ 更新すると口座間移動データなどが消えて不具合起こしやすいので、なしにする。基本そのまま残す。
-            if(!kdata.biko.contains("<imp")){
-               // kdata.biko = kdata.biko+"<imp"+odata.summary; //家計簿に参考までインポート情報追加
-            }
-            if(odata.payment>0){
-             //   table->updateRow(kdata,true,ckozanum);//true=sishutu false=shunyu
-            }else{
-              //  kdata.kingaku=odata.deposit;
-             //   table->updateRow(kdata,false,ckozanum);//true=sishutu false=shunyu
+            if (!table->appendMemoToRow(kdata.id, "<imp",
+                                        "<imp" + odata.summary, ckozanum)) {
+                QMessageBox::warning(
+                    this, "照合結果の更新エラー",
+                    QString("家計簿の明細（番号 %1）に銀行CSV情報を記録できませんでした。")
+                        .arg(kdata.id));
+                return;
             }
         }
         else if (left && !right) //家計簿のみにある
         {
             KakeiboRowData datak=left->kakeiboData();
-            datak.date= toDate.addDays(2);//わかりやすく２日後に移動
-            datak.biko = datak.biko+"(インポートデータにないため削除検討)";
-            //ここも、変更せずに、様子をみる。手動で不要なものさがして、手作業で削除
-            if(datak.kingaku>0){
-               // table->updateRow(datak,true,ckozanum);//true=sishutu false=shunyu
-            }else{
-               // datak.kingaku=-datak.kingaku;
-             //   table->updateRow(datak,false,ckozanum);//true=sishutu false=shunyu
+            datak.date = QDate(toDate.year(), toDate.month(), 1).addMonths(1).addDays(1);
+            if (!datak.biko.contains("(削除の可能性あり)"))
+                datak.biko += "(削除の可能性あり)";
+            if (!table->updateRow(datak, datak.kingaku > 0, ckozanum)) {
+                QMessageBox::warning(this, "照合結果の更新エラー",
+                                     QString("家計簿の明細（番号 %1）を更新できませんでした。")
+                                         .arg(datak.id));
+                return;
             }
         }
         else if (!left && right) //インポートのみにある
@@ -1859,4 +1926,3 @@ void MainWindow::on_actioninportBefore_triggered()
 
 
 }
-

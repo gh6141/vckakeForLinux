@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run vckake (Qt 6.11.2 MinGW)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\build\\Desktop_Qt_6_11_2_MinGW_64_bit_Debug\\vckake.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}\\build\\Desktop_Qt_6_11_2_MinGW_64_bit_Debug",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "C:\\Qt\\6.11.2\\mingw_64\\bin;C:\\Qt\\Tools\\mingw1310_64\\bin;${env:PATH}"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\Qt\\Tools\\mingw1310_64\\bin\\gdb.exe",
+            "preLaunchTask": "CMake: build vckake (Qt 6.11.2 MinGW)"
+        }
+    ]
+}
