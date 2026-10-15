@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QtKake ver1.0</string>
+   <string>QtKake ver1.1</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -375,7 +375,7 @@
          <rect>
           <x>380</x>
           <y>20</y>
-          <width>141</width>
+          <width>181</width>
           <height>31</height>
          </rect>
         </property>
